@@ -1,13 +1,29 @@
-# 🛠️ Dotfiles - Configuración Automática con Stow
+# Dotfiles (Stow)
 
-Este repositorio contiene mi configuración personal (**dotfiles**) para entornos Unix/Linux y macOS, gestionados con **GNU Stow** para una fácil administración y sincronización.
+Configuración personal para macOS/Linux gestionada con GNU Stow.
 
-## 🚀 Instalación
+## Contenido
 
-### **1️⃣ Clonar el repositorio**
-Clona este repositorio en tu directorio personal (**home**):
+- `zsh/.zshrc`
+- `tmux/.tmux.conf`
+- `vim/.vimrc`
+- `starship/.config/starship.toml`
+- `alacritty/.config/alacritty/alacritty.toml`
+- `nvim/.config/nvim/init.lua`
+- `nvim/.config/nvim/lazy-lock.json`
+
+## Instalación
+
 ```bash
-git clone git@github.com:TU_USUARIO/dotfiles.git
-
+git clone git@github.com:dny1020/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
 chmod +x setup_dotfiles.sh
 ./setup_dotfiles.sh
+```
+
+## Remoto GitHub
+
+```bash
+git remote add github git@github.com:dny1020/dotfiles.git
+git push github main
+```

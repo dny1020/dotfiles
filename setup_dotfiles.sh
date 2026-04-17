@@ -1,41 +1,68 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# 📌 Nombre del repositorio en GitHub (ajústalo si es diferente)
-REPO_NAME="dotfiles"
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
+BACKUP_DIR="${BACKUP_DIR:-$HOME/dotfiles_backup}"
+CONFIGS=(vim zsh tmux starship alacritty nvim)
 
-# 📌 Ruta destino
-DOTFILES_DIR="$HOME/.dotfiles"
-BACKUP_DIR="$HOME/dotfiles_backup"
+install_stow() {
+  if command -v stow >/dev/null 2>&1; then
+    return
+  fi
 
-echo "🔄 Renombrando directorio '$REPO_NAME' a '$DOTFILES_DIR'..."
-mv "$HOME/$REPO_NAME" "$DOTFILES_DIR"
+  echo "🛠 Instalando GNU Stow..."
+  case "$(uname -s)" in
+    Darwin)
+      command -v brew >/dev/null 2>&1 || { echo "❌ Homebrew no está instalado."; exit 1; }
+      brew install stow
+      ;;
+    Linux)
+      if command -v apt >/dev/null 2>&1; then
+        sudo apt update && sudo apt install -y stow
+      else
+        echo "❌ No se encontró apt. Instala stow manualmente."
+        exit 1
+      fi
+      ;;
+    *)
+      echo "❌ Sistema no soportado para instalación automática de stow."
+      exit 1
+      ;;
+  esac
+}
 
-# 📌 Instalar stow si no está presente
-if ! command -v stow &> /dev/null; then
-    echo "🛠 Instalando GNU Stow..."
-    sudo apt update && sudo apt install -y stow  # Debian/WSL
-    # brew install stow  # MacOS (Descomentar si estás en Mac)
+backup_target() {
+  local rel="$1"
+  local target="$HOME/$rel"
+  local backup="$BACKUP_DIR/$rel"
+
+  if [[ -e "$target" && ! -L "$target" ]]; then
+    mkdir -p "$(dirname "$backup")"
+    echo "📦 Backup: $target -> $backup"
+    mv "$target" "$backup"
+  fi
+}
+
+if [[ ! -d "$DOTFILES_DIR" ]]; then
+  echo "❌ No existe $DOTFILES_DIR"
+  exit 1
 fi
 
-# 📌 Crear directorio de respaldo
+install_stow
 mkdir -p "$BACKUP_DIR"
 
-# 📌 Archivos que queremos gestionar con Stow
-CONFIGS=("vim" "zsh" "tmux")
+# Targets conocidos para evitar conflictos antes de stow
+backup_target ".vimrc"
+backup_target ".zshrc"
+backup_target ".tmux.conf"
+backup_target ".config/starship.toml"
+backup_target ".config/alacritty/alacritty.toml"
+backup_target ".config/nvim/init.lua"
+backup_target ".config/nvim/lazy-lock.json"
 
-echo "🚀 Creando enlaces simbólicos con Stow..."
+echo "🚀 Aplicando symlinks con stow..."
 for config in "${CONFIGS[@]}"; do
-    # Verifica si hay archivos preexistentes y muévelos a backup
-    for file in $(ls "$DOTFILES_DIR/$config"); do
-        if [ -e "$HOME/.$file" ] && [ ! -L "$HOME/.$file" ]; then
-            echo "📦 Moviendo $HOME/.$file a backup..."
-            mv "$HOME/.$file" "$BACKUP_DIR/"
-        fi
-    done
-    
-    # Ejecutar Stow
-    stow -d "$DOTFILES_DIR" -t "$HOME" "$config"
+  stow -d "$DOTFILES_DIR" -t "$HOME" "$config"
 done
 
-echo "✅ Dotfiles configurados correctamente con Stow."
-
+echo "✅ Dotfiles configurados correctamente."
