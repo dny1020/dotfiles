@@ -17,8 +17,18 @@ Configuración personal para macOS/Linux gestionada con GNU Stow.
 ```bash
 git clone git@github.com:dny1020/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-chmod +x setup_dotfiles.sh
+chmod +x setup_dotfiles.sh setup_dotfiles_macos.sh setup_dotfiles_debian.sh
 ./setup_dotfiles.sh
+```
+
+También puedes ejecutar el script específico por sistema:
+
+```bash
+# macOS
+bash setup_dotfiles_macos.sh
+
+# Debian/Linux
+sudo bash setup_dotfiles_debian.sh
 ```
 
 ## Remoto GitHub
