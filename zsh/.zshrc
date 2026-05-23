@@ -550,8 +550,6 @@ fi
 
 eval "$(starship init zsh)"
 
-# Added by Antigravity
-export PATH="/Users/Dny/.antigravity/antigravity/bin:$PATH"
-
-# opencode
-export PATH=/Users/Dny/.opencode/bin:$PATH
+export PATH=~/.opencode/bin:$PATH
+export PATH="$PATH:/mnt/c/Users/user/AppData/Local/Programs/Microsoft VS Code/bin"
+alias cat="batcat"

@@ -85,6 +85,11 @@ lazy.setup({
     dependencies = { "nvim-lua/plenary.nvim" },
   },
   {
+    "nvim-tree/nvim-tree.lua",
+    cmd = { "NvimTreeToggle", "NvimTreeFindFileToggle", "NvimTreeOpen" },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+  },
+  {
     "nvim-treesitter/nvim-treesitter",
     event = { "BufReadPost", "BufNewFile" },
     build = ":TSUpdate",
@@ -142,6 +147,40 @@ if telescope then
       layout_strategy = "horizontal",
       sorting_strategy = "ascending",
     },
+  })
+end
+
+local nvim_tree = safe_require("nvim-tree")
+if nvim_tree then
+  nvim_tree.setup({
+    hijack_cursor = true,
+    sync_root_with_cwd = true,
+    view = {
+      width = 34,
+      side = "left",
+    },
+    renderer = {
+      group_empty = true,
+      highlight_git = true,
+    },
+    actions = {
+      open_file = {
+        quit_on_open = true,
+      },
+    },
+    filters = {
+      dotfiles = false,
+    },
+  })
+
+  local tree_group = vim.api.nvim_create_augroup("UserNvimTree", { clear = true })
+  vim.api.nvim_create_autocmd("VimEnter", {
+    group = tree_group,
+    callback = function()
+      if vim.fn.argc() == 0 then
+        vim.cmd("NvimTreeOpen")
+      end
+    end,
   })
 end
 
@@ -244,4 +283,5 @@ map("n", "<C-p>", ":Telescope find_files<CR>", { silent = true })
 map("n", "<leader>ff", ":Telescope find_files<CR>", { silent = true })
 map("n", "<leader>fb", ":Telescope buffers<CR>", { silent = true })
 map("n", "<leader>fr", ":Telescope live_grep<CR>", { silent = true })
-map("n", "<leader>e", ":Ex<CR>", { silent = true })
+map("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
+map("n", "<leader>E", ":NvimTreeFindFileToggle<CR>", { silent = true })

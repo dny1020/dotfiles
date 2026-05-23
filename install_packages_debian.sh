@@ -12,35 +12,24 @@ step() { echo; echo "──> $*"; }
 ok()   { echo "    [ok] $*"; }
 skip() { echo "    [skip] $*"; }
 
+PACKAGE_LIST="$(dirname "${BASH_SOURCE[0]}")/packages/debian-manual.txt"
+
+if [[ ! -f "$PACKAGE_LIST" ]]; then
+  echo "ERROR: package list not found: $PACKAGE_LIST"
+  exit 1
+fi
+
+PACKAGES=$(grep -vE '^(#|$)' "$PACKAGE_LIST" | xargs)
+
+if [[ -z "$PACKAGES" ]]; then
+  echo "ERROR: package list is empty"
+  exit 1
+fi
+
 # ── 1. Base tools ─────────────────────────────────────────────────────────────
 step "Base tools"
 apt-get update -qq
-apt-get install -y \
-  apt-transport-https \
-  build-essential \
-  curl \
-  git \
-  gnupg \
-  htop \
-  jq \
-  lsb-release \
-  netcat-openbsd \
-  net-tools \
-  nmap \
-  openssh-client \
-  putty-tools \
-  python3 \
-  python3-dev \
-  python3-pip \
-  stow \
-  sudo \
-  tcpdump \
-  tmux \
-  traceroute \
-  unzip \
-  vim \
-  wget \
-  zsh
+apt-get install -y $PACKAGES
 ok "base tools installed"
 
 # ── 2. Ansible ────────────────────────────────────────────────────────────────
