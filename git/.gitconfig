@@ -1,0 +1,7 @@
+[init]
+	defaultBranch = main
+[user]
+	email = user@icloud.com
+	name = Danilo Narvaez
+[alias]
+	lg = log --oneline --graph --decorate --all
