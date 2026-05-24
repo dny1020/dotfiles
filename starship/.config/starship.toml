@@ -5,7 +5,7 @@ palette = "cleanpower"
 
 format = """
 [](fg:orange)\
-[ ](bg:orange fg:black bold)\
+[ ](bg:orange fg:black bold)\
 [](fg:orange bg:teal)\
 $directory\
 $git_branch\

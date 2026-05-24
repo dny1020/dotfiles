@@ -121,6 +121,7 @@ export PATH
 # ========================
 
 # FZF Configuration
+export FZF_BASE="$HOME/.fzf"
 export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border --inline-info --color=fg:#ebdbb2,bg:#282828,hl:#fabd2f,fg+:#ebdbb2,bg+:#3c3836,hl+:#fabd2f,info:#83a598,prompt:#bdae93,pointer:#fe8019,marker:#fe8019,spinner:#fabd2f,header:#665c54"
 
 # Use fd if available
@@ -234,7 +235,6 @@ alias psg='ps aux | grep -v grep | grep -i -e VSZ -e'
 alias ka='killall'
 
 # Copy SSH key
-alias copyssh='pbcopy < ~/.ssh/id_rsa.pub'
 
 # macOS app shortcuts (use 'open -a AppName' directly if rarely used)
 
@@ -384,12 +384,30 @@ findreplace() {
     echo "Usage: findreplace <search> <replace>"
     return 1
   fi
-  grep -rl "$1" . | xargs sed -i "" "s/$1/$2/g"
+  if sed --version >/dev/null 2>&1; then
+    grep -rl "$1" . | xargs sed -i "s/$1/$2/g"
+  else
+    grep -rl "$1" . | xargs sed -i "" "s/$1/$2/g"
+  fi
 }
 
 # Create a backup of a file
 backup() {
   cp "$1"{,.bak}
+}
+
+copyssh() {
+  local key="${1:-$HOME/.ssh/id_ed25519.pub}"
+  if command -v pbcopy &> /dev/null; then
+    pbcopy < "$key"
+  elif command -v clip.exe &> /dev/null; then
+    clip.exe < "$key"
+  elif command -v xclip &> /dev/null; then
+    xclip -selection clipboard < "$key"
+  else
+    echo "No clipboard tool found (pbcopy, clip.exe, xclip)." >&2
+    return 1
+  fi
 }
 
 # Get the weather
@@ -468,6 +486,10 @@ if command -v bat &> /dev/null; then
   alias cat='bat --style=plain'
   alias catn='bat --style=numbers'
   alias cata='bat --style=full'
+elif command -v batcat &> /dev/null; then
+  alias cat='batcat --style=plain'
+  alias catn='batcat --style=numbers'
+  alias cata='batcat --style=full'
 fi
 
 # ========================
@@ -550,6 +572,13 @@ fi
 
 eval "$(starship init zsh)"
 
-export PATH=/home/jnarvaar/.opencode/bin:$PATH
-export PATH="$PATH:/mnt/c/Users/jnarvaar/AppData/Local/Programs/Microsoft VS Code/bin"
-alias cat="batcat"
+if [[ -d "$HOME/.antigravity/antigravity/bin" ]]; then
+  export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+fi
+
+if [[ -d "$HOME/.opencode/bin" ]]; then
+  export PATH="$HOME/.opencode/bin:$PATH"
+fi
+if [[ -d "/mnt/c/Users/$USER/AppData/Local/Programs/Microsoft VS Code/bin" ]]; then
+  export PATH="$PATH:/mnt/c/Users/$USER/AppData/Local/Programs/Microsoft VS Code/bin"
+fi

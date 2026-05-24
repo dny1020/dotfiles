@@ -1,6 +1,6 @@
 # Dotfiles (Stow)
 
-Configuración personal para macOS/Linux gestionada con GNU Stow.
+Configuracion personal para macOS/Linux gestionada con GNU Stow.
 
 ## Contenido
 
@@ -12,35 +12,39 @@ Configuración personal para macOS/Linux gestionada con GNU Stow.
 - `nvim/.config/nvim/init.lua`
 - `nvim/.config/nvim/lazy-lock.json`
 - `ssh/backup.tar.gpg`
-- `packages/debian-manual.txt`
+- `ssh/.ssh/config`
+- `git/.gitconfig`
+- `packages/apt-manual.txt`
 
 ## SSH
 
-- `ssh/backup.tar.gpg` contains encrypted `~/.ssh/config` and keys.
-- Restore is handled by the Debian deploy script.
-- No plaintext private keys are stored in the repo.
+- `ssh/backup.tar.gpg` contiene `~/.ssh/config` y llaves cifradas con GPG.
+- El deploy de Debian restaura automaticamente.
+- No se versionan llaves privadas en texto plano.
 
-## Debian packages
+## WSL Debian
 
-- `packages/debian-manual.txt` captures the current `apt-mark showmanual` inventory.
-- The Debian deploy script installs it automatically.
+Este repo esta preparado para WSL Debian. Usa stow para instalar los symlinks.
 
-## Full Deploy
+### Paquetes
+
+Guarda y restaura la lista de paquetes instalados manualmente (apt):
 
 ```bash
-sudo bash setup_dotfiles.sh
+apt-mark showmanual | sort > packages/apt-manual.txt
+sudo apt update
+sudo xargs -a packages/apt-manual.txt apt install -y
 ```
 
-That will:
+### SSH y secretos
 
-- install Debian packages
-- apply dotfiles via stow
-- decrypt and restore `~/.ssh`
-- set zsh as default shell
+No se versionan claves privadas. Usa un archivo separado para secretos:
 
-You will be prompted for the SSH bundle passphrase during deploy.
+- `~/.zsh_secrets` para variables sensibles.
+- `~/.ssh/` para llaves y config. Si necesitas versionar configuracion publica,
+  usa `ssh/.ssh/config` y mantiene las llaves privadas fuera del repo.
 
-## Instalación
+## Instalacion
 
 ```bash
 git clone git@github.com:dny1020/dotfiles.git ~/.dotfiles
@@ -49,7 +53,7 @@ chmod +x setup_dotfiles.sh setup_dotfiles_macos.sh setup_dotfiles_debian.sh
 ./setup_dotfiles.sh
 ```
 
-También puedes ejecutar el script específico por sistema:
+Tambien puedes ejecutar el script especifico por sistema:
 
 ```bash
 # macOS
