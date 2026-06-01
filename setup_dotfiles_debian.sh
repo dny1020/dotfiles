@@ -221,8 +221,9 @@ backup_target ".config/starship.toml"
 backup_target ".config/alacritty/alacritty.toml"
 backup_target ".config/nvim/init.lua"
 backup_target ".config/nvim/lazy-lock.json"
+backup_target ".config/lsd/config.yaml"
 
-for pkg in vim zsh tmux starship alacritty nvim; do
+for pkg in vim zsh tmux starship alacritty nvim lsd; do
   if [[ -d "$DOTFILES_DIR/$pkg" ]]; then
     as_user stow -d "$DOTFILES_DIR" -t "$REAL_HOME" "$pkg"
     ok "stowed $pkg"
