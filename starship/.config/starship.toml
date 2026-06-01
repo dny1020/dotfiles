@@ -1,12 +1,12 @@
 add_newline = false
 command_timeout = 300
 scan_timeout = 20
-palette = "cleanpower"
+palette = "pastel"
 
 format = """
-[](fg:orange)\
-[ ](bg:orange fg:black bold)\
-[](fg:orange bg:teal)\
+[](fg:amber)\
+[ ](bg:amber fg:black bold)\
+[](fg:amber bg:blue)\
 $directory\
 $git_branch\
 $git_status\
@@ -16,29 +16,28 @@ $time\
 $line_break\
 $character"""
 
-[palettes.cleanpower]
-orange = "#E48A2A"
-teal = "#6FAEA5"
-mint = "#88B06A"
+[palettes.pastel]
+amber = "#C8A97A"
+blue  = "#7BA7BC"
 slate = "#3A3A3A"
-fg = "#EAE7DC"
+fg    = "#EAE7DC"
 black = "#1F1F1F"
 
 [directory]
 truncation_length = 3
 truncate_to_repo = false
 home_symbol = "~"
-style = "bg:teal fg:black bold"
-format = "[ $path ]($style)[](fg:teal bg:mint)"
+style = "bg:blue fg:black bold"
+format = "[ $path ]($style)[](fg:blue bg:blue)"
 
 [git_branch]
-symbol = " "
-style = "bg:mint fg:black bold"
+symbol = " "
+style = "bg:blue fg:black bold"
 format = "[ $symbol$branch ]($style)"
 
 [git_status]
-style = "bg:mint fg:black bold"
-format = "[ $all_status$ahead_behind ]($style)[](fg:mint bg:slate)"
+style = "bg:blue fg:black bold"
+format = "[ $all_status$ahead_behind ]($style)[](fg:blue bg:slate)"
 
 [cmd_duration]
 min_time = 700
@@ -49,7 +48,7 @@ format = "[ $duration ]($style)"
 disabled = false
 time_format = "%H:%M"
 style = "bg:slate fg:fg"
-format = "[  $time ]($style)[](fg:slate)"
+format = "[ $time ]($style)[](fg:slate)"
 
 [character]
 success_symbol = "[❯](bold green) "

@@ -375,6 +375,15 @@ fi
 
 eval "$(starship init zsh)"
 
+# Restore ^L after zsh-syntax-highlighting may have overridden it
+_clear_screen_scrollback() {
+  printf '\033[2J\033[3J\033[H'
+  zle .reset-prompt
+  zle -R
+}
+zle -N _clear_screen_scrollback
+bindkey '^L' _clear_screen_scrollback
+
 # WSL: VS Code
 [[ -d "/mnt/c/Users/$USER/AppData/Local/Programs/Microsoft VS Code/bin" ]] && \
   export PATH="$PATH:/mnt/c/Users/$USER/AppData/Local/Programs/Microsoft VS Code/bin"
