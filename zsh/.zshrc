@@ -48,7 +48,9 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 # Terminal
-export TERM="xterm-256color"
+# Don't force TERM here; let terminal/tmux set the correct value.
+# This avoids color/key issues in tmux, SSH, and nested shells.
+[[ -z "${TERM:-}" ]] && export TERM="xterm-256color"
 
 # ========================
 # HISTORY CONFIGURATION
@@ -114,6 +116,9 @@ path=(
 # Windsurf (added by installer)
 [[ -d "$HOME/.codeium/windsurf/bin" ]] && path=("$HOME/.codeium/windsurf/bin" $path)
 
+# Mason (Neovim LSP/formatter binaries)
+[[ -d "$HOME/.local/share/nvim/mason/bin" ]] && path=("$HOME/.local/share/nvim/mason/bin" $path)
+
 export PATH
 
 # ========================
@@ -124,10 +129,19 @@ export PATH
 export FZF_BASE="$HOME/.fzf"
 export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border --inline-info --color=fg:#ebdbb2,bg:#282828,hl:#fabd2f,fg+:#ebdbb2,bg+:#3c3836,hl+:#fabd2f,info:#83a598,prompt:#bdae93,pointer:#fe8019,marker:#fe8019,spinner:#fabd2f,header:#665c54"
 
-# Use fd if available
+# Use fd/fdfind when available (fast file listing for fzf)
 if command -v fd &> /dev/null; then
-  export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-  export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+  export FZF_FD_CMD='fd'
+elif command -v fdfind &> /dev/null; then
+  export FZF_FD_CMD='fdfind'
+else
+  unset FZF_FD_CMD
+fi
+
+if [[ -n "${FZF_FD_CMD:-}" ]]; then
+  export FZF_DEFAULT_COMMAND="${FZF_FD_CMD} --type f --hidden --follow --exclude .git"
+  export FZF_ALT_C_COMMAND="${FZF_FD_CMD} --type d --hidden --follow --exclude .git"
+  export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 fi
 
 # ripgrep configuration (avoid errors if file doesn't exist)
@@ -146,7 +160,14 @@ export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_AUTO_UPDATE=1
 
 # zoxide (smarter cd)
-eval "$(zoxide init zsh)"
+if command -v zoxide &> /dev/null; then
+  eval "$(zoxide init zsh)"
+fi
+
+# direnv (project-local envs)
+if command -v direnv &> /dev/null; then
+  eval "$(direnv hook zsh)"
+fi
 
 # ========================
 # ALIASES - GENERAL
@@ -161,11 +182,33 @@ alias ~='cd ~'
 alias -- -='cd -'
 
 # List directory contents (icons + muted colors)
-alias ls='lsd'
-alias l='lsd -lh'
-alias la='lsd -lah'
-alias ll='lsd -lh'
-alias lla='lsd -lah'
+if command -v lsd &> /dev/null; then
+  alias ls='lsd'
+  alias l='lsd -lh'
+  alias la='lsd -lah'
+  alias ll='lsd -lh'
+  alias lla='lsd -lah'
+elif command -v exa &> /dev/null; then
+  alias ls='exa --icons'
+  alias l='exa -lh --icons'
+  alias la='exa -lah --icons'
+  alias ll='exa -lh --icons'
+  alias lla='exa -lah --icons'
+else
+  if ls --color=auto >/dev/null 2>&1; then
+    alias ls='ls --color=auto'
+    alias l='ls -lh --color=auto'
+    alias la='ls -lah --color=auto'
+    alias ll='ls -lh --color=auto'
+    alias lla='ls -lah --color=auto'
+  else
+    alias ls='ls -G'
+    alias l='ls -lhG'
+    alias la='ls -lahG'
+    alias ll='ls -lhG'
+    alias lla='ls -lahG'
+  fi
+fi
 
 # Better directory listing
 alias lsize='ls -lhS'               # Sort by size
@@ -337,8 +380,17 @@ fcd() {
 
 # Fuzzy find file and open in editor
 fv() {
-  local file
-  file=$(fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}') && ${EDITOR} "$file"
+  local file preview_cmd
+
+  if command -v bat &> /dev/null; then
+    preview_cmd='bat --color=always --style=numbers --line-range=:500 {}'
+  elif command -v batcat &> /dev/null; then
+    preview_cmd='batcat --color=always --style=numbers --line-range=:500 {}'
+  else
+    preview_cmd='sed -n "1,200p" {}'
+  fi
+
+  file=$(fzf --preview "$preview_cmd") && ${EDITOR} "$file"
 }
 
 # Fuzzy kill process
@@ -472,12 +524,19 @@ updateall() {
   echo "\nDone!"
 }
 
-# Show file tree with colored output
+# Show file tree with icons (prefer exa)
+# Remove pre-existing alias so this works when re-sourcing ~/.zshrc.
+unalias tree 2>/dev/null
+
 tree() {
-  if command -v tree &> /dev/null; then
+  if (( $+commands[eza] )); then
+    command eza --tree --icons --color=always "$@"
+  elif (( $+commands[exa] )); then
+    command exa --tree --icons --color=always "$@"
+  elif (( $+commands[tree] )); then
     command tree -C "$@"
   else
-    find ${1:-.} -print | sed -e 's;[^/]*/;|____;g;s;____|;  |;g'
+    find "${1:-.}" -print | sed -e 's;[^/]*/;|____;g;s;____|;  |;g'
   fi
 }
 
@@ -487,6 +546,7 @@ if command -v bat &> /dev/null; then
   alias catn='bat --style=numbers'
   alias cata='bat --style=full'
 elif command -v batcat &> /dev/null; then
+  alias bat='batcat'  # Debian compatibility
   alias cat='batcat --style=plain'
   alias catn='batcat --style=numbers'
   alias cata='batcat --style=full'
@@ -582,3 +642,6 @@ fi
 if [[ -d "/mnt/c/Users/$USER/AppData/Local/Programs/Microsoft VS Code/bin" ]]; then
   export PATH="$PATH:/mnt/c/Users/$USER/AppData/Local/Programs/Microsoft VS Code/bin"
 fi
+
+# Pi
+export PATH="/home/jnarvaar/.local/share/pi-node/node-v22.22.3-linux-x64/bin:$PATH"

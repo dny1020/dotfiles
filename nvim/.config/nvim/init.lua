@@ -14,6 +14,8 @@ vim.opt.smartcase = true
 vim.opt.hlsearch = true
 vim.opt.incsearch = true
 vim.opt.cursorline = true
+vim.opt.termguicolors = true
+vim.opt.signcolumn = "yes"
 vim.opt.mouse = "a"
 vim.opt.clipboard = "unnamedplus"
 vim.opt.backspace = { "indent", "eol", "start" }
@@ -97,12 +99,16 @@ lazy.setup({
   { "lewis6991/gitsigns.nvim", event = "BufReadPre" },
   { "williamboman/mason.nvim", cmd = { "Mason", "MasonInstall", "MasonUpdate" } },
   { "williamboman/mason-lspconfig.nvim", event = "VeryLazy" },
+  { "WhoIsSethDaniel/mason-tool-installer.nvim", lazy = false },
   { "neovim/nvim-lspconfig", event = { "BufReadPre", "BufNewFile" } },
   { "hrsh7th/nvim-cmp", event = "InsertEnter" },
   { "hrsh7th/cmp-nvim-lsp", event = "InsertEnter" },
   { "L3MON4D3/LuaSnip", event = "InsertEnter" },
   { "saadparwaiz1/cmp_luasnip", event = "InsertEnter" },
   { "windwp/nvim-autopairs", event = "InsertEnter" },
+  { "stevearc/conform.nvim", event = { "BufWritePre" }, cmd = { "ConformInfo" } },
+  { "mfussenegger/nvim-lint", event = { "BufReadPost", "BufNewFile" } },
+  { "christoomey/vim-tmux-navigator", lazy = false },
 }, {
   checker = { enabled = false },
   change_detection = { notify = false },
@@ -198,6 +204,27 @@ if mason then
   mason.setup()
 end
 
+local mason_tools = safe_require("mason-tool-installer")
+if mason_tools then
+  mason_tools.setup({
+    ensure_installed = {
+      "stylua",
+      "shfmt",
+      "shellcheck",
+      "ruff",
+      "black",
+      "isort",
+      "prettierd",
+      "prettier",
+      "eslint_d",
+    },
+    run_on_start = true,
+    auto_update = false,
+    start_delay = 3000,
+    debounce_hours = 24,
+  })
+end
+
 local cmp = safe_require("cmp")
 local luasnip = safe_require("luasnip")
 if cmp and luasnip then
@@ -259,29 +286,129 @@ else
   end
 end
 
+vim.diagnostic.config({
+  virtual_text = { spacing = 2, prefix = "●" },
+  severity_sort = true,
+  update_in_insert = false,
+  float = { border = "rounded", source = "if_many" },
+})
+
+local lsp_group = vim.api.nvim_create_augroup("UserLspKeymaps", { clear = true })
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = lsp_group,
+  callback = function(ev)
+    local opts = { buffer = ev.buf, silent = true }
+
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, vim.tbl_extend("force", opts, { desc = "Go to definition" }))
+    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, vim.tbl_extend("force", opts, { desc = "Go to declaration" }))
+    vim.keymap.set("n", "gr", vim.lsp.buf.references, vim.tbl_extend("force", opts, { desc = "References" }))
+    vim.keymap.set("n", "gi", vim.lsp.buf.implementation, vim.tbl_extend("force", opts, { desc = "Implementation" }))
+    vim.keymap.set("n", "K", vim.lsp.buf.hover, vim.tbl_extend("force", opts, { desc = "Hover" }))
+    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, vim.tbl_extend("force", opts, { desc = "Rename symbol" }))
+    vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "Code action" }))
+    vim.keymap.set("n", "<leader>ld", vim.diagnostic.open_float, vim.tbl_extend("force", opts, { desc = "Line diagnostics" }))
+    vim.keymap.set("n", "<leader>lf", function()
+      vim.lsp.buf.format({ async = true })
+    end, vim.tbl_extend("force", opts, { desc = "LSP format" }))
+  end,
+})
+
 local autopairs = safe_require("nvim-autopairs")
 if autopairs then
   autopairs.setup()
 end
 
+local conform = safe_require("conform")
+if conform then
+  conform.setup({
+    notify_on_error = false,
+    notify_no_formatters = false,
+    formatters_by_ft = {
+      lua = { "stylua" },
+      python = { "isort", "black" },
+      javascript = { "prettierd", "prettier" },
+      javascriptreact = { "prettierd", "prettier" },
+      typescript = { "prettierd", "prettier" },
+      typescriptreact = { "prettierd", "prettier" },
+      json = { "prettierd", "prettier" },
+      markdown = { "prettierd", "prettier" },
+      sh = { "shfmt" },
+      zsh = { "shfmt" },
+    },
+    format_on_save = function(bufnr)
+      if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+        return
+      end
+      return { timeout_ms = 1200, lsp_format = "fallback" }
+    end,
+  })
+end
+
+local lint = safe_require("lint")
+if lint then
+  local lint_linters = {}
+
+  if vim.fn.executable("ruff") == 1 then
+    lint_linters.python = { "ruff" }
+  end
+  if vim.fn.executable("eslint_d") == 1 then
+    lint_linters.javascript = { "eslint_d" }
+    lint_linters.javascriptreact = { "eslint_d" }
+    lint_linters.typescript = { "eslint_d" }
+    lint_linters.typescriptreact = { "eslint_d" }
+  end
+  if vim.fn.executable("shellcheck") == 1 then
+    lint_linters.sh = { "shellcheck" }
+    lint_linters.bash = { "shellcheck" }
+    lint_linters.zsh = { "shellcheck" }
+  end
+
+  lint.linters_by_ft = lint_linters
+
+  if next(lint_linters) ~= nil then
+    local lint_group = vim.api.nvim_create_augroup("UserLint", { clear = true })
+    vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+      group = lint_group,
+      callback = function()
+        lint.try_lint()
+      end,
+    })
+  end
+end
+
 -- Keymaps
 local map = vim.keymap.set
-map("n", "<leader>w", ":w<CR>", { silent = true })
-map("n", "<leader>q", ":q<CR>", { silent = true })
-map("n", "<leader>Q", ":q!<CR>", { silent = true })
-map("n", "<C-s>", ":w<CR>", { silent = true })
-map("i", "<C-s>", "<Esc>:w<CR>a", { silent = true })
-map("n", "<leader>h", ":nohlsearch<CR>", { silent = true })
+map("n", "<leader>w", ":w<CR>", { silent = true, desc = "Save buffer" })
+map("n", "<leader>q", ":q<CR>", { silent = true, desc = "Quit" })
+map("n", "<leader>Q", ":q!<CR>", { silent = true, desc = "Force quit" })
+map("n", "<C-s>", ":w<CR>", { silent = true, desc = "Save buffer" })
+map("i", "<C-s>", "<Esc>:w<CR>a", { silent = true, desc = "Save buffer" })
+map("n", "<leader>h", ":nohlsearch<CR>", { silent = true, desc = "Clear search highlight" })
 map("v", "<", "<gv", { silent = true })
 map("v", ">", ">gv", { silent = true })
-map("n", "<C-h>", "<C-w>h", { silent = true })
-map("n", "<C-j>", "<C-w>j", { silent = true })
-map("n", "<C-k>", "<C-w>k", { silent = true })
-map("n", "<C-l>", "<C-w>l", { silent = true })
 
-map("n", "<C-p>", ":Telescope find_files<CR>", { silent = true })
-map("n", "<leader>ff", ":Telescope find_files<CR>", { silent = true })
-map("n", "<leader>fb", ":Telescope buffers<CR>", { silent = true })
-map("n", "<leader>fr", ":Telescope live_grep<CR>", { silent = true })
-map("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
-map("n", "<leader>E", ":NvimTreeFindFileToggle<CR>", { silent = true })
+map("n", "[d", vim.diagnostic.goto_prev, { silent = true, desc = "Previous diagnostic" })
+map("n", "]d", vim.diagnostic.goto_next, { silent = true, desc = "Next diagnostic" })
+
+map("n", "<C-p>", ":Telescope find_files<CR>", { silent = true, desc = "Find files" })
+map("n", "<leader>ff", ":Telescope find_files<CR>", { silent = true, desc = "Find files" })
+map("n", "<leader>fb", ":Telescope buffers<CR>", { silent = true, desc = "Find buffers" })
+map("n", "<leader>fr", ":Telescope live_grep<CR>", { silent = true, desc = "Live grep" })
+map("n", "<leader>fd", ":Telescope diagnostics<CR>", { silent = true, desc = "Diagnostics" })
+
+map("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true, desc = "Toggle tree" })
+map("n", "<leader>E", ":NvimTreeFindFileToggle<CR>", { silent = true, desc = "Tree find file" })
+
+map({ "n", "v" }, "<leader>f", function()
+  if conform then
+    conform.format({ async = true, lsp_format = "fallback" })
+  else
+    vim.lsp.buf.format({ async = true })
+  end
+end, { silent = true, desc = "Format buffer" })
+
+if lint then
+  map("n", "<leader>ll", function()
+    lint.try_lint()
+  end, { silent = true, desc = "Run linter" })
+end
