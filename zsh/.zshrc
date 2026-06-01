@@ -1,23 +1,9 @@
-# ========================
-#   Professional Zsh Configuration
-#   macOS Optimized
-# ========================
+# Zsh Configuration - Debian WSL
 
-# ========================
-# POWERLEVEL10K INSTANT PROMPT (DISABLED)
-# ========================
-# Using Starship; keep this block commented.
-# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-#   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-# fi
-
-# ========================
-# OH-MY-ZSH CONFIGURATION
-# ========================
+# OH-MY-ZSH
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME=""
 
-# Plugins (minimal set for speed)
 plugins=(
   git
   sudo
@@ -28,83 +14,40 @@ plugins=(
   history-substring-search
 )
 
-# Load Oh My Zsh
 source $ZSH/oh-my-zsh.sh
 
-# Load Powerlevel10k config (disabled)
-# [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
-
-# ========================
 # GENERAL SETTINGS
-# ========================
-
-# Editor
 export EDITOR='nvim'
 export VISUAL='nvim'
 export PAGER='less'
-
-# Language
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-
-# Terminal
-# Don't force TERM here; let terminal/tmux set the correct value.
-# This avoids color/key issues in tmux, SSH, and nested shells.
 [[ -z "${TERM:-}" ]] && export TERM="xterm-256color"
 
-# ========================
-# HISTORY CONFIGURATION
-# ========================
+# HISTORY
 export HISTFILE="$HOME/.zsh_history"
-export HISTSIZE=100000              # Memory history size
-export SAVEHIST=100000              # File history size
+export HISTSIZE=100000
+export SAVEHIST=100000
 export HISTORY_IGNORE="(ls|cd|pwd|exit|cd ..|clear|cls)"
 
-# History options
-setopt HIST_FIND_NO_DUPS           # Don't show duplicates in search
-setopt HIST_IGNORE_ALL_DUPS        # Remove older duplicate entries
-setopt HIST_IGNORE_DUPS            # Don't record duplicates
-setopt HIST_IGNORE_SPACE           # Don't record entries starting with space
-setopt HIST_REDUCE_BLANKS          # Remove superfluous blanks
-setopt HIST_SAVE_NO_DUPS           # Don't write duplicates to history file
-setopt HIST_VERIFY                 # Don't execute immediately upon history expansion
-setopt INC_APPEND_HISTORY          # Write to history file immediately
-setopt SHARE_HISTORY               # Share history between sessions
-setopt EXTENDED_HISTORY            # Record timestamp of command
+setopt HIST_FIND_NO_DUPS HIST_IGNORE_ALL_DUPS HIST_IGNORE_DUPS HIST_IGNORE_SPACE
+setopt HIST_REDUCE_BLANKS HIST_SAVE_NO_DUPS HIST_VERIFY INC_APPEND_HISTORY
+setopt SHARE_HISTORY EXTENDED_HISTORY
 
-# ========================
 # ZSH OPTIONS
-# ========================
-setopt AUTO_CD                     # cd by typing directory name
-setopt AUTO_PUSHD                  # Push directories onto stack
-setopt PUSHD_IGNORE_DUPS           # Don't push duplicates
-setopt PUSHD_SILENT                # Don't print directory stack
-unsetopt CORRECT                  # Disable spell correction (faster command submit)
-setopt COMPLETE_IN_WORD            # Complete from both ends of word
-setopt ALWAYS_TO_END               # Move cursor to end after completion
-setopt PATH_DIRS                   # Perform path search even on command names with slashes
-setopt AUTO_MENU                   # Show completion menu on successive tab press
-setopt AUTO_LIST                   # Automatically list choices on ambiguous completion
-setopt MENU_COMPLETE               # Insert first match immediately
-setopt GLOB_DOTS                   # Match hidden files without explicitly specifying dot
+setopt AUTO_CD AUTO_PUSHD PUSHD_IGNORE_DUPS PUSHD_SILENT
+unsetopt CORRECT
+setopt COMPLETE_IN_WORD ALWAYS_TO_END PATH_DIRS AUTO_MENU AUTO_LIST MENU_COMPLETE GLOB_DOTS
 
-# ========================
-# PATH CONFIGURATION
-# ========================
-# Remove duplicates from PATH
+# PATH
 typeset -U path
-
-# Build PATH (order matters - first has priority)
 path=(
   $HOME/.local/bin
   $HOME/bin
-  $HOME/.cargo/bin              # Rust
-  $HOME/go/bin                  # Go
-  $HOME/.npm-global/bin         # Node global
-  /usr/local/opt/python@3.11/libexec/bin  # Python 3.11
-  /opt/homebrew/bin             # Homebrew (Apple Silicon)
-  /opt/homebrew/sbin
-  /usr/local/bin                # Homebrew (Intel)
+  $HOME/go/bin
+  $HOME/.npm-global/bin
+  $HOME/.local/share/pi-node/node-v22.22.3-linux-x64/bin
+  /usr/local/bin
   /usr/local/sbin
   /usr/bin
   /bin
@@ -113,29 +56,21 @@ path=(
   $path
 )
 
-# Windsurf (added by installer)
 [[ -d "$HOME/.codeium/windsurf/bin" ]] && path=("$HOME/.codeium/windsurf/bin" $path)
-
-# Mason (Neovim LSP/formatter binaries)
 [[ -d "$HOME/.local/share/nvim/mason/bin" ]] && path=("$HOME/.local/share/nvim/mason/bin" $path)
+[[ -d "$HOME/.antigravity/antigravity/bin" ]] && path=("$HOME/.antigravity/antigravity/bin" $path)
+[[ -d "$HOME/.opencode/bin" ]] && path=("$HOME/.opencode/bin" $path)
 
 export PATH
 
-# ========================
-# ENVIRONMENT VARIABLES
-# ========================
-
-# FZF Configuration
+# ENVIRONMENT
 export FZF_BASE="$HOME/.fzf"
 export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border --inline-info --color=fg:#ebdbb2,bg:#282828,hl:#fabd2f,fg+:#ebdbb2,bg+:#3c3836,hl+:#fabd2f,info:#83a598,prompt:#bdae93,pointer:#fe8019,marker:#fe8019,spinner:#fabd2f,header:#665c54"
 
-# Use fd/fdfind when available (fast file listing for fzf)
 if command -v fd &> /dev/null; then
   export FZF_FD_CMD='fd'
 elif command -v fdfind &> /dev/null; then
   export FZF_FD_CMD='fdfind'
-else
-  unset FZF_FD_CMD
 fi
 
 if [[ -n "${FZF_FD_CMD:-}" ]]; then
@@ -144,44 +79,21 @@ if [[ -n "${FZF_FD_CMD:-}" ]]; then
   export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 fi
 
-# ripgrep configuration (avoid errors if file doesn't exist)
-if [[ -f "$HOME/.ripgreprc" ]]; then
-  export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
-else
-  unset RIPGREP_CONFIG_PATH
-fi
-
-# Less configuration (better paging)
+[[ -f "$HOME/.ripgreprc" ]] && export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
 export LESS='-R -F -X -i -g -s -M'
 export LESSCHARSET='utf-8'
 
-# Homebrew
-export HOMEBREW_NO_ANALYTICS=1
-export HOMEBREW_NO_AUTO_UPDATE=1
+command -v zoxide &> /dev/null && eval "$(zoxide init zsh)"
+command -v direnv &> /dev/null && eval "$(direnv hook zsh)"
 
-# zoxide (smarter cd)
-if command -v zoxide &> /dev/null; then
-  eval "$(zoxide init zsh)"
-fi
-
-# direnv (project-local envs)
-if command -v direnv &> /dev/null; then
-  eval "$(direnv hook zsh)"
-fi
-
-# ========================
-# ALIASES - GENERAL
-# ========================
-
-# Navigation
+# ALIASES - Navigation
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
-alias .....='cd ../../../..'
 alias ~='cd ~'
 alias -- -='cd -'
 
-# List directory contents (icons + muted colors)
+# Listing
 if command -v lsd &> /dev/null; then
   alias ls='lsd'
   alias l='lsd -lh'
@@ -195,99 +107,47 @@ elif command -v exa &> /dev/null; then
   alias ll='exa -lh --icons'
   alias lla='exa -lah --icons'
 else
-  if ls --color=auto >/dev/null 2>&1; then
-    alias ls='ls --color=auto'
-    alias l='ls -lh --color=auto'
-    alias la='ls -lah --color=auto'
-    alias ll='ls -lh --color=auto'
-    alias lla='ls -lah --color=auto'
-  else
-    alias ls='ls -G'
-    alias l='ls -lhG'
-    alias la='ls -lahG'
-    alias ll='ls -lhG'
-    alias lla='ls -lahG'
-  fi
+  alias ls='ls --color=auto'
+  alias l='ls -lh --color=auto'
+  alias la='ls -lah --color=auto'
+  alias ll='ls -lh --color=auto'
+  alias lla='ls -lah --color=auto'
 fi
 
-# Better directory listing
-alias lsize='ls -lhS'               # Sort by size
-alias ltime='ls -lht'               # Sort by time
-alias ldot='ls -ld .*'              # List dot files
+alias lsize='ls -lhS'
+alias ltime='ls -lht'
+alias ldot='ls -ld .*'
 
-# File operations
-alias cp='cp -iv'                   # Interactive, verbose
+# Files
+alias cp='cp -iv'
 alias mv='mv -iv'
 alias rm='rm -i'
-alias mkdir='mkdir -pv'             # Create parent dirs, verbose
-
-# Grep with color
+alias mkdir='mkdir -pv'
 alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 
 # System
 alias c='clear'
-alias cls='clear'
 alias h='history'
 alias j='jobs -l'
 alias path='echo -e ${PATH//:/\\n}'
 alias now='date +"%T"'
 alias nowdate='date +"%Y-%m-%d"'
+alias myip='curl -s ifconfig.me'
+alias df='df -h'
+alias du='du -h -d 1'
+alias ducks='du -cks * | sort -rn | head'
+alias psg='ps aux | grep -v grep | grep -i -e VSZ -e'
+alias ka='killall'
 
-# Reload shell
+# Shell
 alias reload='source ~/.zshrc'
 alias zshrc='${EDITOR} ~/.zshrc'
 alias vimrc='${EDITOR} ~/.vimrc'
 alias vim='nvim'
 
-# ========================
-# ALIASES - macOS SPECIFIC
-# ========================
-
-# macOS shortcuts
-alias showfiles='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder'
-alias hidefiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder'
-alias showdesktop='defaults write com.apple.finder CreateDesktop true; killall Finder'
-alias hidedesktop='defaults write com.apple.finder CreateDesktop false; killall Finder'
-
-# Quick access
-alias dl='cd ~/Downloads'
-alias dt='cd ~/Desktop'
-alias docs='cd ~/Documents'
-alias dev='cd ~/Developer'
-
-# System monitoring
-alias cpu='top -o cpu'
-alias mem='top -o rsize'
-alias battery='pmset -g batt'
-
-# Network
-alias myip='curl -s ifconfig.me'
-alias localip='ipconfig getifaddr en0'
-alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
-alias flushdns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
-
-# Disk usage
-alias df='df -h'
-alias du='du -h -d 1'
-alias ducks='du -cks * | sort -rn | head'
-
-# Processes
-alias psg='ps aux | grep -v grep | grep -i -e VSZ -e'
-alias ka='killall'
-
-# Copy SSH key
-
-# macOS app shortcuts (use 'open -a AppName' directly if rarely used)
-
-# Lock screen
-alias afk='pmset displaysleepnow'
-
-# ========================
-# ALIASES - GIT
-# ========================
-
+# ALIASES - Git
 alias g='git'
 alias gs='git status'
 alias ga='git add'
@@ -315,16 +175,10 @@ alias gr='git remote'
 alias grv='git remote -v'
 alias gclean='git clean -fd'
 alias greset='git reset --hard'
-
-# Git WIP shortcuts
 alias gwip='git add -A && git commit --no-verify -m "WIP"'
 alias gunwip='git reset HEAD~1'
 
-# ========================
-# ALIASES - DEVELOPMENT
-# ========================
-
-# Docker
+# ALIASES - Docker
 alias d='docker'
 alias dc='docker-compose'
 alias dps='docker ps'
@@ -335,7 +189,7 @@ alias dlog='docker logs -f'
 alias dprune='docker system prune -af'
 alias dstop='docker stop $(docker ps -q)'
 
-# Node/NPM/Yarn
+# ALIASES - Node/NPM
 alias ni='npm install'
 alias nid='npm install --save-dev'
 alias nig='npm install -g'
@@ -343,45 +197,24 @@ alias nr='npm run'
 alias ns='npm start'
 alias nt='npm test'
 alias nup='npm update'
-alias yi='yarn install'
-alias ya='yarn add'
-alias yr='yarn run'
-alias ys='yarn start'
-alias yt='yarn test'
 
-# Python
+# ALIASES - Python
 alias py='python3'
 alias pip='pip3'
 alias venv='python3 -m venv'
 alias activate='source venv/bin/activate'
 
-# Brew
-alias brewup='brew update && brew upgrade && brew cleanup'
-alias brewinfo='brew leaves | xargs brew desc --eval-all'
-
-# ========================
 # FUNCTIONS
-# ========================
 
-# Create and enter directory
-mkcd() {
-  mkdir -p "$1" && cd "$1"
-}
+mkcd() { mkdir -p "$1" && cd "$1" }
 
-# Extract archives (oh-my-zsh extract plugin provides this, kept for redundancy)
-# Usage: extract <file>
-
-# FZF enhanced functions
-# Fuzzy find directory and cd
 fcd() {
   local dir
   dir=$(find ${1:-.} -type d 2>/dev/null | fzf +m) && cd "$dir"
 }
 
-# Fuzzy find file and open in editor
 fv() {
   local file preview_cmd
-
   if command -v bat &> /dev/null; then
     preview_cmd='bat --color=always --style=numbers --line-range=:500 {}'
   elif command -v batcat &> /dev/null; then
@@ -389,23 +222,17 @@ fv() {
   else
     preview_cmd='sed -n "1,200p" {}'
   fi
-
   file=$(fzf --preview "$preview_cmd") && ${EDITOR} "$file"
 }
 
-# Fuzzy kill process
 fkill() {
   local pid
   pid=$(ps aux | sed 1d | fzf -m | awk '{print $2}')
   [ -n "$pid" ] && echo "$pid" | xargs kill -${1:-9}
 }
 
-# Fuzzy history search and execute
-fh() {
-  eval $(history | fzf +s --tac | sed 's/ *[0-9]* *//')
-}
+fh() { eval $(history | fzf +s --tac | sed 's/ *[0-9]* *//') }
 
-# Fuzzy git branch checkout
 fgb() {
   local branches branch
   branches=$(git branch --all | grep -v HEAD) &&
@@ -413,7 +240,6 @@ fgb() {
   git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
 }
 
-# Fuzzy git log browser
 fgl() {
   git log --graph --color=always \
     --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
@@ -425,49 +251,34 @@ fgl() {
 FZF-EOF"
 }
 
-# Fuzzy git add
 fga() {
   git status --short | fzf -m --preview 'git diff --color=always {2}' | awk '{print $2}' | xargs git add
 }
 
-# Find and replace in files
 findreplace() {
   if [ $# -ne 2 ]; then
     echo "Usage: findreplace <search> <replace>"
     return 1
   fi
-  if sed --version >/dev/null 2>&1; then
-    grep -rl "$1" . | xargs sed -i "s/$1/$2/g"
-  else
-    grep -rl "$1" . | xargs sed -i "" "s/$1/$2/g"
-  fi
+  grep -rl "$1" . | xargs sed -i "s/$1/$2/g"
 }
 
-# Create a backup of a file
-backup() {
-  cp "$1"{,.bak}
-}
+backup() { cp "$1"{,.bak} }
 
 copyssh() {
   local key="${1:-$HOME/.ssh/id_ed25519.pub}"
-  if command -v pbcopy &> /dev/null; then
-    pbcopy < "$key"
-  elif command -v clip.exe &> /dev/null; then
+  if command -v clip.exe &> /dev/null; then
     clip.exe < "$key"
   elif command -v xclip &> /dev/null; then
     xclip -selection clipboard < "$key"
   else
-    echo "No clipboard tool found (pbcopy, clip.exe, xclip)." >&2
+    echo "No clipboard tool found (clip.exe, xclip)." >&2
     return 1
   fi
 }
 
-# Get the weather
-weather() {
-  curl "wttr.in/${1:-}"
-}
+weather() { curl "wttr.in/${1:-}" }
 
-# Man pages with colors
 man() {
   env \
     LESS_TERMCAP_mb=$'\e[01;31m' \
@@ -480,39 +291,19 @@ man() {
     man "$@"
 }
 
-# Quick note taking
-note() {
-  echo "$(date '+%Y-%m-%d %H:%M:%S'): $*" >> "$HOME/.notes"
-}
+note() { echo "$(date '+%Y-%m-%d %H:%M:%S'): $*" >> "$HOME/.notes" }
+notes() { ${EDITOR} "$HOME/.notes" }
+serve() { python3 -m http.server ${1:-8000} }
+cheat() { curl "cheat.sh/$1" }
+qr() { curl "qrenco.de/$1" }
 
-notes() {
-  ${EDITOR} "$HOME/.notes"
-}
-
-# Server a directory over HTTP
-serve() {
-  python3 -m http.server ${1:-8000}
-}
-
-# Get cheatsheet from cheat.sh
-cheat() {
-  curl "cheat.sh/$1"
-}
-
-# Create a QR code
-qr() {
-  curl "qrenco.de/$1"
-}
-
-# Dotfiles management (bare git repo)
 alias dotfiles='git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
 
-# Update all: Homebrew, npm, pip, etc.
 updateall() {
-  echo "Updating Homebrew..."
-  brew update && brew upgrade && brew cleanup
+  echo "Updating apt..."
+  sudo apt update && sudo apt upgrade -y
 
-  echo "\nUpdating npm..."
+  echo "\nUpdating npm globals..."
   npm update -g
 
   echo "\nUpdating pip..."
@@ -524,10 +315,7 @@ updateall() {
   echo "\nDone!"
 }
 
-# Show file tree with icons (prefer exa)
-# Remove pre-existing alias so this works when re-sourcing ~/.zshrc.
 unalias tree 2>/dev/null
-
 tree() {
   if (( $+commands[eza] )); then
     command eza --tree --icons --color=always "$@"
@@ -540,49 +328,25 @@ tree() {
   fi
 }
 
-# Better cat with syntax highlighting (if bat is installed)
 if command -v bat &> /dev/null; then
   alias cat='bat --style=plain'
   alias catn='bat --style=numbers'
   alias cata='bat --style=full'
 elif command -v batcat &> /dev/null; then
-  alias bat='batcat'  # Debian compatibility
+  alias bat='batcat'
   alias cat='batcat --style=plain'
   alias catn='batcat --style=numbers'
   alias cata='batcat --style=full'
 fi
 
-# ========================
-# SECURITY & SECRETS
-# ========================
-
-# Load secrets from a separate file (not tracked in git)
+# SECRETS (not tracked in git)
 [[ -f ~/.zsh_secrets ]] && source ~/.zsh_secrets
 
-# Example ~/.zsh_secrets file:
-# export OPENAI_API_KEY="sk-..."
-# export AWS_ACCESS_KEY_ID="..."
-# export AWS_SECRET_ACCESS_KEY="..."
-
-# If you need AI tools, uncomment and move to ~/.zsh_secrets:
-# export OPENAI_API_KEY="sk-XXX"
-# alias ai="sgpt"
-
-# ========================
 # KEYBINDINGS
-# ========================
-
-# Vi mode
-# bindkey -v  # Uncomment for vi mode
-
-# Use emacs keybindings
 bindkey -e
-
-# Better history search with arrow keys
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
-# Ctrl+Z to foreground last background job
 fancy-ctrl-z() {
   if [[ $#BUFFER -eq 0 ]]; then
     BUFFER="fg"
@@ -595,11 +359,7 @@ fancy-ctrl-z() {
 zle -N fancy-ctrl-z
 bindkey '^Z' fancy-ctrl-z
 
-# ========================
-# PERFORMANCE
-# ========================
-
-# Lazy load nvm (Node Version Manager) for faster shell startup
+# NVM (lazy load)
 if [[ -d "$HOME/.nvm" ]]; then
   export NVM_DIR="$HOME/.nvm"
   alias nvm='unalias nvm; [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"; nvm $@'
@@ -607,41 +367,14 @@ if [[ -d "$HOME/.nvm" ]]; then
   alias npm='unalias npm; [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"; npm $@'
 fi
 
-# ========================
-# WELCOME MESSAGE
-# ========================
-
-# Uncomment to show system info on startup
-# if command -v neofetch &> /dev/null; then
-#   neofetch
-# fi
-
-# ========================
-# ADDITIONAL SOURCES
-# ========================
-
-# FZF keybindings/completion (single source)
+# FZF keybindings/completion
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Local customizations (not tracked in git)
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
-# ========================
-#   End of Configuration
-# ========================
-
 eval "$(starship init zsh)"
 
-if [[ -d "$HOME/.antigravity/antigravity/bin" ]]; then
-  export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
-fi
-
-if [[ -d "$HOME/.opencode/bin" ]]; then
-  export PATH="$HOME/.opencode/bin:$PATH"
-fi
-if [[ -d "/mnt/c/Users/$USER/AppData/Local/Programs/Microsoft VS Code/bin" ]]; then
+# WSL: VS Code
+[[ -d "/mnt/c/Users/$USER/AppData/Local/Programs/Microsoft VS Code/bin" ]] && \
   export PATH="$PATH:/mnt/c/Users/$USER/AppData/Local/Programs/Microsoft VS Code/bin"
-fi
-
-# Pi
-export PATH="/home/jnarvaar/.local/share/pi-node/node-v22.22.3-linux-x64/bin:$PATH"
