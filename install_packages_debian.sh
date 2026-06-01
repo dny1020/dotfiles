@@ -12,7 +12,7 @@ step() { echo; echo "──> $*"; }
 ok()   { echo "    [ok] $*"; }
 skip() { echo "    [skip] $*"; }
 
-PACKAGE_LIST="$(dirname "${BASH_SOURCE[0]}")/packages/debian-manual.txt"
+PACKAGE_LIST="$(dirname "${BASH_SOURCE[0]}")/packages/packages.txt"
 
 if [[ ! -f "$PACKAGE_LIST" ]]; then
   echo "ERROR: package list not found: $PACKAGE_LIST"
