@@ -1,23 +1,20 @@
 # Dotfiles
 
-Configuración personal de terminal/editor para **macOS** y **Debian/WSL**, gestionada con **GNU Stow**.
+Configuración minimalista de terminal/editor para **Debian/WSL** y **macOS**, gestionada con **GNU Stow**. Sin frameworks, sin plugins: solo lo que zsh, vim y las herramientas clásicas de Unix ya traen.
 
 ## Incluye
 
-- `zsh/.zshrc`
-- `tmux/.tmux.conf`
-- `nvim/.config/nvim/init.lua`
-- `starship/.config/starship.toml`
-- `alacritty/.config/alacritty/alacritty.toml`
+- `zsh/.zshrc` — zsh puro: prompt nativo con rama git (`vcs_info`), completado e historial integrados
+- `vim/.vimrc` — vim clásico sin plugins: netrw, `:find`, `:grep` con ripgrep, completado nativo
 - `git/.gitconfig`
+- `alacritty/.config/alacritty/alacritty.toml` (macOS)
 - `ssh/.ssh/config` (solo configuración pública)
 
 ## Instalación rápida
 
 ```bash
-git clone git@github.com:dny1020/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
-chmod +x setup_dotfiles.sh setup_dotfiles_macos.sh setup_dotfiles_debian.sh
+git clone git@github.com:dny1020/dotfiles.git ~/dotfiles
+cd ~/dotfiles
 ./setup_dotfiles.sh
 ```
 
@@ -31,17 +28,18 @@ bash setup_dotfiles_macos.sh
 sudo bash setup_dotfiles_debian.sh
 ```
 
-## Debian: guardar/restaurar paquetes
+## Paquetes
+
+- `packages/packages.txt` — paquetes apt base (vim, git, ripgrep, fzf, etc.)
+- `install_packages_debian.sh` — instala además docker, terraform, node y ansible (repos externos)
 
 ```bash
-apt-mark showmanual | sort > packages/apt-manual.txt
-sudo apt update
-sudo xargs -a packages/apt-manual.txt apt install -y
+sudo bash install_packages_debian.sh
 ```
 
 ## SSH y secretos
 
 - No se versionan claves privadas.
 - Variables sensibles: `~/.zsh_secrets`
-- Llaves SSH: `~/.ssh/`
+- Ajustes locales de zsh: `~/.zshrc.local`
 - Backup cifrado opcional: `ssh/backup.tar.gpg`
