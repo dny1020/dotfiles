@@ -32,16 +32,7 @@ apt-get update -qq
 apt-get install -y $PACKAGES
 ok "base tools installed"
 
-# ── 2. Ansible ────────────────────────────────────────────────────────────────
-step "Ansible"
-if ! command -v ansible &>/dev/null; then
-  apt-get install -y ansible
-  ok "ansible installed"
-else
-  skip "ansible already installed ($(ansible --version | head -1))"
-fi
-
-# ── 3. Docker ─────────────────────────────────────────────────────────────────
+# ── 2. Docker ─────────────────────────────────────────────────────────────────
 step "Docker"
 if ! command -v docker &>/dev/null; then
   install -m 0755 -d /etc/apt/keyrings
@@ -67,7 +58,7 @@ else
   skip "docker already installed ($(docker --version))"
 fi
 
-# ── 4. Terraform ──────────────────────────────────────────────────────────────
+# ── 3. Terraform ──────────────────────────────────────────────────────────────
 step "Terraform"
 if ! command -v terraform &>/dev/null; then
   wget -qO /usr/share/keyrings/hashicorp-archive-keyring.gpg \
@@ -86,7 +77,7 @@ else
   skip "terraform already installed ($(terraform version | head -1))"
 fi
 
-# ── 5. Node.js (via NodeSource LTS) ──────────────────────────────────────────
+# ── 4. Node.js (via NodeSource LTS) ──────────────────────────────────────────
 step "Node.js"
 if ! command -v node &>/dev/null; then
   curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -

@@ -36,8 +36,9 @@ fi
 ok "brew found"
 
 step "Installing system packages with brew"
-brew install stow git zsh wget curl vim fzf ripgrep universal-ctags
-ok "stow git zsh wget curl vim fzf ripgrep universal-ctags"
+BREW_PKGS="stow git zsh wget curl vim fzf ripgrep universal-ctags zsh-autosuggestions zsh-syntax-highlighting"
+brew install $BREW_PKGS
+ok "$BREW_PKGS"
 
 step "Applying dotfiles with stow"
 mkdir -p "$BACKUP_DIR"

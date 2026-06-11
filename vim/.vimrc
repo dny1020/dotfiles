@@ -3,9 +3,20 @@
 set nocompatible
 filetype plugin indent on
 syntax on
+" matchit: % salta entre if/endif, etiquetas HTML, etc. (viene incluido en vim)
+silent! packadd! matchit
+
+" -- Colores ---------------------------------------------------------------
+if has('termguicolors')
+  set termguicolors
+endif
+set background=dark
+" colorscheme moderno incluido en vim 9 (otros: retrobox, sorbet, wildcharm)
+silent! colorscheme habamax
 
 " -- Interfaz ------------------------------------------------------------
 set number
+set cursorline
 set ruler
 set laststatus=2
 set statusline=%f\ %m%r%=%y\ %l:%c\ %p%%
@@ -45,10 +56,29 @@ endif
 " :find busca recursivo desde el directorio actual
 set path+=**
 
-" -- Completado nativo ---------------------------------------------------
-" <C-n>/<C-p> palabras, <C-x><C-o> omni, <C-x><C-f> rutas
+" -- Completado nativo (menu automatico tipo VS Code) ----------------------
+" El menu se abre solo al escribir; ademas <C-x><C-o> omni, <C-x><C-f> rutas
 set omnifunc=syntaxcomplete#Complete
-set completeopt=menuone,longest
+set complete=.,w,b,u,t
+set completeopt=menuone,noinsert,noselect
+set infercase
+set shortmess+=c
+
+if exists('+autocomplete')
+  " vim >= 9.1.1591 trae completado automatico nativo
+  set autocomplete
+else
+  augroup autocomplete
+    autocmd!
+    autocmd InsertCharPre * if !pumvisible() && v:char =~# '\K'
+          \ | call feedkeys("\<C-n>", 'n') | endif
+  augroup END
+endif
+
+" Tab/S-Tab navegan el menu, Enter acepta la seleccion
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <CR>    pumvisible() ? "\<C-y>" : "\<CR>"
 
 " -- netrw como explorador -----------------------------------------------
 let g:netrw_banner = 0
