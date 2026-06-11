@@ -96,20 +96,5 @@ else
   skip "node already installed ($(node --version))"
 fi
 
-# ── 6. Neovim ────────────────────────────────────────────────────────────────
-step "Neovim"
-if ! command -v nvim &>/dev/null; then
-  # Use the official AppImage for the latest stable release
-  NVIM_VERSION=$(curl -fsSL https://api.github.com/repos/neovim/neovim/releases/latest \
-    | grep '"tag_name"' | cut -d'"' -f4)
-  curl -fsSLo /tmp/nvim.appimage \
-    "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux-x86_64.appimage"
-  chmod +x /tmp/nvim.appimage
-  mv /tmp/nvim.appimage /usr/local/bin/nvim
-  ok "neovim ${NVIM_VERSION} installed"
-else
-  skip "neovim already installed ($(nvim --version | head -1))"
-fi
-
 echo
 echo "All packages installed. Run setup_dotfiles_debian.sh to apply dotfiles."

@@ -1,23 +1,18 @@
 # Apt packages - Debian WSL
 # Install: sudo apt install $(grep -v '^#' packages.txt | xargs)
-# Note: docker, terraform, nodejs, neovim use custom repos (see install_packages_debian.sh)
+# Note: docker, terraform, nodejs use custom repos (see install_packages_debian.sh)
 
 ansible
 awscli
-bat
 build-essential
 curl
-direnv
-fd-find
 fzf
 gh
 git
 gnupg
 htop
 jq
-lsd
 lsof
-neovim
 nodejs
 npm
 python3-pip
@@ -25,13 +20,11 @@ python3-venv
 ripgrep
 rsync
 sqlite3
-starship
 stow
-tmux
 tree
+universal-ctags
 unzip
 vim
 wget
 xclip
-zoxide
 zsh
