@@ -1,0 +1,55 @@
+# Paquetes apt instalados manualmente — Debian/WSL (trixie)
+# Instala: sudo apt install $(grep -vE '^\s*(#|$)' packages.txt | xargs)
+# Regenerar referencia: apt-mark showmanual | sort
+# Repos externos (los añade setup_debian.sh): docker (buildx/compose), hashicorp (terraform)
+
+# Shell, editor y forge
+zsh
+vim
+stow
+git
+gh
+tea-cli
+
+# Búsqueda y utilidades de terminal
+fzf
+ripgrep
+universal-ctags
+tree
+htop
+jq
+rsync
+unzip
+xclip
+lsof
+nano
+screen
+net-tools
+tcpdump
+gnupg
+
+# Red, descargas y compilación
+curl
+wget
+build-essential
+
+# Lenguajes y runtimes
+python3-pip
+python3-venv
+nodejs
+npm
+php-cli
+
+# Datos
+sqlite3
+
+# Infra / cloud
+ansible
+awscli
+docker.io
+docker-buildx-plugin
+docker-compose-plugin
+terraform
+
+# LaTeX (grande, ~varios GB; elimina esta línea si no lo usas)
+texlive-full
