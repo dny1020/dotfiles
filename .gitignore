@@ -3,12 +3,9 @@
 **/.zsh_secrets
 **/.zshrc.local
 
-# SSH keys (keep config tracked)
-ssh/.ssh/id_*
-!ssh/.ssh/id_*.pub
-
-# GitHub CLI tokens
-gh/.config/gh/hosts.yml
+# vim undo/swap files
+*.un~
+*.swp
 
 # OS junk
 .DS_Store
