@@ -7,5 +7,9 @@
 *.un~
 *.swp
 
+# config backups (config.bak.YYYYMMDD-HHMMSS, etc.)
+*.bak
+*.bak.*
+
 # OS junk
 .DS_Store
