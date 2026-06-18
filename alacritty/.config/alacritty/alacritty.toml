@@ -1,58 +1,27 @@
-# Configuración de Alacritty en Mac con Blur y Estilo Dev GitHub
+# Config de Alacritty — generada para i3
+# Atajos de portapapeles (ya vienen por defecto, aquí solo documentados):
+#   Ctrl+Shift+C  -> copiar       Ctrl+Shift+V -> pegar
+#   Shift+Insert  -> pegar selección (PRIMARY)
+#   Seleccionar con el mouse copia automáticamente (ver [selection]).
 
 [window]
-opacity = 0.60    # Transparencia suave para dar un look profesional
-blur = true       # Habilita desenfoque en macOS
-padding = { x = 14, y = 14 }
-dynamic_padding = true
-decorations = 'none'
+padding = { x = 6, y = 6 }
+opacity = 1.0
+dynamic_title = true
 
 [font]
-normal = { family = "MesloLGS Nerd Font", style = "Regular" }
-bold = { family = "MesloLGS Nerd Font", style = "Bold" }
-italic = { family = "MesloLGS Nerd Font", style = "Italic" }
-size = 15.0  # Ajusta según prefieras
-
-# 🎨 Esquema de colores estilo GitHub Dark / Developer Theme
-[colors.primary]
-background = "#0d1117"  # Negro con un toque de azul oscuro
-foreground = "#c9d1d9"  # Gris claro para texto, tipo VS Code GitHub Dark
-
-[colors.cursor]
-text = "#0d1117"
-cursor = "#58a6ff"  # Azul cian llamativo
-
-[colors.normal]
-black   = "#161b22"
-red     = "#ff7b72"  # Rojo suave para errores
-green   = "#3fb950"  # Verde más sobrio, menos neón
-yellow  = "#d29922"  # Amarillo oscuro elegante
-blue    = "#58a6ff"  # Azul cian vibrante
-magenta = "#bc8cff"  # Morado sutil para resaltar cosas
-cyan    = "#39c5cf"  # Cian medio, sin ser muy brillante
-white   = "#b1bac4"  # Gris claro para no ser 100% blanco
-
-[colors.bright]
-black   = "#21262d"
-red     = "#ffa198"
-green   = "#56d364"
-yellow  = "#e3b341"
-blue    = "#79c0ff"
-magenta = "#d2a8ff"
-cyan    = "#56d4dd"
-white   = "#f0f6fc"
-
-[cursor]
-style = "Beam"
-blink_interval = 500  # Cursor parpadeante estilo VS Code
+size = 7.0
+normal = { family = "JetBrainsMono Nerd Font Mono", style = "Regular" }
+bold   = { family = "JetBrainsMono Nerd Font Mono", style = "Bold" }
+italic = { family = "JetBrainsMono Nerd Font Mono", style = "Italic" }
 
 [scrolling]
 history = 10000
-multiplier = 3
 
-[keyboard]
-bindings = [
-  { key = "N", mods = "Command", action = "SpawnNewInstance" },
-    { key = "Return", mods = "Command", action = "ToggleFullscreen" }
-    ]
+[selection]
+# Al seleccionar con el mouse, copia también al portapapeles (CLIPBOARD),
+# así puedes pegar con Ctrl+Shift+V o Ctrl+V en otras apps.
+save_to_clipboard = true
 
+[cursor]
+style = { shape = "Block", blinking = "On" }

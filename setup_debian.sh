@@ -76,7 +76,7 @@ mkdir -p "$BACKUP_DIR"
 chown "$REAL_USER":"$REAL_USER" "$BACKUP_DIR"
 backup_target ".vimrc"
 backup_target ".zshrc"
-for pkg in vim zsh; do
+for pkg in vim zsh alacritty i3; do
   as_user stow -d "$SCRIPT_DIR" -t "$REAL_HOME" "$pkg"
   ok "stow $pkg"
 done
