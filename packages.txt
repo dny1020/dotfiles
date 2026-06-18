@@ -6,6 +6,7 @@
 # Shell, editor y forge
 zsh
 vim
+tmux
 stow
 git
 gh
@@ -22,8 +23,7 @@ rsync
 unzip
 xclip
 lsof
-nano
-screen
+feh
 net-tools
 tcpdump
 gnupg
@@ -32,6 +32,8 @@ gnupg
 curl
 wget
 build-essential
+gdb
+valgrind
 
 # Lenguajes y runtimes
 python3-pip
