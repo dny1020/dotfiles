@@ -3,6 +3,11 @@
 set nocompatible
 filetype plugin indent on
 syntax on
+
+" Tema Dracula (colorscheme propio en ~/dotfiles/vim/colors, sin plugins)
+set runtimepath+=$HOME/dotfiles/vim
+silent! colorscheme dracula
+
 set cursorline
 " Apariencia
 set number

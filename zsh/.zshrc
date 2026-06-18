@@ -47,3 +47,7 @@ alias gd='git diff'
 
 # Secretos locales
 [[ -f ~/.zsh_secrets ]] && source ~/.zsh_secrets
+[[ -f ~/.config/shell/debian-i3-aliases.sh ]] && source ~/.config/shell/debian-i3-aliases.sh
+
+# Autosuggestions / highlighting / fzf / historial (debe ir el ÚLTIMO source)
+[[ -f ~/.config/shell/zsh-enhance.zsh ]] && source ~/.config/shell/zsh-enhance.zsh
