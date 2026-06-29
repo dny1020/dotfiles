@@ -1,0 +1,103 @@
+# ~/.config/starship.toml
+# Prompt minimalista de 2 líneas: colores suaves, iconos Nerd Font discretos.
+# Muestra SOLO contexto útil (dir, git, y lenguaje/cloud únicamente si existe en
+# la carpeta). Oculta host/usuario/fecha/hora/memoria/etc. Versionado en dotfiles.
+
+add_newline = true
+palette = "suave"
+
+# Orden visible. Todo módulo NO listado aquí queda oculto automáticamente.
+format = """
+$username\
+$directory\
+$git_branch\
+$git_status\
+$python\
+$nodejs\
+$terraform\
+$aws\
+$kubernetes\
+$cmd_duration\
+$line_break\
+$character"""
+
+# El prompt no debe colgarse buscando módulos lentos en repos/carpetas grandes.
+command_timeout = 800
+scan_timeout = 30
+
+# Paleta casi monocromática y suave (piensa "macOS Terminal", no setup gamer)
+[palettes.suave]
+azul     = "#82aaff"  # directorio
+verde    = "#a6da95"  # git / éxito
+amarillo = "#eed49f"  # git con cambios
+rojo     = "#ed8796"  # errores
+gris     = "#939ab7"  # todo lo demás (lenguajes, cloud, duración)
+
+[directory]
+style = "azul"
+truncation_length = 3
+truncate_to_repo = true
+read_only = " "
+read_only_style = "rojo"
+format = "[$path]($style)[$read_only]($read_only_style) "
+
+[git_branch]
+symbol = " "
+style = "verde"
+format = "[$symbol$branch]($style) "
+
+[git_status]
+style = "amarillo"
+format = "([$all_status$ahead_behind]($style))"
+ahead      = "⇡${count}"
+behind     = "⇣${count}"
+diverged   = "⇕⇡${ahead_count}⇣${behind_count}"
+modified   = "!"
+staged     = "+"
+untracked  = "?"
+stashed    = "≡"
+renamed    = "»"
+deleted    = "✘"
+conflicted = "="
+
+[python]
+symbol = " "
+style = "gris"
+format = "[$symbol$version]($style) "
+
+[nodejs]
+symbol = " "
+style = "gris"
+format = "[$symbol$version]($style) "
+
+[terraform]
+symbol = "󱁢 "
+style = "gris"
+# workspace (rápido). Mostrar versión obliga a ejecutar `terraform version` (lento) → omitido.
+format = "[$symbol$workspace]($style) "
+
+[aws]
+symbol = " "
+style = "gris"
+# Solo aparece si hay un PERFIL activo (no por una región por defecto del entorno).
+# El grupo (...) se oculta cuando $profile está vacío.
+format = "([$symbol$profile]($style) )"
+
+[kubernetes]
+disabled = false
+symbol = "☸ "
+style = "gris"
+format = "[$symbol$context]($style) "
+# Solo aparece en carpetas con manifiestos/charts (evita ruido y errores caros).
+detect_files = ["k8s", "kustomization.yaml", "Chart.yaml"]
+detect_folders = ["k8s", ".kube"]
+
+[cmd_duration]
+min_time = 2000  # solo si el último comando tardó > 2 s
+style = "gris"
+format = "[$duration]($style) "
+
+[character]
+success_symbol = "[❯](verde)"
+error_symbol = "[❯](rojo)"
+vimcmd_symbol = "[❮](amarillo)"

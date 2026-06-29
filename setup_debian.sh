@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Despliegue para Debian/WSL: paquetes (packages.txt) + dotfiles vim y zsh.
+# Despliegue para Debian/WSL: paquetes (packages.txt) + Neovim + dotfiles nvim y zsh.
 # Uso: sudo bash setup_debian.sh
 set -euo pipefail
 
@@ -70,16 +70,45 @@ apt-get update -qq
 apt-get install -y $(grep -vE '^\s*(#|$)' "$PACKAGE_LIST" | xargs)
 ok "paquetes instalados"
 
+# ── 2b. Neovim 0.11+ (apt trixie solo trae 0.10.4; el LSP moderno necesita 0.11+) ─
+# Release oficial (binario estático) en ~/.local/nvim, con symlink en ~/.local/bin.
+NVIM_PREFIX="$REAL_HOME/.local/nvim"
+if ! as_user test -x "$NVIM_PREFIX/bin/nvim"; then
+  step "Instalando Neovim estable (release oficial)"
+  NVIM_URL="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
+  TMP="$(as_user mktemp -d)"
+  as_user curl -fsSL -o "$TMP/nvim.tar.gz" "$NVIM_URL"
+  as_user tar -xzf "$TMP/nvim.tar.gz" -C "$TMP"
+  as_user rm -rf "$NVIM_PREFIX"
+  as_user mkdir -p "$REAL_HOME/.local/bin"
+  as_user mv "$TMP/nvim-linux-x86_64" "$NVIM_PREFIX"
+  as_user ln -sf "$NVIM_PREFIX/bin/nvim" "$REAL_HOME/.local/bin/nvim"
+  as_user rm -rf "$TMP"
+  ok "neovim instalado en $NVIM_PREFIX (symlink en ~/.local/bin/nvim)"
+else
+  skip "neovim ya instalado en $NVIM_PREFIX"
+fi
+
 # ── 3. Dotfiles con stow ──────────────────────────────────────────────────────
 step "Aplicando dotfiles con stow"
 mkdir -p "$BACKUP_DIR"
 chown "$REAL_USER":"$REAL_USER" "$BACKUP_DIR"
-backup_target ".vimrc"
+backup_target ".config/nvim"
 backup_target ".zshrc"
-for pkg in vim zsh alacritty i3; do
+as_user mkdir -p "$REAL_HOME/.config/qutebrowser"   # solo enlaza config.py; runtime fuera del repo
+as_user mkdir -p "$REAL_HOME/.config/opencode"      # solo enlaza opencode.json; runtime/node_modules fuera del repo
+for pkg in nvim zsh tmux alacritty i3 qutebrowser opencode; do
   as_user stow -d "$SCRIPT_DIR" -t "$REAL_HOME" "$pkg"
   ok "stow $pkg"
 done
+
+# Instala los plugins (lazy.nvim) según lazy-lock.json, en headless; no es fatal si falla.
+step "Instalando plugins de Neovim (versiones del lockfile)"
+if as_user "$NVIM_PREFIX/bin/nvim" --headless "+Lazy! restore" +qa 2>/dev/null; then
+  ok "plugins instalados (treesitter/LSP terminan de instalarse al abrir nvim)"
+else
+  skip "instálalos luego con: nvim (lazy lo hace solo al primer arranque)"
+fi
 
 # ── 4. zsh como shell por defecto ─────────────────────────────────────────────
 step "Estableciendo zsh como shell por defecto"
