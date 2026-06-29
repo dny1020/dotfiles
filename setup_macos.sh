@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Despliegue para macOS: paquetes brew + dotfiles vim, zsh y alacritty.
+# Despliegue para macOS: paquetes brew + dotfiles nvim, zsh y alacritty.
 # Uso: bash setup_macos.sh
 set -euo pipefail
 
@@ -31,20 +31,27 @@ ok "brew encontrado"
 
 # ── 2. Paquetes ───────────────────────────────────────────────────────────────
 step "Instalando paquetes con brew"
-brew install stow git vim zsh curl wget fzf ripgrep universal-ctags jq tree htop
+brew install stow git neovim zsh curl wget fzf ripgrep universal-ctags jq tree htop \
+  eza zoxide tealdeer bat fd starship tmux
 ok "paquetes instalados"
 brew install --cask alacritty || skip "alacritty (cask) — instálalo manualmente si lo necesitas"
 
 # ── 3. Dotfiles con stow ──────────────────────────────────────────────────────
 step "Aplicando dotfiles con stow"
 mkdir -p "$BACKUP_DIR"
-backup_target ".vimrc"
+backup_target ".config/nvim"
 backup_target ".zshrc"
 backup_target ".config/alacritty/alacritty.toml"
-for pkg in vim zsh alacritty; do
+mkdir -p "$HOME/.config/opencode"   # solo enlaza opencode.json; runtime/node_modules fuera del repo
+for pkg in nvim zsh tmux alacritty opencode; do
   stow -d "$SCRIPT_DIR" -t "$HOME" "$pkg"
   ok "stow $pkg"
 done
+
+# Instala los plugins (lazy.nvim) según lazy-lock.json, en headless; no es fatal si falla.
+step "Instalando plugins de Neovim (versiones del lockfile)"
+nvim --headless "+Lazy! restore" +qa 2>/dev/null && ok "plugins instalados" \
+  || skip "instálalos luego con: nvim (lazy lo hace solo al primer arranque)"
 
 # ── 4. zsh como shell por defecto ─────────────────────────────────────────────
 step "Estableciendo zsh como shell por defecto"

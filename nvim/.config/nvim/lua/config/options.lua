@@ -1,0 +1,61 @@
+-- Opciones — equivalente 1:1 a los `set` del antiguo ~/.vimrc
+
+-- Leader (debe ir ANTES de cargar lazy y los mapeos)
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
+local opt = vim.opt
+
+-- Apariencia
+opt.termguicolors = true -- color verdadero (necesario para Dracula en Alacritty)
+opt.number = true
+opt.cursorline = true
+opt.signcolumn = "yes" -- columna fija para diagnósticos/git (no salta el texto)
+opt.scrolloff = 4
+
+-- Edición (encoding, backspace, hidden, autoread ya son por defecto en Neovim)
+opt.tabstop = 2
+opt.shiftwidth = 2
+opt.expandtab = true
+opt.autoindent = true
+
+-- Búsqueda
+opt.ignorecase = true
+opt.smartcase = true
+opt.hlsearch = true -- (incsearch ya es por defecto)
+
+-- Archivos
+opt.autoread = true
+opt.undofile = true -- undo persistente (Neovim usa ~/.local/state/nvim/undo y lo crea solo)
+
+-- Completado (lo gestiona nvim-cmp)
+opt.completeopt = { "menu", "menuone", "noselect" }
+
+-- Ripgrep para :grep
+if vim.fn.executable("rg") == 1 then
+  opt.grepprg = "rg --vimgrep --smart-case"
+  opt.grepformat = "%f:%l:%c:%m"
+end
+
+-- Abre la lista quickfix automáticamente tras :grep (tu <leader>g)
+vim.api.nvim_create_autocmd("QuickFixCmdPost", {
+  group = vim.api.nvim_create_augroup("auto_quickfix", { clear = true }),
+  pattern = { "grep", "grepadd" },
+  command = "cwindow",
+})
+
+-- Netrw (explorador nativo, usado por <leader>e)
+vim.g.netrw_banner = 0
+vim.g.netrw_liststyle = 3
+
+-- Volver al último cursor al reabrir un archivo
+vim.api.nvim_create_autocmd("BufReadPost", {
+  group = vim.api.nvim_create_augroup("last_cursor", { clear = true }),
+  callback = function(args)
+    local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+    local line_count = vim.api.nvim_buf_line_count(args.buf)
+    if mark[1] > 1 and mark[1] <= line_count then
+      pcall(vim.api.nvim_win_set_cursor, 0, mark)
+    end
+  end,
+})

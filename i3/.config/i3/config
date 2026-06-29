@@ -45,9 +45,9 @@ exec --no-startup-id dex --autostart --environment i3
 # screen before suspend. Use loginctl lock-session to lock your screen.
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork -c 1d2021
 
-# NetworkManager is the most popular way to manage wireless networks on Linux,
-# and nm-applet is a desktop environment-independent system tray GUI for it.
-exec --no-startup-id env GTK_THEME=Adwaita-dark nm-applet
+# NetworkManager: applet GTK desactivado (sin icono en la barra).
+# Gestiona la red desde terminal con:  nmtui   (o:  nmcli dev wifi)
+# exec --no-startup-id env GTK_THEME=Adwaita-dark nm-applet
 
 # Compositor (sin tearing + sombras) -> ~/.config/picom.conf
 exec --no-startup-id picom -b
@@ -83,6 +83,18 @@ floating_modifier $mod
 # move tiling windows via drag & drop by left-clicking into the title bar,
 # or left-clicking anywhere into the window while holding the floating modifier.
 tiling_drag modifier titlebar
+
+# ── Gaps y bordes (i3 >=4.22 trae gaps nativo) ──────────────────────────────
+# Hueco entre ventanas (inner) y contra el borde de la pantalla (outer):
+# deja ver el wallpaper alrededor de cada ventana.
+gaps inner 10
+gaps outer 6
+# Borde fino sin barra de título = más minimalista (quita para volver atrás).
+default_border pixel 2
+default_floating_border pixel 2
+# Ajusta gaps en caliente:  $mod+Shift+plus / $mod+Shift+minus
+bindsym $mod+plus  gaps inner current plus 2
+bindsym $mod+minus gaps inner current minus 2
 
 # start a terminal (zsh)
 bindsym $mod+Return exec --no-startup-id alacritty -e zsh
@@ -235,6 +247,21 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-        font pango:JetBrainsMono Nerd Font 10
+        font pango:JetBrainsMono Nerd Font 11
         status_command i3status
+
+        # Colores acorde a rofi (Super+D) y a las ventanas: Gruvbox dark + amarillo opaco.
+        # Paleta tomada de ~/.config/rofi/config.rasi (bg/bg-sel/fg/fg-dim/accent).
+        colors {
+                background #1d2021
+                statusline #d79921
+                separator  #928374
+
+                #                  borde    fondo    texto
+                focused_workspace  #d79921  #3c3836  #d79921
+                active_workspace   #3c3836  #3c3836  #928374
+                inactive_workspace #1d2021  #1d2021  #928374
+                urgent_workspace   #cc241d  #cc241d  #1d2021
+                binding_mode       #d79921  #3c3836  #d79921
+        }
 }
