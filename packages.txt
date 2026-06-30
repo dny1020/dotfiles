@@ -14,9 +14,6 @@ git
 gh
 tea-cli
 
-# Navegador (keyboard-driven, config en qutebrowser/)
-qutebrowser
-
 # Búsqueda y utilidades de terminal
 fzf
 ripgrep
