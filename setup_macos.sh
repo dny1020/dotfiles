@@ -43,10 +43,16 @@ backup_target ".config/nvim"
 backup_target ".zshrc"
 backup_target ".config/alacritty/alacritty.toml"
 mkdir -p "$HOME/.config/opencode"   # solo enlaza opencode.json; runtime/node_modules fuera del repo
-for pkg in nvim zsh tmux alacritty opencode; do
+mkdir -p "$HOME/.config/tealdeer"   # solo enlaza config.toml; el cache vive en ~/.cache
+for pkg in nvim zsh tmux alacritty opencode tealdeer; do
   stow -d "$SCRIPT_DIR" -t "$HOME" "$pkg"
   ok "stow $pkg"
 done
+
+# Semilla del cache de tldr (sin esto el primer `tldr` falla pidiendo --update).
+if command -v tldr >/dev/null 2>&1; then
+  tldr --update >/dev/null 2>&1 && ok "cache de tldr descargado" || skip "no se pudo descargar el cache de tldr"
+fi
 
 # Instala los plugins (lazy.nvim) según lazy-lock.json, en headless; no es fatal si falla.
 step "Instalando plugins de Neovim (versiones del lockfile)"

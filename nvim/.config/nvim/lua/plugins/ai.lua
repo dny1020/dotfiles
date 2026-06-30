@@ -4,7 +4,10 @@
 return {
   "milanglacier/minuet-ai.nvim",
   dependencies = { "nvim-lua/plenary.nvim" },
-  event = "InsertEnter",
+  -- IMPORTANTE: cargar en BufReadPre/BufNewFile (no en InsertEnter). minuet activa
+  -- el ghost text con un autocmd FileType; si se carga en InsertEnter ese autocmd
+  -- se registra demasiado tarde y el auto-trigger nunca se habilita en el buffer.
+  event = { "BufReadPre", "BufNewFile" },
   config = function()
     require("minuet").setup({
       provider = "openai_fim_compatible",
@@ -23,6 +26,19 @@ return {
           name = "Ollama",
           end_point = "http://localhost:11434/v1/completions",
           model = "qwen2.5-coder:3b",
+          -- Ollama solo activa el modo FIM (fill-in-middle) cuando el `suffix` NO
+          -- está vacío. Al final de un archivo el texto tras el cursor es "" y el
+          -- modelo instruct se pone a "chatear" (devuelve markdown/prosa). Forzamos
+          -- un suffix mínimo (un salto de línea) para que SIEMPRE haga FIM limpio.
+          -- Solo sobreescribimos `suffix`; `prompt` queda con el default de minuet.
+          template = {
+            suffix = function(_, context_after_cursor, _)
+              if context_after_cursor == "" then
+                return "\n"
+              end
+              return context_after_cursor
+            end,
+          },
           optional = {
             -- 64 basta para una sugerencia en línea y acelera ~4x la generación
             -- frente a 256 (clave para que entre dentro del timeout en CPU).

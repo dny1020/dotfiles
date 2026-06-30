@@ -1,0 +1,5 @@
+# tealdeer (tldr): mantener el cache al día sin pensar en ello.
+# Comprueba la antigüedad del cache al invocar tldr y lo descarga si está
+# obsoleto (cada 30 días por defecto). Coste: un stat de archivo, sin latencia real.
+[updates]
+auto_update = true
