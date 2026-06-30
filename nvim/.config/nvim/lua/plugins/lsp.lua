@@ -20,6 +20,7 @@ return {
         "cssls",
         "jsonls",
         "yamlls",
+        "taplo", -- TOML
         "dockerls",
         "terraformls", -- Terraform
         "intelephense", -- PHP

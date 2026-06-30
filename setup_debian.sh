@@ -97,10 +97,16 @@ backup_target ".config/nvim"
 backup_target ".zshrc"
 as_user mkdir -p "$REAL_HOME/.config/qutebrowser"   # solo enlaza config.py; runtime fuera del repo
 as_user mkdir -p "$REAL_HOME/.config/opencode"      # solo enlaza opencode.json; runtime/node_modules fuera del repo
-for pkg in nvim zsh tmux alacritty i3 qutebrowser opencode; do
+as_user mkdir -p "$REAL_HOME/.config/tealdeer"      # solo enlaza config.toml; el cache vive en ~/.cache
+for pkg in nvim zsh tmux alacritty i3 qutebrowser opencode tealdeer; do
   as_user stow -d "$SCRIPT_DIR" -t "$REAL_HOME" "$pkg"
   ok "stow $pkg"
 done
+
+# Semilla del cache de tldr (sin esto el primer `tldr` falla pidiendo --update).
+if command -v tldr >/dev/null 2>&1; then
+  as_user tldr --update >/dev/null 2>&1 && ok "cache de tldr descargado" || skip "no se pudo descargar el cache de tldr"
+fi
 
 # Instala los plugins (lazy.nvim) según lazy-lock.json, en headless; no es fatal si falla.
 step "Instalando plugins de Neovim (versiones del lockfile)"
