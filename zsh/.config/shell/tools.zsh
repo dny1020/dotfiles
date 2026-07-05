@@ -5,16 +5,16 @@
 
 # --- bat reemplaza a cat / fd reemplaza a find -------------------------------
 # En Debian los binarios son batcat / fdfind; en macOS son bat / fd.
-# cat → bat con syntax highlight + nº de línea, SIN pager (se comporta como cat).
+# cat → bat con syntax highlight, SIN números ni pager (se comporta como cat).
 if command -v batcat >/dev/null; then
   alias bat='batcat'
-  alias cat='batcat --style=numbers --paging=never'
+  alias cat='batcat --style=plain --paging=never'
   # less → bat CON pager (numera + colores); el pager real es `less -RF`
   # (-R respeta colores ANSI, -F sale solo si cabe en una pantalla). Sin recursión:
   # bat lanza el BINARIO `less`, no el alias (los alias no aplican a subprocesos).
   alias less='batcat --style=numbers --paging=always --pager="less -RF"'
 elif command -v bat >/dev/null; then
-  alias cat='bat --style=numbers --paging=never'
+  alias cat='bat --style=plain --paging=never'
   alias less='bat --style=numbers --paging=always --pager="less -RF"'
 fi
 command -v fdfind >/dev/null && alias fd='fdfind'
