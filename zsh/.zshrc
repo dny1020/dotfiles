@@ -64,6 +64,8 @@ alias ga='git add'
 alias gc='git commit'
 alias gd='git diff'
 
+alias clip='xclip -selection clipboard'
+
 # Secretos locales
 [[ -f ~/.zsh_secrets ]] && source ~/.zsh_secrets
 [[ -f ~/.config/shell/debian-i3-aliases.sh ]] && source ~/.config/shell/debian-i3-aliases.sh
