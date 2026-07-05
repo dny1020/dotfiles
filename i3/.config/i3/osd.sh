@@ -2,6 +2,7 @@
 # OSD de volumen / brillo / micro con dunst.
 # Uso: osd.sh {vol_up|vol_down|vol_mute|mic_mute|bri_up|bri_down}
 id=2593   # id fijo: reemplaza siempre la misma notificacion
+bat_id=2594 # id para bateria
 
 bar() {   # $1 = porcentaje 0-100  ->  barra de 20 bloques
     local p=$1 filled empty out=""
@@ -29,6 +30,16 @@ notify_bri() {
     dunstify -r $id -u low -h int:value:"$b" "☀  $b%   $(bar "$b")"
 }
 
+notify_bat_low() {
+    local p status
+    p=$(cat /sys/class/power_supply/BAT0/capacity 2>/dev/null)
+    status=$(cat /sys/class/power_supply/BAT0/status 2>/dev/null)
+    [ -z "$p" ] && return
+    if [ "$p" -le 10 ] && [ "$status" = "Discharging" ]; then
+        dunstify -r $bat_id -u critical -h int:value:"$p" "🔋  Batería baja: $p%   $(bar "$p")"
+    fi
+}
+
 case "$1" in
     vol_up)   pactl set-sink-volume @DEFAULT_SINK@ +5%;  notify_vol ;;
     vol_down) pactl set-sink-volume @DEFAULT_SINK@ -5%;  notify_vol ;;
@@ -42,5 +53,8 @@ case "$1" in
               fi ;;
     bri_up)   brightnessctl set +10%; notify_bri ;;
     bri_down) brightnessctl set 10%-; notify_bri ;;
-    *) echo "uso: $0 {vol_up|vol_down|vol_mute|mic_mute|bri_up|bri_down}" ;;
+    bat_check)
+        while sleep 60; do notify_bat_low; done &
+        ;;
+    *) echo "uso: $0 {vol_up|vol_down|vol_mute|mic_mute|bri_up|bri_down|bat_check}" ;;
 esac
