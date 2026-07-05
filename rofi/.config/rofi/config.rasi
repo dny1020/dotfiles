@@ -1,0 +1,72 @@
+configuration {
+    modi: "drun,run,window";
+    show-icons: false;
+    font: "JetBrainsMono Nerd Font 11";
+    drun-display-format: "{name}";
+    display-drun: "apps";
+    display-run:  "run";
+    display-window: "win";
+}
+
+* {
+    bg:      #1d2021;
+    bg-sel:  #3c3836;
+    fg:      #d5c4a1;
+    fg-dim:  #928374;
+    accent:  #d79921;
+
+    background-color: @bg;
+    text-color: @fg;
+}
+
+window {
+    background-color: @bg;
+    border: 1px;
+    border-color: @bg-sel;
+    width: 600px;
+    padding: 0;
+}
+
+mainbox {
+    background-color: @bg;
+    padding: 8px;
+    spacing: 6px;
+}
+
+inputbar {
+    background-color: @bg;
+    text-color: @fg;
+    padding: 6px 8px;
+    spacing: 6px;
+    children: [ prompt, entry ];
+}
+
+prompt { background-color: @bg; text-color: @accent; }
+entry  { background-color: @bg; text-color: @fg; placeholder: ""; }
+
+listview {
+    background-color: @bg;
+    lines: 10;
+    columns: 1;
+    scrollbar: false;
+    spacing: 0px;
+}
+
+element { background-color: @bg; text-color: @fg; padding: 5px 8px; }
+
+/* Todos los estados en oscuro (esto arregla el "blanco" de las apps abiertas) */
+element normal.normal     { background-color: @bg;     text-color: @fg; }
+element alternate.normal  { background-color: @bg;     text-color: @fg; }
+element normal.active     { background-color: @bg;     text-color: @fg-dim; }
+element alternate.active  { background-color: @bg;     text-color: @fg-dim; }
+element normal.urgent     { background-color: @bg;     text-color: @fg; }
+element alternate.urgent  { background-color: @bg;     text-color: @fg; }
+element selected.normal   { background-color: @bg-sel; text-color: @accent; }
+element selected.active   { background-color: @bg-sel; text-color: @accent; }
+element selected.urgent   { background-color: @bg-sel; text-color: @accent; }
+
+element-text { background-color: inherit; text-color: inherit; }
+
+mode-switcher { background-color: @bg; spacing: 0; }
+button          { background-color: @bg;     text-color: @fg-dim; padding: 4px; }
+button selected { background-color: @bg-sel; text-color: @accent; }
