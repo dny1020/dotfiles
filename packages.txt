@@ -7,6 +7,7 @@
 # Nota: Neovim NO va por apt (trixie solo trae 0.10.4); setup_debian.sh instala
 # el release oficial 0.11+ en ~/.local. En macOS lo instala brew.
 zsh
+# Plugins de zsh que carga ~/.config/shell/zsh-enhance.zsh desde /usr/share/*
 zsh-autosuggestions
 zsh-syntax-highlighting
 starship
