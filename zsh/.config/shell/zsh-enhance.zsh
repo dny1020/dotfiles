@@ -21,9 +21,21 @@ bindkey '^[[B' down-line-or-beginning-search  # flecha abajo
 bindkey '^[OA' up-line-or-beginning-search    # variante (terminal en modo app)
 bindkey '^[OB' down-line-or-beginning-search
 
+# Los plugins viven en rutas distintas según el SO:
+#   Debian/WSL: /usr/share/<plugin>/         (apt)
+#   macOS:      $(brew --prefix)/share/<plugin>/  (brew; /opt/homebrew o /usr/local)
+_plugin_source() {  # busca y sourcea la primera ruta que exista
+  local f
+  for f in "/usr/share/$1/$1.zsh" \
+           "/opt/homebrew/share/$1/$1.zsh" \
+           "/usr/local/share/$1/$1.zsh"; do
+    [[ -f "$f" ]] && { source "$f"; return 0; }
+  done
+  return 1
+}
+
 # --- zsh-autosuggestions (la sugerencia gris desde historial) ---------------
-if [[ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
-  source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+if _plugin_source zsh-autosuggestions; then
   ZSH_AUTOSUGGEST_STRATEGY=(history completion)  # historial y, si no, completado
   ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'         # gris tenue
   bindkey '^ '  autosuggest-accept               # Ctrl+Espacio acepta entero
@@ -36,13 +48,6 @@ if command -v fzf >/dev/null; then
 fi
 
 # --- zsh-syntax-highlighting (SIEMPRE el último que se sourcea) -------------
-if [[ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
-  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
+_plugin_source zsh-syntax-highlighting
 
-# --- (OPCIONAL) Prompt con iconos Nerd Font ---------------------------------
-# Descomenta para sustituir tu prompt actual por uno con iconos.
-# Requiere que Alacritty use "JetBrainsMono Nerd Font" (ya la tienes instalada).
-# zstyle ':vcs_info:git:*' formats ' %F{176} %b%f'
-# PROMPT='%F{114} %n%f %F{222} %1~%f${vcs_info_msg_0_} %(?.%F{114}.%F{203})❯%f '
-# RPROMPT='%(?..%F{203}[%?]%f)'
+unfunction _plugin_source
