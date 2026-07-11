@@ -32,7 +32,7 @@ ok "brew encontrado"
 # ── 2. Paquetes ───────────────────────────────────────────────────────────────
 step "Instalando paquetes con brew"
 brew install stow git neovim zsh curl wget fzf ripgrep universal-ctags jq tree htop \
-  eza zoxide tealdeer bat fd starship tmux
+  eza zoxide tealdeer bat fd starship tmux zsh-autosuggestions zsh-syntax-highlighting
 ok "paquetes instalados"
 brew install --cask alacritty || skip "alacritty (cask) — instálalo manualmente si lo necesitas"
 

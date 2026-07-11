@@ -1,8 +1,13 @@
-# Config de Alacritty — generada para i3
+# Config de Alacritty — universal (Debian/i3, macOS, WSL)
 # Atajos de portapapeles (ya vienen por defecto, aquí solo documentados):
 #   Ctrl+Shift+C  -> copiar       Ctrl+Shift+V -> pegar
 #   Shift+Insert  -> pegar selección (PRIMARY)
 #   Seleccionar con el mouse copia automáticamente (ver [selection]).
+
+[general]
+# Overrides por máquina (no versionado): p.ej. otro tamaño de fuente en macOS/retina.
+# Si el archivo no existe, Alacritty lo ignora en silencio.
+import = ["~/.config/alacritty/local.toml"]
 
 [window]
 padding = { x = 6, y = 6 }

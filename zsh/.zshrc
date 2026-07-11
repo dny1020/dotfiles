@@ -50,6 +50,7 @@ export PAGER=less
 
 # PATH personal
 export PATH="$HOME/.local/bin:$PATH"
+[[ -d "$HOME/.opencode/bin" ]] && export PATH="$HOME/.opencode/bin:$PATH"
 
 # Alias
 alias vim='nvim'   # migrado a Neovim; el comando `vim` sigue funcionando
@@ -64,11 +65,18 @@ alias ga='git add'
 alias gc='git commit'
 alias gd='git diff'
 
-alias clip='xclip -selection clipboard'
+# clip: copiar stdin al portapapeles, según el SO (macOS / Linux X11 / WSL)
+if command -v pbcopy >/dev/null; then
+  alias clip='pbcopy'
+elif command -v xclip >/dev/null; then
+  alias clip='xclip -selection clipboard'
+elif command -v clip.exe >/dev/null; then
+  alias clip='clip.exe'
+fi
 
-# Secretos locales
+# Secretos y ajustes por máquina (no versionados; ver README)
 [[ -f ~/.zsh_secrets ]] && source ~/.zsh_secrets
-[[ -f ~/.config/shell/debian-i3-aliases.sh ]] && source ~/.config/shell/debian-i3-aliases.sh
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
 # Herramientas modernas como alias (eza/zoxide/bat/fd) y copiloto local Ollama
 [[ -f ~/.config/shell/tools.zsh ]] && source ~/.config/shell/tools.zsh
@@ -76,6 +84,3 @@ alias clip='xclip -selection clipboard'
 
 # Autosuggestions / highlighting / fzf / historial (debe ir el ÚLTIMO source)
 [[ -f ~/.config/shell/zsh-enhance.zsh ]] && source ~/.config/shell/zsh-enhance.zsh
-
-# opencode
-export PATH=/home/jnarvaar/.opencode/bin:$PATH
