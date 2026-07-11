@@ -41,7 +41,7 @@ notify_bat_low() {
 }
 
 case "$1" in
-    vol_up)   pactl set-sink-volume @DEFAULT_SINK@ +5%;  notify_vol ;;
+    vol_up)   wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+;  notify_vol ;;
     vol_down) pactl set-sink-volume @DEFAULT_SINK@ -5%;  notify_vol ;;
     vol_mute) pactl set-sink-mute   @DEFAULT_SINK@ toggle; notify_vol ;;
     mic_mute) pactl set-source-mute @DEFAULT_SOURCE@ toggle

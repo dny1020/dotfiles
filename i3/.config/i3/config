@@ -59,7 +59,7 @@ exec --no-startup-id dunst
 exec --no-startup-id redshift
 
 # Gestos del trackpad (si libinput-gestures esta instalado)
-exec --no-startup-id libinput-gestures-start
+exec --no-startup-id libinput-gestures-setup start
 
 # Volumen / brillo / micro con OSD (script ~/.config/i3/osd.sh + dunst)
 set $osd ~/.config/i3/osd.sh
