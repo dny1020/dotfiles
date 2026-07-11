@@ -5,7 +5,7 @@
 local langs = {
   "lua", "vim", "vimdoc", "bash", "python", "javascript", "typescript",
   "json", "yaml", "toml", "php", "html", "css", "markdown", "markdown_inline",
-  "dockerfile", "hcl", "sql", "gitcommit", "diff",
+  "dockerfile", "hcl", "terraform", "sql", "gitcommit", "diff",
 }
 
 -- Por encima de este tamano no se activa treesitter: en archivos enormes

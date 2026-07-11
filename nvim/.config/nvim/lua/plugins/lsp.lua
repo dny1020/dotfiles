@@ -56,6 +56,15 @@ return {
       vim.api.nvim_create_autocmd("LspAttach", {
         group = vim.api.nvim_create_augroup("lsp_attach", { clear = true }),
         callback = function(ev)
+          -- terraform-ls (<=0.38.x) emite semantic tokens corruptos (deltas
+          -- negativos desbordados como uint32) en archivos con heredocs <<-EOT,
+          -- y Neovim se queda al 100% de CPU decodificándolos (editor congelado).
+          -- Se desactivan: el resaltado de .tf lo da el parser terraform de treesitter.
+          local client = vim.lsp.get_client_by_id(ev.data.client_id)
+          if client and client.name == "terraformls" then
+            client.server_capabilities.semanticTokensProvider = nil
+          end
+
           local function m(keys, fn, desc)
             vim.keymap.set("n", keys, fn, { buffer = ev.buf, desc = "LSP: " .. desc })
           end
