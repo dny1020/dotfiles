@@ -40,15 +40,35 @@ if command -v ollama >/dev/null; then
 $*"
   }
 
+  # genera UNA línea de comando a partir de una descripción en lenguaje natural
+  _ai_cmdgen() {
+    _ai "Devuelve ÚNICAMENTE un comando de shell para Linux que logre esto, sin explicación ni markdown ni comillas de adorno:
+$*" 0.1 | _ai_oneline
+  }
+
   # --- cmd: genera un comando y lo DEJA en el prompt para que tú lo revises ----
   #     (nunca se auto-ejecuta: aparece editable, pulsa Enter si te convence)
   cmd() {
     [[ -z "$*" ]] && { echo "uso: cmd '<lo que quieres hacer>'"; return 1; }
     local out
-    out=$(_ai "Devuelve ÚNICAMENTE un comando de shell para Linux que logre esto, sin explicación ni markdown ni comillas de adorno:
-$*" 0.1 | _ai_oneline)
+    out=$(_ai_cmdgen "$*")
     [[ -n "$out" ]] && print -z "$out"
   }
+
+  # --- Ctrl+X Ctrl+A: escribe en el prompt lo que quieres en lenguaje natural,
+  #     pulsa el atajo y el texto se REEMPLAZA por el comando generado.
+  #     Editable y nunca se auto-ejecuta: Enter solo si te convence.
+  _ai_prompt_to_cmd() {
+    [[ -z "$BUFFER" ]] && return
+    zle -M "ai: generando comando…"
+    local out
+    out=$(_ai_cmdgen "$BUFFER")
+    zle -M ""
+    [[ -n "$out" ]] && { BUFFER=$out; CURSOR=${#BUFFER}; }
+    zle redisplay
+  }
+  zle -N _ai_prompt_to_cmd
+  bindkey '^X^A' _ai_prompt_to_cmd
 
   # --- why: analiza por qué falló el último comando ---------------------------
   why() {

@@ -2,6 +2,7 @@
 -- ghost text inline mediante FIM (fill-in-middle). Convive con nvim-cmp:
 -- el menú lo dan los servidores LSP; la sugerencia gris en línea la da la IA.
 return {
+  {
   "milanglacier/minuet-ai.nvim",
   dependencies = { "nvim-lua/plenary.nvim" },
   -- IMPORTANTE: cargar en BufReadPre/BufNewFile (no en InsertEnter). minuet activa
@@ -59,4 +60,31 @@ return {
       },
     })
   end,
+  },
+
+  -- Acciones IA sobre selección/buffer: selecciona código, <espacio>a y eliges
+  -- del menú (Explicar, Fix_Code, Review_Code, Ask, Chat...). Usa el MISMO
+  -- modelo que minuet ya tiene residente en RAM -> no añade carga ni espera
+  -- de carga en frío. Sale del split con `q`.
+  {
+    "David-Kunz/gen.nvim",
+    cmd = "Gen",
+    keys = {
+      { "<leader>a", ":Gen<CR>", mode = { "n", "v" }, desc = "IA local: menú de acciones (Ollama)" },
+    },
+    opts = {
+      model = "qwen2.5-coder:3b",
+      display_mode = "split",
+      show_prompt = true,
+      show_model = true,
+    },
+    config = function(_, opts)
+      local gen = require("gen")
+      gen.setup(opts)
+      -- prompt propio: los de fábrica responden en inglés
+      gen.prompts["Explicar"] = {
+        prompt = "Explica en español, claro y breve, qué hace este código:\n```$filetype\n$text\n```",
+      }
+    end,
+  },
 }
