@@ -69,6 +69,9 @@ $*" 0.1 | _ai_oneline
   }
   zle -N _ai_prompt_to_cmd
   bindkey '^X^A' _ai_prompt_to_cmd
+  # Variante para DENTRO de tmux: su prefijo es Ctrl+A y se traga el segundo
+  # golpe de ^X^A. Ctrl+X y luego la letra `a` (sin Ctrl) pasa limpio siempre.
+  bindkey '^Xa' _ai_prompt_to_cmd
 
   # --- why: analiza por qué falló el último comando ---------------------------
   why() {
