@@ -84,3 +84,7 @@ fi
 
 # Autosuggestions / highlighting / fzf / historial (debe ir el ÚLTIMO source)
 [[ -f ~/.config/shell/zsh-enhance.zsh ]] && source ~/.config/shell/zsh-enhance.zsh
+
+# zoxide: tu `cd` de siempre, pero recuerda a dónde sueles ir.
+# Va al final del todo porque zoxide exige inicializarse el último.
+command -v zoxide >/dev/null && eval "$(zoxide init zsh --cmd cd)"
