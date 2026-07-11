@@ -31,9 +31,7 @@ if command -v eza >/dev/null; then
   alias la='eza -la --icons=auto --git --group-directories-first --time-style=long-iso'
 fi
 
-# --- zoxide: tu `cd` de siempre, pero recuerda a dónde sueles ir -------------
-# Sigues escribiendo `cd`; tras visitar dirs, `cd nombre-parcial` salta directo.
-command -v zoxide >/dev/null && eval "$(zoxide init zsh --cmd cd)"
+# --- zoxide vive al FINAL de ~/.zshrc (lo exige: debe iniciarse el último) ---
 
 # --- tldr (tealdeer): ejemplos prácticos en vez de man ----------------------
 # No es alias de nada (no hay equivalente), pero solo corre cuando lo llamas.
