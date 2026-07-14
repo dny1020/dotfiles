@@ -1,0 +1,26 @@
+{% if use_database %}
+from sqlalchemy.orm import Session
+
+from app.models import Item
+from app.schemas import ItemCreate
+
+
+class ItemService:
+    def __init__(self, db: Session) -> None:
+        self.db = db
+
+    def list_items(self) -> list[Item]:
+        return list(self.db.query(Item).all())
+
+    def get_item(self, item_id: int) -> Item | None:
+        return self.db.get(Item, item_id)
+
+    def create_item(self, data: ItemCreate) -> Item:
+        item = Item(name=data.name)
+        self.db.add(item)
+        self.db.commit()
+        self.db.refresh(item)
+        return item
+{% else %}
+# Logica de negocio del proyecto. Mantener services.py libre de detalles de framework/infra.
+{% endif %}

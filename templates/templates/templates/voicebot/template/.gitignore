@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+logs/*
+!logs/.gitkeep
+models/*
+!models/.gitkeep
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage

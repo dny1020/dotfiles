@@ -43,6 +43,7 @@ gnupg
 curl
 wget
 build-essential
+cmake
 gdb
 valgrind
 

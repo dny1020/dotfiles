@@ -1,0 +1,55 @@
+_subdirectory: template
+_envops:
+  trim_blocks: true
+  lstrip_blocks: true
+
+project_name:
+  type: str
+  help: Nombre legible del proyecto (ej. "IVR Turnos")
+
+project_slug:
+  type: str
+  help: Nombre del paquete/directorio (slug)
+  default: "{{ project_name.lower().replace(' ', '-') }}"
+  validator: >-
+    {% if not (project_slug | regex_search('^[a-z][a-z0-9-]*$')) %}
+    project_slug debe ser minusculas, empezar con letra y usar solo letras, numeros y guiones.
+    {% endif %}
+
+project_description:
+  type: str
+  help: Descripcion corta del proyecto
+  default: ""
+
+author_name:
+  type: str
+  help: Nombre del autor
+  default: ""
+
+ollama_model:
+  type: str
+  help: Modelo de Ollama a usar por defecto
+  default: "llama3.2"
+
+whisper_model:
+  type: str
+  help: Modelo de faster-whisper para STT (se descarga solo la primera vez)
+  default: "base"
+
+piper_model_path:
+  type: str
+  help: Ruta al modelo de voz de Piper (.onnx) para TTS, debes descargarlo aparte
+  default: "models/voice.onnx"
+
+use_auth:
+  type: bool
+  help: "Proteger /voice con un API key simple (header X-API-Key)?"
+  default: false
+
+python_version:
+  type: str
+  help: Version de Python
+  default: "3.13"
+
+_tasks:
+  - "cp .env.example .env"

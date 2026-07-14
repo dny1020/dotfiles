@@ -1,0 +1,18 @@
+from pydantic import BaseModel
+
+
+class HealthResponse(BaseModel):
+    status: str = "ok"
+{% if use_database %}
+
+
+class ItemCreate(BaseModel):
+    name: str
+
+
+class ItemRead(BaseModel):
+    id: int
+    name: str
+
+    model_config = {"from_attributes": True}
+{% endif %}

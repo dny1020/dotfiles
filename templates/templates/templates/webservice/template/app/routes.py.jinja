@@ -1,0 +1,26 @@
+import httpx
+from fastapi import APIRouter, Depends
+
+{% if use_auth %}
+from app.auth import require_api_key
+{% endif %}
+from app.clients import get_client
+from app.schemas import HealthResponse
+from app.services import UpstreamService
+
+public_router = APIRouter()
+{% if use_auth %}
+router = APIRouter(dependencies=[Depends(require_api_key)])
+{% else %}
+router = APIRouter()
+{% endif %}
+
+
+@public_router.get("/health", response_model=HealthResponse)
+def health() -> HealthResponse:
+    return HealthResponse()
+
+
+@router.get("/upstream-status")
+def upstream_status(client: httpx.Client = Depends(get_client)) -> dict[str, object]:
+    return UpstreamService(client).get_status()

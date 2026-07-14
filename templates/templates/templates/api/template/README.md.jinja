@@ -1,0 +1,52 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Requisitos
+
+- Python {{ python_version }}+
+- [uv](https://docs.astral.sh/uv/)
+- Docker y Docker Compose
+
+## Desarrollo local
+
+```bash
+uv sync
+uv run uvicorn app.main:app --reload
+```
+
+## Tests
+
+```bash
+uv run pytest
+```
+
+## Docker
+
+```bash
+docker compose up --build
+```
+{% if use_database %}
+
+## Migraciones
+
+```bash
+uv run alembic revision --autogenerate -m "mensaje"
+uv run alembic upgrade head
+```
+{% endif %}
+
+## Estructura
+
+```
+app/
+    main.py         # entrypoint FastAPI, logging, exception handlers
+    config.py       # configuracion via variables de entorno
+{% if use_database %}
+    database.py     # engine/session SQLAlchemy
+    models.py       # modelos ORM
+{% endif %}
+    schemas.py      # esquemas Pydantic
+    services.py     # logica de negocio
+    routes.py       # endpoints FastAPI
+```

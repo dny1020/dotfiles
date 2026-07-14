@@ -1,0 +1,76 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Requisitos
+
+- Python {{ python_version }}+
+- [uv](https://docs.astral.sh/uv/)
+- Docker y Docker Compose
+
+## Desarrollo local
+
+```bash
+uv sync
+ollama pull {{ ollama_model }}   # si corres Ollama fuera de Docker
+uv run uvicorn app.main:app --reload
+```
+
+Por defecto `OLLAMA_BASE_URL` apunta a `http://ollama:11434` (el servicio de docker-compose). Si corres Ollama en tu maquina sin Docker, cambia esa variable en `.env` a `http://localhost:11434`.
+
+## Tests
+
+```bash
+uv run pytest
+```
+
+Los tests reemplazan el agente real por un stub (`tests/conftest.py`), asi que corren sin necesidad de Ollama.
+
+## Docker
+
+```bash
+docker compose up --build
+docker compose exec ollama ollama pull {{ ollama_model }}
+```
+{% if use_mcp %}
+
+## Servidor MCP
+
+Las mismas herramientas del agente tambien se exponen como servidor MCP:
+
+```bash
+uv run python app/mcp_server.py
+```
+{% endif %}
+{% if use_rag %}
+
+## RAG local
+
+Coloca tus documentos (`.txt`) en `data/knowledge/` y cargalos al vector store:
+
+```bash
+uv run python -m app.ingest
+```
+
+El agente puede buscar en esos documentos usando la herramienta `search_knowledge`. El vector store (Chroma) persiste en `data/chroma/` (montado como volumen en Docker).
+{% endif %}
+
+## Estructura
+
+```
+app/
+    main.py         # entrypoint FastAPI, logging, exception handlers
+    config.py       # configuracion via variables de entorno
+    ai.py           # arma el agente de LangGraph (modelo + herramientas)
+    prompts.py      # prompts del agente
+    tools.py        # funciones planas usadas por el agente{% if use_mcp %} y por mcp_server.py{% endif %}
+{% if use_rag %}
+    embeddings.py   # genera embeddings con sentence-transformers
+    vectorstore.py  # coleccion de Chroma (persistida en data/chroma/)
+    ingest.py       # carga data/knowledge/*.txt al vector store
+{% endif %}
+    schemas.py      # esquemas Pydantic
+    routes.py       # endpoints FastAPI
+{% if use_mcp %}    mcp_server.py   # expone tools.py como servidor MCP
+{% endif %}
+```

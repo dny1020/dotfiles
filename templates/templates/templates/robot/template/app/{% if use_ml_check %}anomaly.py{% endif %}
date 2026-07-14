@@ -1,0 +1,35 @@
+from sklearn.ensemble import IsolationForest
+
+from app.database import get_session
+from app.models import JobRun
+
+MIN_HISTORY = 10
+
+
+def is_anomalous(response_time_ms: float) -> bool:
+    """Flag whether a response time looks anomalous vs. recent history.
+
+    Fits a fresh IsolationForest on each call using recent JobRun history —
+    fine for a periodic job (not a hot path). Returns False until there is
+    enough history to make a meaningful call.
+    """
+    session = get_session()
+    try:
+        rows = (
+            session.query(JobRun.response_time_ms)
+            .filter(JobRun.response_time_ms.is_not(None))
+            .order_by(JobRun.ran_at.desc())
+            .limit(200)
+            .all()
+        )
+    finally:
+        session.close()
+
+    history = [row[0] for row in rows if row[0] is not None]
+    if len(history) < MIN_HISTORY:
+        return False
+
+    model = IsolationForest(random_state=42, contamination="auto")
+    model.fit([[value] for value in history])
+    prediction = model.predict([[response_time_ms]])
+    return bool(prediction[0] == -1)

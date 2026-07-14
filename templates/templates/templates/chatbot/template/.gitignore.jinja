@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+logs/*
+!logs/.gitkeep
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+{% if use_rag %}
+data/chroma/
+{% endif %}

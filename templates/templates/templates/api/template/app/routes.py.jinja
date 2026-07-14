@@ -1,0 +1,59 @@
+{% if use_database %}
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+{% if use_auth %}
+from app.auth import require_api_key
+{% endif %}
+from app.database import get_db
+from app.models import Item
+from app.schemas import HealthResponse, ItemCreate, ItemRead
+from app.services import ItemService
+{% elif use_auth %}
+from fastapi import APIRouter, Depends
+
+from app.auth import require_api_key
+from app.schemas import HealthResponse
+{% else %}
+from fastapi import APIRouter
+
+from app.schemas import HealthResponse
+{% endif %}
+
+public_router = APIRouter()
+{% if use_auth %}
+router = APIRouter(dependencies=[Depends(require_api_key)])
+{% else %}
+router = APIRouter()
+{% endif %}
+
+
+@public_router.get("/health", response_model=HealthResponse)
+def health() -> HealthResponse:
+    return HealthResponse()
+{% if use_database %}
+
+
+@router.get("/items", response_model=list[ItemRead])
+def list_items(db: Session = Depends(get_db)) -> list[Item]:
+    return ItemService(db).list_items()
+
+
+@router.get("/items/{item_id}", response_model=ItemRead)
+def get_item(item_id: int, db: Session = Depends(get_db)) -> Item:
+    item = ItemService(db).get_item(item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="item not found")
+    return item
+
+
+@router.post("/items", response_model=ItemRead, status_code=201)
+def create_item(data: ItemCreate, db: Session = Depends(get_db)) -> Item:
+    return ItemService(db).create_item(data)
+{% elif use_auth %}
+
+
+@router.get("/protected")
+def protected() -> dict[str, str]:
+    return {"message": "you are authenticated"}
+{% endif %}
