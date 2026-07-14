@@ -1,0 +1,36 @@
+from types import SimpleNamespace
+
+import pytest
+
+from app.config import get_settings
+from app.database import get_engine
+from app.jobs import run_check_job
+from app.models import JobRun
+
+
+def test_run_check_job_records_success(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "test.db"))
+    get_settings.cache_clear()
+    get_engine.cache_clear()
+
+    def fake_get(url: str, timeout: float) -> SimpleNamespace:
+        return SimpleNamespace(status_code=200, raise_for_status=lambda: None)
+
+    monkeypatch.setattr("app.services.httpx.get", fake_get)
+
+    run_check_job()
+
+    from app.database import get_session
+
+    session = get_session()
+    try:
+        rows = session.query(JobRun).all()
+        assert len(rows) == 1
+        assert rows[0].success is True
+{% if use_ml_check %}
+        assert rows[0].response_time_ms is not None
+{% endif %}
+    finally:
+        session.close()
+        get_engine.cache_clear()
+        get_settings.cache_clear()

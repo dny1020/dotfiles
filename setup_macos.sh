@@ -44,7 +44,8 @@ backup_target ".zshrc"
 backup_target ".config/alacritty/alacritty.toml"
 mkdir -p "$HOME/.config/opencode"   # solo enlaza opencode.json; runtime/node_modules fuera del repo
 mkdir -p "$HOME/.config/tealdeer"   # solo enlaza config.toml; el cache vive en ~/.cache
-for pkg in nvim zsh tmux alacritty opencode tealdeer; do
+mkdir -p "$HOME/.claude"            # solo enlaza agents/skills/AGENTS.md/CLAUDE.md; credenciales/sesiones/cache fuera del repo
+for pkg in nvim zsh tmux alacritty opencode tealdeer claude templates; do
   stow -d "$SCRIPT_DIR" -t "$HOME" "$pkg"
   ok "stow $pkg"
 done

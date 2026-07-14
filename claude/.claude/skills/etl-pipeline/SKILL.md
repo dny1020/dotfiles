@@ -1,0 +1,39 @@
+---
+name: etl-pipeline
+description: "Builds or reviews an ETL/data pipeline. Invoked when: writing a data extraction, transformation, or load job, or reviewing a pipeline for production-readiness. Covers: idempotency, logging, retry behavior, metrics, and error handling."
+---
+
+<skill>
+Build or review the ETL pipeline and apply the following checklist. Fix every issue found and explain each change in one line.
+
+## Idempotency
+- Re-running the pipeline on the same input produces the same result — no duplicate rows from a re-run after a partial failure.
+- Upserts (`ON CONFLICT DO UPDATE` or equivalent) used instead of blind inserts where records can recur.
+- Pipeline can resume from the last successful checkpoint rather than always restarting from scratch, if a run is long enough to matter.
+
+## Logging
+- Each stage (extract, transform, load) logs record counts in and out, so a silent data-loss bug shows up in the logs.
+- Failures log enough context (source, batch id, offending record identifier) to debug without re-running the whole pipeline.
+- No secrets (API keys, DB credentials) or raw PII logged.
+
+## Retry
+- Transient failures (network, rate limits, timeouts) are retried with backoff — not treated as fatal on the first attempt.
+- Retries are bounded (max attempts) and the pipeline fails loudly, not silently, once exhausted.
+- Non-transient failures (bad schema, malformed record) are not retried blindly — they're routed to a dead-letter path instead.
+
+## Metrics
+- Pipeline emits at least: records processed, records failed, duration, last successful run timestamp.
+- Metrics are queryable/alertable, not just printed to a log no one watches.
+
+## Error handling
+- Bad records don't crash the whole batch — isolate and quarantine them, then continue.
+- Schema/type mismatches are caught explicitly, not left to throw a generic exception deep in the transform step.
+
+## Output format
+For each issue found:
+```
+[ISSUE] <file>:<line or section> — <description>
+[FIX]   <what was changed and why>
+```
+Then show the corrected pipeline code.
+</skill>

@@ -1,0 +1,52 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Requisitos
+
+- Python {{ python_version }}+
+- [uv](https://docs.astral.sh/uv/)
+- Docker y Docker Compose
+- Un modelo de voz de Piper (`.onnx` + `.onnx.json`) en `{{ piper_model_path }}`
+
+## Desarrollo local
+
+```bash
+uv sync
+ollama pull {{ ollama_model }}   # si corres Ollama fuera de Docker
+uv run uvicorn app.main:app --reload
+```
+
+## Tests
+
+```bash
+uv run pytest
+```
+
+Los tests reemplazan el pipeline completo (`app/speech.py::get_pipeline`) por un stub, asi que corren sin necesitar los modelos de Whisper/Piper descargados. Para probar de verdad, usa `curl` con un archivo de audio real despues de descargar los modelos:
+
+```bash
+curl -X POST http://localhost:8000/voice -F "file=@grabacion.wav" -o respuesta.wav -D -
+```
+
+## Docker
+
+```bash
+docker compose up --build
+docker compose exec ollama ollama pull {{ ollama_model }}
+```
+
+## Estructura
+
+```
+app/
+    main.py         # entrypoint FastAPI, logging, exception handlers
+    config.py       # configuracion via variables de entorno
+    speech.py       # arma el agente LangGraph y orquesta voz -> texto -> agente -> voz
+    stt.py          # transcripcion con faster-whisper
+    tts.py          # sintesis de voz con Piper
+    prompts.py      # prompts del agente
+    tools.py        # funciones planas usadas por el agente
+    schemas.py      # esquemas Pydantic
+    routes.py       # POST /voice (audio en, audio fuera)
+```

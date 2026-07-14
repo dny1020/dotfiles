@@ -1,0 +1,43 @@
+import pytest
+
+from app.anomaly import is_anomalous
+from app.config import get_settings
+from app.database import get_engine, get_session
+from app.models import JobRun
+
+
+def test_is_anomalous_false_with_insufficient_history(
+    tmp_path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "test.db"))
+    get_settings.cache_clear()
+    get_engine.cache_clear()
+
+    assert is_anomalous(100.0) is False
+
+    get_engine.cache_clear()
+    get_settings.cache_clear()
+
+
+def test_is_anomalous_detects_outlier(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "test.db"))
+    get_settings.cache_clear()
+    get_engine.cache_clear()
+
+    # Realistic history needs some natural jitter — a zero-variance training
+    # set is degenerate for IsolationForest (every point looks equally novel).
+    normal_response_times = [95.0, 98.0, 100.0, 101.0, 103.0, 97.0, 99.0, 102.0, 100.0, 96.0] * 2
+
+    session = get_session()
+    try:
+        for value in normal_response_times:
+            session.add(JobRun(job_name="check", success=True, detail="ok", response_time_ms=value))
+        session.commit()
+    finally:
+        session.close()
+
+    assert is_anomalous(100.0) is False
+    assert is_anomalous(5000.0) is True
+
+    get_engine.cache_clear()
+    get_settings.cache_clear()

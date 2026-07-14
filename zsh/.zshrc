@@ -88,3 +88,7 @@ fi
 # zoxide: tu `cd` de siempre, pero recuerda a dónde sueles ir.
 # Va al final del todo porque zoxide exige inicializarse el último.
 command -v zoxide >/dev/null && eval "$(zoxide init zsh --cmd cd)"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

@@ -1,0 +1,23 @@
+{% if destination == "postgresql" %}
+from sqlalchemy import create_engine
+from sqlalchemy.engine import Engine
+
+from app.config import get_settings
+
+
+def get_engine() -> Engine:
+    settings = get_settings()
+    return create_engine(settings.database_url)
+{% else %}
+from pathlib import Path
+
+import duckdb
+
+from app.config import get_settings
+
+
+def get_connection() -> duckdb.DuckDBPyConnection:
+    settings = get_settings()
+    Path(settings.database_path).parent.mkdir(parents=True, exist_ok=True)
+    return duckdb.connect(settings.database_path)
+{% endif %}

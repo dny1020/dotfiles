@@ -1,0 +1,5 @@
+This is a sample document for the local knowledge base.
+
+Replace this file (and add more .txt files in this folder) with your own
+content, then run `uv run python -m app.ingest` to load it into the vector
+store before starting the app.

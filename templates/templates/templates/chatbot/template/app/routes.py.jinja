@@ -1,0 +1,31 @@
+from fastapi import APIRouter, Depends
+
+{% if use_auth %}
+from app.auth import require_api_key
+{% endif %}
+from app.chatbot import get_agent
+from app.memory import ConversationMemory, get_memory
+from app.schemas import ChatRequest, ChatResponse, HealthResponse
+from app.services import handle_message
+
+public_router = APIRouter()
+{% if use_auth %}
+router = APIRouter(dependencies=[Depends(require_api_key)])
+{% else %}
+router = APIRouter()
+{% endif %}
+
+
+@public_router.get("/health", response_model=HealthResponse)
+def health() -> HealthResponse:
+    return HealthResponse()
+
+
+@router.post("/chat", response_model=ChatResponse)
+def chat(
+    data: ChatRequest,
+    agent: object = Depends(get_agent),
+    memory: ConversationMemory = Depends(get_memory),
+) -> ChatResponse:
+    reply = handle_message(agent, memory, data.session_id, data.message)
+    return ChatResponse(reply=reply)

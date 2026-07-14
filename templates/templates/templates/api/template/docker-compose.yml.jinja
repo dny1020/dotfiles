@@ -1,0 +1,42 @@
+services:
+  api:
+    build: .
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+{% if use_database or use_redis %}
+    depends_on:
+{% if use_database %}
+      - db
+{% endif %}
+{% if use_redis %}
+      - redis
+{% endif %}
+{% endif %}
+{% if use_database and db_engine == "postgresql" %}
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: {{ project_slug }}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+{% endif %}
+{% if use_redis %}
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+{% endif %}
+{% if use_database and db_engine == "postgresql" %}
+
+volumes:
+  db_data:
+{% endif %}

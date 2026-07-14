@@ -1,0 +1,44 @@
+from pathlib import Path
+from unittest.mock import MagicMock
+
+import pytest
+
+from app.ai import search_knowledge
+from app.ingest import ingest
+
+
+def test_search_knowledge_returns_matches(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake_collection = MagicMock()
+    fake_collection.query.return_value = {"documents": [["relevant text"]]}
+    monkeypatch.setattr("app.ai.get_collection", lambda: fake_collection)
+    monkeypatch.setattr("app.ai.embed", lambda texts: [[0.1, 0.2]])
+
+    result = search_knowledge("what is this about?")
+
+    assert result == "relevant text"
+
+
+def test_search_knowledge_no_matches(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake_collection = MagicMock()
+    fake_collection.query.return_value = {"documents": [[]]}
+    monkeypatch.setattr("app.ai.get_collection", lambda: fake_collection)
+    monkeypatch.setattr("app.ai.embed", lambda texts: [[0.1, 0.2]])
+
+    result = search_knowledge("anything")
+
+    assert result == "No relevant documents found."
+
+
+def test_ingest_reads_txt_files(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    (tmp_path / "doc1.txt").write_text("hello world")
+
+    fake_collection = MagicMock()
+    monkeypatch.setattr("app.ingest.get_collection", lambda: fake_collection)
+    monkeypatch.setattr("app.ingest.embed", lambda texts: [[0.1] * 3 for _ in texts])
+
+    count = ingest(str(tmp_path))
+
+    assert count == 1
+    fake_collection.upsert.assert_called_once_with(
+        ids=["doc1"], documents=["hello world"], embeddings=[[0.1, 0.1, 0.1]]
+    )

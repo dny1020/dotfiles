@@ -1,0 +1,59 @@
+import logging
+from pathlib import Path
+
+import structlog
+
+from app.config import get_settings
+{% if destination == "postgresql" %}
+from app.database import get_engine
+{% else %}
+from app.database import get_connection
+{% endif %}
+from app.extract import fetch
+from app.load import save
+from app.transform import clean
+
+settings = get_settings()
+log_level = getattr(logging, settings.log_level.upper(), logging.INFO)
+
+Path("logs").mkdir(exist_ok=True)
+logging.basicConfig(
+    level=log_level,
+    format="%(message)s",
+    handlers=[logging.FileHandler("logs/app.log"), logging.StreamHandler()],
+)
+structlog.configure(
+    wrapper_class=structlog.make_filtering_bound_logger(log_level),
+    processors=[
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.add_log_level,
+        structlog.processors.JSONRenderer(),
+    ],
+    logger_factory=structlog.stdlib.LoggerFactory(),
+)
+logger = structlog.get_logger(__name__)
+
+
+def run() -> None:
+    logger.info("etl_start")
+    try:
+        raw = fetch()
+        clean_df = clean(raw)
+{% if destination == "postgresql" %}
+        engine = get_engine()
+        save(engine, clean_df)
+{% else %}
+        con = get_connection()
+        try:
+            save(con, clean_df)
+        finally:
+            con.close()
+{% endif %}
+        logger.info("etl_success", rows=len(clean_df))
+    except Exception:
+        logger.exception("etl_failed")
+        raise
+
+
+if __name__ == "__main__":
+    run()

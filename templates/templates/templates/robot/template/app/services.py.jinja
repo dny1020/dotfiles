@@ -1,0 +1,43 @@
+{% if use_ml_check %}
+import time
+
+{% endif %}
+import httpx
+import structlog
+
+from app.config import get_settings
+from app.utils import retry
+
+logger = structlog.get_logger(__name__)
+
+
+@retry
+def _request(url: str) -> httpx.Response:
+    response = httpx.get(url, timeout=10)
+    response.raise_for_status()
+    return response
+{% if use_ml_check %}
+
+
+def perform_check() -> tuple[bool, str, float]:
+    settings = get_settings()
+    start = time.perf_counter()
+    try:
+        response = _request(settings.check_url)
+    except httpx.HTTPError as exc:
+        logger.error("check_failed", error=str(exc))
+        return False, str(exc), 0.0
+    elapsed_ms = (time.perf_counter() - start) * 1000
+    return True, f"status={response.status_code}", elapsed_ms
+{% else %}
+
+
+def perform_check() -> tuple[bool, str]:
+    settings = get_settings()
+    try:
+        response = _request(settings.check_url)
+    except httpx.HTTPError as exc:
+        logger.error("check_failed", error=str(exc))
+        return False, str(exc)
+    return True, f"status={response.status_code}"
+{% endif %}

@@ -1,0 +1,47 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Requisitos
+
+- Node.js {{ node_version }}+
+- Docker (opcional, para produccion)
+
+## Desarrollo local
+
+```bash
+npm install
+npm run dev
+```
+
+Este frontend consume `{{ api_base_url }}` (variable `VITE_API_BASE_URL` en `.env`). Si el backend requiere API key, descomenta `VITE_API_KEY` en `.env`.
+
+## Lint, tipos y tests
+
+```bash
+npm run lint
+npm run typecheck
+npm run test
+```
+
+## Build y Docker
+
+```bash
+npm run build       # genera dist/
+docker compose up --build
+```
+
+**Importante:** las variables `VITE_*` se hornean en el bundle al momento del build — no son configurables en runtime. Si cambias `.env` para otro ambiente, hay que reconstruir (`npm run build` o `docker compose build`).
+
+## Estructura
+
+```
+src/
+    main.tsx            # entrypoint: providers (QueryClient, Router)
+    App.tsx             # layout + rutas
+    lib/
+        api-client.ts   # wrapper de fetch (VITE_API_BASE_URL, X-API-Key opcional)
+        query-client.ts # instancia de TanStack QueryClient
+    pages/              # una pagina por ruta
+    components/         # componentes reusables (ej. ContactForm con React Hook Form + Zod)
+```

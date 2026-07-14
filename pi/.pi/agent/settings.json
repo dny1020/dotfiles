@@ -1,0 +1,8 @@
+{
+  "llamaServerUrl": "http://127.0.0.1:8080",
+  "packages": [
+    "npm:pi-llama-cpp",
+    "npm:pi-ollama"
+  ],
+  "theme": "dark"
+}

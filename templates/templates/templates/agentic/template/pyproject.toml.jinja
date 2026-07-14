@@ -1,0 +1,62 @@
+[project]
+name = "{{ project_slug }}"
+version = "0.1.0"
+description = "{{ project_description }}"
+{% if author_name %}
+authors = [{ name = "{{ author_name }}" }]
+{% endif %}
+requires-python = ">={{ python_version }}"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic-settings>=2.6",
+    "structlog>=24.4",
+    "langgraph>=0.2",
+    "langchain-ollama>=0.2",
+{% if use_mcp %}
+    "mcp>=1.0",
+{% endif %}
+{% if use_rag %}
+    "sentence-transformers>=3.0",
+    "chromadb>=0.5",
+    "torch>=2.2",
+{% endif %}
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "httpx>=0.27",
+    "ruff>=0.7",
+    "pyright>=1.1",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py{{ python_version.replace('.', '') }}"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["B008"]  # FastAPI's Depends() default-arg pattern is intentional
+
+[tool.pyright]
+include = ["app", "tests"]
+pythonVersion = "{{ python_version }}"
+
+[tool.pytest.ini_options]
+addopts = "--cov=app --cov-report=term-missing"
+testpaths = ["tests"]
+
+[tool.uv]
+package = false
+{% if use_rag %}
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+{% endif %}

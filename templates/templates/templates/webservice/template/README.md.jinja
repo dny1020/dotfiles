@@ -1,0 +1,44 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Requisitos
+
+- Python {{ python_version }}+
+- [uv](https://docs.astral.sh/uv/)
+- Docker y Docker Compose
+
+## Desarrollo local
+
+```bash
+uv sync
+uv run uvicorn app.main:app --reload
+```
+
+`UPSTREAM_BASE_URL` (en `.env`) apunta a la API externa que este servicio consume.
+
+## Tests
+
+```bash
+uv run pytest
+```
+
+Los tests simulan la API externa con `httpx.MockTransport` (ver `tests/conftest.py`), sin red real.
+
+## Docker
+
+```bash
+docker compose up --build
+```
+
+## Estructura
+
+```
+app/
+    main.py         # entrypoint FastAPI, logging, exception handlers
+    config.py       # configuracion via variables de entorno
+    clients.py      # cliente HTTPX hacia la API externa (inyectado via Depends)
+    services.py     # logica de negocio, convierte errores de red en 502
+    schemas.py      # esquemas Pydantic
+    routes.py       # endpoints FastAPI
+```

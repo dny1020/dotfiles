@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# pil = "pi local": run the pi coding agent against the local llama.cpp server.
+# Requires llama-serve to be running (http://127.0.0.1:8080).
+# All args are passed through to pi, e.g.:  pil "refactor this file" @main.py
+set -euo pipefail
+
+# load nvm so the right node (>=22) is used even from non-interactive shells
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" >/dev/null 2>&1 || true
+
+LLAMA_URL="${LLAMA_SERVER_URL:-http://127.0.0.1:8080}"
+MODEL="${LLAMA_MODEL:-$HOME/models/Qwen3-4B-Q4_K_M.gguf}"
+
+exec pi --provider "llama-server=${LLAMA_URL}" --model "$MODEL" "$@"
