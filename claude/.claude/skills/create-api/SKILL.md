@@ -6,6 +6,11 @@ description: "Creates or reviews a production-ready FastAPI endpoint. Invoked wh
 <skill>
 Create or review the FastAPI endpoint and apply the following checklist. Fix every issue found and explain each change in one line.
 
+## Style
+- No AI-looking code: no filler comments, no single-call helpers, no premature Factory/Manager/Repository/Service abstraction.
+- Prefer plain string operations over regex unless regex is clearly the better fit.
+- Type hints and docstrings only where they aid comprehension — not on every line. No `from __future__ import annotations`.
+
 ## Dependencies
 - New packages go in via `uv add <package>` (or `uv add --dev` for test/dev-only deps) — never edit `pyproject.toml` dependencies by hand or use `pip install`.
 

@@ -6,6 +6,10 @@ description: "Generates or reviews tests for Python code. Invoked when: a featur
 <skill>
 Write or review tests for the given code and apply the following checklist. Fix every issue found and explain each change in one line.
 
+## Style
+- No AI-looking code: no filler comments, no single-call helpers, no test-only abstraction layers a reader has to trace through.
+- Type hints and docstrings only where they aid comprehension — not on every line.
+
 ## Structure
 - Use `pytest`, not `unittest`-style classes, unless the codebase already standardizes on the latter.
 - Run tests with `uv run pytest`, not a bare `pytest` or `python -m pytest` — keeps the venv/lockfile authoritative.

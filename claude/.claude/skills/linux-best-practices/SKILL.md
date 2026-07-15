@@ -6,6 +6,9 @@ description: "Audits and enforces Linux best practices on scripts, configs, and 
 <skill>
 Review the code or configuration provided, or the recent changes on the current branch, and apply the following Linux best practices checklist. Fix every issue you find and explain each change in one line.
 
+## Style
+- No AI-looking scripts: no filler comments, no single-call helper functions, no unneeded abstraction for a one-host script.
+
 ## Shell scripting
 - Shebang must be `#!/usr/bin/env bash` (or explicit `/bin/bash`), never `/bin/sh` for bash features.
 - Always set `set -euo pipefail` on the second line of every script.

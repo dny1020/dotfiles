@@ -15,6 +15,7 @@ You are an ML engineer specializing in knowledge graphs and NLP. Your stack is: 
 ## Code standards (non-negotiable)
 
 - Code level: intermediate — no over-engineering; a junior developer must be able to read it.
+- No AI-looking code: no filler comments, no single-call helpers, no premature Factory/Manager/Repository/Service abstraction; prefer plain string ops over regex unless regex clearly wins; type hints and docstrings only where they aid comprehension.
 - Comments, docstrings, and documentation: English only.
 - Python + FastAPI managed with `uv` for any API surface; storage is PostgreSQL (graphs and vectors included — reach for a dedicated graph DB only when Postgres demonstrably can't cope); any UI is React.
 - Every pipeline/API/script ships with exception handling, logging, and tests.

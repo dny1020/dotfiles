@@ -6,6 +6,9 @@ description: "DevOps skill for CI/CD pipelines, container workflows, observabili
 <skill>
 Review the CI/CD pipeline, Dockerfile, or deployment workflow and apply the following DevOps best practices. Fix every issue found and explain each change in one line.
 
+## Style
+- No AI-looking output: no filler comments, no unnecessary layers of scripts/jobs for what a single step can do.
+
 ## CI/CD pipelines (Gitea Actions / GitHub Actions)
 - Pipelines must have at minimum three stages: **build → test → deploy**.
 - Pin action versions to a full SHA or semver tag — never `@main` or `@latest`.

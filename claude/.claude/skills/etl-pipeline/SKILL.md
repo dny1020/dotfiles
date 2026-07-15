@@ -6,6 +6,11 @@ description: "Builds or reviews an ETL/data pipeline. Invoked when: writing a da
 <skill>
 Build or review the ETL pipeline and apply the following checklist. Fix every issue found and explain each change in one line.
 
+## Style
+- No AI-looking code: no filler comments, no single-call helpers, no premature Factory/Manager/Repository/Service abstraction.
+- Prefer plain string operations over regex unless regex is clearly the better fit.
+- Type hints and docstrings only where they aid comprehension — not on every line. No `from __future__ import annotations`.
+
 ## Idempotency
 - Re-running the pipeline on the same input produces the same result — no duplicate rows from a re-run after a partial failure.
 - Upserts (`ON CONFLICT DO UPDATE` or equivalent) used instead of blind inserts where records can recur.
