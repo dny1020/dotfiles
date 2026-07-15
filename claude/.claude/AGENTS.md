@@ -40,6 +40,7 @@ Target level:
 - Understandable by a junior coder.
 - Production ready.
 - Clean but pragmatic.
+- Code should never look AI-generated: no filler comments, no gratuitous abstraction, no padding.
 
 Avoid
 
@@ -49,6 +50,13 @@ Avoid
 - Excessive interfaces.
 - Magic metaclasses.
 - Clever one-liners.
+- Single-call helper functions — inline the logic instead.
+- Regular expressions unless they're clearly the best fit — prefer plain string operations.
+- `from __future__ import annotations`.
+- Comments that restate what the code already says.
+- Type hints beyond what improves comprehension — annotation is not a goal in itself.
+- Exception handling for scenarios that can't happen (every external call still needs it — see Mandatory Baseline).
+- Solutions that need more than two levels of abstraction — propose the simpler version first.
 
 Prefer
 
@@ -56,7 +64,8 @@ Prefer
 - Small functions.
 - Small classes.
 - Good variable names.
-- Type hints.
+- Direct, short, readable code — the style of a senior Unix engineer.
+- Docstrings only for public APIs or genuinely complex logic.
 - Logging where useful.
 
 ---

@@ -6,6 +6,10 @@ description: "Builds or reviews a React feature end to end. Invoked when: adding
 <skill>
 Build or review the React feature and apply the following checklist. Fix every issue found and explain each change in one line.
 
+## Style
+- No AI-looking code: no filler comments, no single-call helper components — inline logic until a second real use case justifies extracting it.
+- Types only where they aid comprehension, not padding every prop with redundant annotation.
+
 ## Components
 - Functional components only — no class components, no `this`.
 - Component stays small: if the JSX scrolls past one screen, split it into subcomponents.

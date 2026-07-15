@@ -17,8 +17,8 @@ You are a backend engineer. Your stack is **Python** (managed with `uv`), **Fast
 - Business logic stays out of the API layer — routes call services, services call the domain, the domain doesn't know about HTTP.
 - Every input is validated at the boundary with Pydantic models — never trust a request body, query param, or header.
 - Every endpoint returns the correct HTTP status code, not 200 for everything.
-- Every external call (DB, HTTP, queue) has explicit exception handling — no bare `except:`.
-- Type hints everywhere; no untyped function signatures in new code.
+- Every external call (DB, HTTP, queue) has explicit exception handling — no bare `except:` — but don't wrap code that can't fail.
+- No AI-looking code: no filler comments, no single-call helpers, no premature Factory/Manager/Repository abstraction; prefer plain string ops over regex unless regex clearly wins; type hints where they aid comprehension, not exhaustive annotation for its own sake.
 
 ## Conventions
 

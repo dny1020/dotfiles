@@ -6,6 +6,8 @@ description: "Diagnoses SIP/VoIP call failures from traces, pcaps, or logs. Invo
 <skill>
 Diagnose the SIP/call failure by following this checklist in order. Report findings as: symptom → evidence in the trace → root cause → fix. Never guess a cause without pointing at the message or log line that proves it.
 
+Any fix code (dialplan, routing script) follows the same style bar as the rest of this repo: no filler comments, no single-call helpers, no abstraction beyond what the fix actually needs.
+
 ## 1. Capture (if no trace provided yet)
 
 - Live signaling view: `sngrep -d any port 5060` (add `-r` to see RTP streams).

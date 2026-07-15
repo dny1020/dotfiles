@@ -6,6 +6,9 @@ description: "Writes or reviews Terraform for AWS deployments. Invoked when: pro
 <skill>
 Write or review the Terraform code and apply the following checklist. Fix every issue found and explain each change in one line.
 
+## Style
+- No AI-looking code: no filler comments, no module indirection for a resource with a single call site.
+
 ## Module structure
 - Reusable infrastructure is a module under `modules/<name>/` with its own `variables.tf`, `outputs.tf`, `main.tf` — not copy-pasted between environments.
 - Environments (`dev`, `staging`, `prod`) are separate root modules that call shared modules with different variables, not separate copies of the same resources.
