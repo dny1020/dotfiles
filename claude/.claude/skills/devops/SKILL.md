@@ -16,6 +16,7 @@ Review the CI/CD pipeline, Dockerfile, or deployment workflow and apply the foll
 - Cache dependencies (pip, npm, go modules) to cut build time.
 - Deploy stage must depend explicitly on test passing (`needs: [test]`).
 - Python test stage runs the same gate as local, same order: `uv run ruff check .`, `uv run ruff format --check .`, `uv run pyright app tests`, `uv run pytest` — CI and the developer's machine must never disagree about what passing means.
+- React test stage likewise: `npm run lint`, `npm run format:check`, `npm run typecheck`, `npm run test`, `npm run build`. The local gate is the shorter `lint && format:check && build`; CI adds the explicit typecheck and test steps so a failure names which one broke.
 - Add a smoke-test step after deploy that curls a health endpoint and fails the job if it returns non-200.
 
 ## Dockerfile hygiene

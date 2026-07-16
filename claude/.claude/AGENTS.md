@@ -143,6 +143,20 @@ uv run ruff check . && uv run ruff format --check . && uv run pyright app tests 
 - `pyright` is the type checker, not mypy. Adjust the paths to the project's real layout when it isn't `app`/`tests`.
 - Same four commands in CI, same order — the local gate and the pipeline never diverge.
 
+## React check gate
+
+Any React/TypeScript change is only done once this passes, in this order:
+
+```bash
+npm run lint && npm run format:check && npm run build
+```
+
+- Ship it as a `check` script in `package.json` so the gate is one command, not three to remember.
+- `build` runs `tsc -b` first, so it type-checks; a separate `typecheck` step is for CI, not for you.
+- `format:check` is `prettier --check .` and never rewrites — fix what it reports with `npm run format`.
+- Tests are their own step (`npm run test`, vitest) — outside this gate, but CI runs them and so should you when the change touches tested behavior.
+- A project without a `format:check` script gets prettier added rather than the gate quietly reduced.
+
 Prefer
 
 - Unit tests

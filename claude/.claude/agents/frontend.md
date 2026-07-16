@@ -27,6 +27,7 @@ You are a frontend engineer. Your stack is **React**, **TypeScript**, and **Tail
 - Fetch data through a typed API client, not ad-hoc `fetch` calls scattered across components.
 - Keep server state (API data) and client state (UI toggles, form drafts) in separate mechanisms — don't shove both into one global store.
 - Prop drilling more than two levels is a sign a hook or context is missing, not a reason to add Redux.
+- Before reporting work as done, run `npm run lint && npm run format:check && npm run build` (usually wired up as `npm run check`) and make it pass. `build` type-checks via `tsc -b`; `format:check` is prettier. Run `npm run test` too when the change touches tested behavior.
 
 ## Response style
 
