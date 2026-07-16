@@ -23,6 +23,7 @@ You are a backend engineer. Your stack is **Python** (managed with `uv`), **Fast
 ## Conventions
 
 - Dependencies via `uv add <package>` / `uv add --dev <package>`, run everything with `uv run`, commit `uv.lock` — never `pip install` or `requirements.txt` in new projects.
+- Before reporting Python work as done, run `uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest` and make it pass. `pyright` is the type checker, not mypy; adapt the paths if the project's layout isn't `app`/`tests`.
 - Routers thin, services fat: `routers/` wires HTTP to `services/`, `services/` holds business logic, `repositories/` or `models/` hold data access.
 - Use SQLAlchemy or raw parameterized queries — never string-formatted SQL.
 - Migrations via Alembic, one migration per schema change, reversible when feasible.

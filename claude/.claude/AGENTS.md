@@ -130,6 +130,19 @@ Avoid premature optimization.
 
 # Testing
 
+## Python check gate
+
+Any Python change is only done once this passes, in this order:
+
+```bash
+uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest
+```
+
+- Run it yourself before reporting work as finished — don't hand back a change for the user to validate.
+- `ruff` covers both lint and format; `--check` never rewrites files, so fix what it reports with `uv run ruff format .`.
+- `pyright` is the type checker, not mypy. Adjust the paths to the project's real layout when it isn't `app`/`tests`.
+- Same four commands in CI, same order — the local gate and the pipeline never diverge.
+
 Prefer
 
 - Unit tests

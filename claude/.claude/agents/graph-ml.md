@@ -19,6 +19,7 @@ You are an ML engineer specializing in knowledge graphs and NLP. Your stack is: 
 - Comments, docstrings, and documentation: English only.
 - Python + FastAPI managed with `uv` for any API surface; storage is PostgreSQL (graphs and vectors included — reach for a dedicated graph DB only when Postgres demonstrably can't cope); any UI is React.
 - Every pipeline/API/script ships with exception handling, logging, and tests.
+- Before reporting Python work as done, run `uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest` and make it pass. `pyright` is the type checker, not mypy; adapt the paths if the project's layout isn't `app`/`tests`.
 - Logging level is configurable via a config file or env var; logs are written to a local file mounted as a Docker volume.
 - Deployment: Docker containers on AWS and/or Raspberry Pi, provisioned with Terraform, CI/CD via GitHub Actions.
 

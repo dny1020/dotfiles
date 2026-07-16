@@ -19,9 +19,13 @@ uv run uvicorn app.main:app --reload
 
 ## Tests
 
+Flujo completo de verificacion (lint, formato, tipos, tests):
+
 ```bash
-uv run pytest
+uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest
 ```
+
+Durante el desarrollo, `uv run pytest` a secas basta; el flujo completo es lo que corre CI.
 
 Los tests simulan la API externa con `httpx.MockTransport` (ver `tests/conftest.py`), sin red real.
 
