@@ -30,6 +30,11 @@ Build or review the React feature and apply the following checklist. Fix every i
 - Form inputs have associated `<label>` elements (or `aria-label`).
 - Color contrast and focus states are visible; keyboard-only navigation works for every interactive element.
 
+## Checks
+- The feature isn't done until `npm run lint && npm run format:check && npm run build` passes — run it yourself; most projects wire it up as `npm run check`.
+- `build` type-checks (`tsc -b`), so a green build covers types; `format:check` is `prettier --check .` and is fixed with `npm run format`, never by hand.
+- Run `npm run test` (vitest) as well when the change touches behavior that has tests.
+
 ## Output format
 For each issue found:
 ```
