@@ -16,13 +16,21 @@ npm run dev
 
 Este frontend consume `{{ api_base_url }}` (variable `VITE_API_BASE_URL` en `.env`). Si el backend requiere API key, descomenta `VITE_API_KEY` en `.env`.
 
-## Lint, tipos y tests
+## Lint, formato, tipos y tests
+
+Flujo completo de verificacion (`npm run build` incluye el chequeo de tipos):
 
 ```bash
-npm run lint
-npm run typecheck
+npm run check       # lint + format:check + build
+```
+
+Los tests van por separado:
+
+```bash
 npm run test
 ```
+
+Para corregir el formato en vez de solo comprobarlo: `npm run format`.
 
 ## Build y Docker
 

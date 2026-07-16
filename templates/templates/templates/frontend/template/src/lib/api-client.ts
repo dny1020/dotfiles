@@ -6,16 +6,16 @@ export class ApiError extends Error {
 
   constructor(message: string, status: number) {
     super(message)
-    this.name = "ApiError"
+    this.name = 'ApiError'
     this.status = status
   }
 }
 
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const headers = new Headers(init?.headers)
-  headers.set("Content-Type", "application/json")
+  headers.set('Content-Type', 'application/json')
   if (API_KEY) {
-    headers.set("X-API-Key", API_KEY)
+    headers.set('X-API-Key', API_KEY)
   }
 
   const response = await fetch(`${API_BASE_URL}${path}`, { ...init, headers })

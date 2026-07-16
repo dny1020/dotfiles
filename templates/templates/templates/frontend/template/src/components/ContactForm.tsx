@@ -1,10 +1,10 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 const contactSchema = z.object({
-  name: z.string().min(1, "Requerido"),
-  email: z.string().email("Email invalido"),
+  name: z.string().min(1, 'Requerido'),
+  email: z.string().email('Email invalido'),
 })
 
 type ContactFormValues = z.infer<typeof contactSchema>
@@ -25,7 +25,7 @@ export function ContactForm({ onSubmit }: { onSubmit: (values: ContactFormValues
         <input
           id="name"
           className="mt-1 w-full rounded border border-slate-300 p-2"
-          {...register("name")}
+          {...register('name')}
         />
         {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
       </div>
@@ -37,7 +37,7 @@ export function ContactForm({ onSubmit }: { onSubmit: (values: ContactFormValues
         <input
           id="email"
           className="mt-1 w-full rounded border border-slate-300 p-2"
-          {...register("email")}
+          {...register('email')}
         />
         {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
       </div>
