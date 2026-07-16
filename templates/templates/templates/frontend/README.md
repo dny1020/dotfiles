@@ -24,13 +24,14 @@ No hay toggle de auth: `src/lib/api-client.ts` ya manda el header `X-API-Key` si
 
 ## Lo que genera
 
-- Vite + React 19 + TypeScript, linter `oxlint` (el que trae el scaffold oficial de Vite)
+- Vite + React 19 + TypeScript, linter `oxlint` (el que trae el scaffold oficial de Vite) + `prettier` para el formato
 - React Router para las rutas, TanStack Query para el estado del servidor, React Hook Form + Zod para formularios (ver `src/components/ContactForm.tsx` como ejemplo)
 - Tailwind CSS v4 (via el plugin de Vite, sin `tailwind.config.js`)
 - `src/lib/api-client.ts`: wrapper de `fetch` con `VITE_API_BASE_URL` y header opcional `X-API-Key`
 - `vitest` + Testing Library para tests de componentes (`npm run test`)
 - `Dockerfile` multi-stage (build con Node, sirve con nginx) + `docker-compose.yml`
-- `.github/workflows/ci.yml`: lint, typecheck, test, build
+- `npm run check` (= `lint && format:check && build`): el flujo de verificacion completo en un solo comando
+- `.github/workflows/ci.yml`: lint, format:check, typecheck, test, build
 
 **Importante:** las variables `VITE_*` se hornean en el bundle al momento de `npm run build` — no son configurables en runtime como en un backend. Si cambias `VITE_API_BASE_URL` para otro ambiente, hay que reconstruir la imagen.
 
@@ -38,5 +39,5 @@ No hay toggle de auth: `src/lib/api-client.ts` ya manda el header `X-API-Key` si
 
 ```bash
 uvx copier copy --trust --data project_name="Demo Frontend" --data project_description="demo" -f templates/frontend /tmp/demo-frontend
-cd /tmp/demo-frontend && npm install && npm run lint && npm run typecheck && npm run test && npm run build
+cd /tmp/demo-frontend && npm install && npm run check && npm run typecheck && npm run test
 ```

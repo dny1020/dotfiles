@@ -1,8 +1,8 @@
-import { Link, Route, Routes } from "react-router"
+import { Link, Route, Routes } from 'react-router'
 
-import { ContactPage } from "./pages/ContactPage"
-import { HomePage } from "./pages/HomePage"
-import { NotFoundPage } from "./pages/NotFoundPage"
+import { ContactPage } from './pages/ContactPage'
+import { HomePage } from './pages/HomePage'
+import { NotFoundPage } from './pages/NotFoundPage'
 
 export function App() {
   return (
