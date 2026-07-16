@@ -20,9 +20,13 @@ Por defecto `OLLAMA_BASE_URL` apunta a `http://ollama:11434` (el servicio de doc
 
 ## Tests
 
+Flujo completo de verificacion (lint, formato, tipos, tests):
+
 ```bash
-uv run pytest
+uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest
 ```
+
+Durante el desarrollo, `uv run pytest` a secas basta; el flujo completo es lo que corre CI.
 
 Los tests reemplazan el agente real por un stub (`tests/conftest.py`), asi que corren sin necesidad de Ollama.
 

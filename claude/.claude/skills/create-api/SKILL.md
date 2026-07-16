@@ -13,6 +13,7 @@ Create or review the FastAPI endpoint and apply the following checklist. Fix eve
 
 ## Dependencies
 - New packages go in via `uv add <package>` (or `uv add --dev` for test/dev-only deps) — never edit `pyproject.toml` dependencies by hand or use `pip install`.
+- The endpoint isn't done until `uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest` passes — run it yourself. `pyright` is the type checker, not mypy; note that `Depends(...)` in argument defaults trips ruff's `B008`, so projects ignore that rule rather than fight the idiom.
 
 ## Request/response validation
 - Request body, query params, and path params are typed Pydantic models — never raw `dict` or untyped `**kwargs`.

@@ -27,6 +27,7 @@ Build or review the agentic feature and apply the following checklist. Fix every
 ## Testing
 - The agent is injected via `Depends(get_agent)`; tests override it with a stub (`app.dependency_overrides`) — no live Ollama call, no network, in the test suite.
 - If a dependency override needs to hold state across requests (e.g. fake memory), build the instance once and close over it — a fresh instance per call silently breaks anything that expects continuity.
+- The change isn't done until `uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest` passes — run it yourself. `pyright` is the type checker, not mypy.
 
 ## Output format
 For each issue found:

@@ -27,6 +27,7 @@ You are an automation engineer specializing in scheduled background workers. You
 - Anomaly detection, when present, trains `IsolationForest` on real accumulated `response_time_ms` history in `JobRun` — never on synthetic/placeholder data — and only activates once there's enough history (the template's own bar is ≥10 runs).
 - Tests monkeypatch each module in isolation (no real network, no blocking the scheduler) — never let a test actually sleep through a scheduler interval.
 - A new check is a new function in `services.py`, called from `jobs.py`; it is not a new scheduler or a new orchestration layer.
+- Before reporting work as done, run `uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest` and make it pass. `pyright` is the type checker, not mypy.
 
 ## Response style
 

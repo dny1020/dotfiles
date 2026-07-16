@@ -18,9 +18,13 @@ uv run uvicorn app.main:app --reload
 
 ## Tests
 
+Flujo completo de verificacion (lint, formato, tipos, tests):
+
 ```bash
-uv run pytest
+uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest
 ```
+
+Durante el desarrollo, `uv run pytest` a secas basta; el flujo completo es lo que corre CI.
 
 Los tests reemplazan el agente y la memoria por stubs (`tests/conftest.py`), asi que corren sin necesidad de Ollama.
 

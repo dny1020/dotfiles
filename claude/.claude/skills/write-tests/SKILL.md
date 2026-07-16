@@ -13,6 +13,7 @@ Write or review tests for the given code and apply the following checklist. Fix 
 ## Structure
 - Use `pytest`, not `unittest`-style classes, unless the codebase already standardizes on the latter.
 - Run tests with `uv run pytest`, not a bare `pytest` or `python -m pytest` — keeps the venv/lockfile authoritative.
+- Before calling the work done, run the full gate — `uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest` — so new tests are lint-clean, formatted, and type-checked, not just green.
 - One behavior per test; test names describe the behavior (`test_returns_404_when_user_not_found`), not the implementation (`test_get_user_2`).
 - Fixtures for shared setup, not copy-pasted setup code across tests.
 

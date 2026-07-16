@@ -19,9 +19,13 @@ Corre en foreground y ejecuta `app/jobs.py::run_check_job` cada `{{ interval_min
 
 ## Tests
 
+Flujo completo de verificacion (lint, formato, tipos, tests):
+
 ```bash
-uv run pytest
+uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest
 ```
+
+Durante el desarrollo, `uv run pytest` a secas basta; el flujo completo es lo que corre CI.
 
 ## Docker
 

@@ -15,6 +15,7 @@ Review the CI/CD pipeline, Dockerfile, or deployment workflow and apply the foll
 - Secrets must come from the CI secret store (`${{ secrets.NAME }}`), never hardcoded.
 - Cache dependencies (pip, npm, go modules) to cut build time.
 - Deploy stage must depend explicitly on test passing (`needs: [test]`).
+- Python test stage runs the same gate as local, same order: `uv run ruff check .`, `uv run ruff format --check .`, `uv run pyright app tests`, `uv run pytest` — CI and the developer's machine must never disagree about what passing means.
 - Add a smoke-test step after deploy that curls a health endpoint and fails the job if it returns non-200.
 
 ## Dockerfile hygiene

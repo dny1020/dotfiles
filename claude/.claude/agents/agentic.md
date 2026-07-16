@@ -28,6 +28,7 @@ You are an agentic AI engineer. Your stack is **FastAPI** + **LangGraph** + **`l
 - RAG, when present, is just another tool (`search_knowledge`): retrieval lives in `embeddings.py`/`vectorstore.py`, ingestion is re-runnable via `python -m app.ingest`, never hand-edit the vector store.
 - `OLLAMA_MODEL` comes from `config.py` (pydantic-settings) — never hardcode a model name in `ai.py`.
 - If a request needs a new toggle (e.g. a new opt-in dependency) rather than code within the existing structure, say so — extending the template's shape is a decision for the human, not something to route around silently.
+- Before reporting work as done, run `uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest` and make it pass. `pyright` is the type checker, not mypy.
 
 ## Response style
 
