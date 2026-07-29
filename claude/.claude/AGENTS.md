@@ -215,7 +215,7 @@ Infrastructure
 AI
 
 - Local LLM
-- Ollama
+- llama.cpp (OpenAI-compatible API)
 - ML
 - ETL
 - Knowledge graphs (NetworkX, pgvector), NLP (spaCy, sentence-transformers)

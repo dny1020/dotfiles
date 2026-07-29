@@ -1,7 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "ollama/qwen2.5-coder:7b",
-  "small_model": "ollama/llama3.2:3b",
+  "model": "llamacpp/qwen3-4b",
   "default_agent": "build",
   "instructions": ["../../.opencode/AGENTS.md"],
   "logLevel": "INFO",
@@ -36,36 +35,6 @@
           "name": "Qwen3 4B (llama.cpp)",
           "tools": true,
           "limit": { "context": 16384, "output": 4096 }
-        }
-      }
-    },
-    "ollama": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Ollama (local)",
-      "options": {
-        "baseURL": "http://127.0.0.1:11434/v1"
-      },
-      "models": {
-        "qwen2.5-coder:7b": {
-          "name": "Qwen2.5 Coder 7B",
-          "tools": true,
-          "options": { "num_ctx": 16384 },
-          "limit": { "context": 16384, "output": 4096 }
-        },
-        "llama3.1:8b": {
-          "name": "Llama 3.1 8B",
-          "tools": true,
-          "options": { "num_ctx": 8192 },
-          "limit": { "context": 8192, "output": 2048 }
-        },
-        "llama3.2:3b": {
-          "name": "Llama 3.2 3B",
-          "tools": true,
-          "options": { "num_ctx": 8192 },
-          "limit": { "context": 8192, "output": 2048 }
-        },
-        "qwen2.5-coder:3b": {
-          "name": "Qwen2.5 Coder 3B (no tool-calling support in Ollama)"
         }
       }
     }
