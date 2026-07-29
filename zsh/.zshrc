@@ -78,7 +78,7 @@ fi
 [[ -f ~/.zsh_secrets ]] && source ~/.zsh_secrets
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
-# Herramientas modernas como alias (eza/zoxide/bat/fd) y copiloto local Ollama
+# Herramientas modernas como alias (eza/zoxide/bat/fd) y copiloto local llama.cpp
 [[ -f ~/.config/shell/tools.zsh ]] && source ~/.config/shell/tools.zsh
 [[ -f ~/.config/shell/ai.zsh ]] && source ~/.config/shell/ai.zsh
 
@@ -92,3 +92,12 @@ command -v zoxide >/dev/null && eval "$(zoxide init zsh --cmd cd)"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
+
+# alias awsl: AWS CLI con MiniStack
+alias awsl='aws --endpoint-url=http://localhost:4566'
+
+# alias awsp: AWS CLI con perfil de produccion
+alias awsp='aws --profile produccion'
+# alias aws-dev: alias directo sin perfil (default)
+alias aws-default='aws --profile default'

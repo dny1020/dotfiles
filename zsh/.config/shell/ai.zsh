@@ -1,22 +1,28 @@
 # ~/.config/shell/ai.zsh
-# Copiloto local con Ollama. Son funciones (coste de arranque ~0, sin daemon extra).
-# Modelo por defecto: qwen2.5-coder:3b. Más rápido: export AI_MODEL=qwen2.5-coder:1.5b
+# Copiloto local con llama.cpp (Qwen2.5-Coder-1.5B). Son funciones (coste de arranque ~0).
+# Modelo por defecto: qwen2.5-coder-1.5b (puerto 8082, ~19 tokens/s en CPU).
+# Cambia con export AI_MODEL=otro-modelo o export LLAMA_HOST=otro-puerto.
 # (Versionado en el repo dotfiles; sourceado desde ~/.zshrc.)
 
-: ${AI_MODEL:=qwen2.5-coder:3b}
+: ${AI_MODEL:=qwen2.5-coder-1.5b}
+: ${LLAMA_HOST:=http://127.0.0.1:8082}
 
-if command -v ollama >/dev/null; then
+if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s "$LLAMA_HOST/v1/models" >/dev/null 2>&1; then
 
   # --- helper interno: manda un prompt al modelo y devuelve solo la respuesta -
-  #     Usa la API HTTP (stream:false) para una salida limpia, sin spinner ni
-  #     códigos de terminal. jq arma el JSON respetando saltos de línea/comillas.
+  #     Usa la API OpenAI-compatible de llama.cpp (chat/completions para instruct models).
+  #     jq extrae choices[0].message.content.
   #     2º arg opcional = temperatura (baja = más determinista, para comandos).
+  #     3º arg opcional = max_tokens (default 64 para shell rápido en CPU).
+  #     Nota: usa chat/completions porque qwen2.5-coder es un modelo instruct.
   _ai() {
     local temp=${2:-0.4}
-    curl -s "${OLLAMA_HOST:-http://localhost:11434}/api/generate" \
-      -d "$(jq -n --arg m "$AI_MODEL" --arg p "$1" --argjson t "$temp" \
-            '{model:$m, prompt:$p, stream:false, options:{temperature:$t}}')" \
-      | jq -r '.response // empty'
+    local tokens=${3:-64}
+    curl -s "$LLAMA_HOST/v1/chat/completions" \
+      -H "Content-Type: application/json" \
+      -d "$(jq -n --arg m "$AI_MODEL" --arg p "$1" --argjson t "$temp" --argjson mx "$tokens" \
+            '{model:$m, messages:[{role:"user",content:$p}], stream:false, temperature:$t, max_tokens:$mx}')" \
+      | jq -r '.choices[0].message.content // empty'
   }
 
   # limpia la respuesta del modelo a UNA línea de comando (quita fences/backticks)
@@ -36,14 +42,12 @@ if command -v ollama >/dev/null; then
   # --- explain: explica qué hace un comando (no lo ejecuta) -------------------
   explain() {
     [[ -z "$*" ]] && { echo "uso: explain '<comando>'"; return 1; }
-    _ai "Explica en español, claro y breve, qué hace este comando de shell. Solo explícalo, no lo ejecutes:
-$*"
+    _ai "En 1-2 oraciones, explica qué hace este comando: $*" 0.3 64
   }
 
   # genera UNA línea de comando a partir de una descripción en lenguaje natural
   _ai_cmdgen() {
-    _ai "Devuelve ÚNICAMENTE un comando de shell para Linux que logre esto, sin explicación ni markdown ni comillas de adorno:
-$*" 0.1 | _ai_oneline
+    _ai "Comando Linux para: $*. Solo el comando, sin explicación." 0.1 32 | _ai_oneline
   }
 
   # --- cmd: genera un comando y lo DEJA en el prompt para que tú lo revises ----
@@ -77,9 +81,7 @@ $*" 0.1 | _ai_oneline
   why() {
     local code=${__AI_LAST_STATUS:-$?}
     [[ -z "$__AI_PREV_CMD" ]] && { echo "No hay comando previo que analizar."; return 1; }
-    _ai "Este comando de shell falló con código de salida $code:
-  $__AI_PREV_CMD
-En español y en 2-3 líneas: causa más probable y cómo solucionarlo."
+    _ai "Comando falló (exit $code): $__AI_PREV_CMD. Causa y solución en 1-2 líneas:" 0.3 64
   }
 
   # --- gitai: mensaje de commit (Conventional Commits) desde el diff ----------
@@ -90,8 +92,7 @@ En español y en 2-3 líneas: causa más probable y cómo solucionarlo."
     diff=$(git diff --cached --stat 2>/dev/null; git diff --cached 2>/dev/null | head -c 6000)
     [[ -z "${diff//[[:space:]]/}" ]] && diff=$(git diff --stat 2>/dev/null; git diff 2>/dev/null | head -c 6000)
     [[ -z "${diff//[[:space:]]/}" ]] && { echo "No hay cambios para describir (git diff vacío). ¿Hiciste 'git add'?"; return 1; }
-    msg=$(_ai "Eres un generador de mensajes de commit. Devuelve EXCLUSIVAMENTE una línea en español en formato Conventional Commits (ej: 'feat(nvim): añade LSP con mason'). Sin explicación, sin comillas, sin markdown. Cambios:
-$diff" 0.1 | _ai_oneline)
+    msg=$(_ai "Commit message en español (Conventional Commits, 1 línea): $diff" 0.1 32 | _ai_oneline)
     [[ -n "$msg" ]] && print -z "git commit -m \"${msg//\"/\\\"}\""
   }
 

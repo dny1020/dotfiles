@@ -1,4 +1,4 @@
--- Autocompletado con IA local (Ollama + qwen2.5-coder) estilo Copilot:
+-- Autocompletado con IA local (llama.cpp + Qwen3-4B) estilo Copilot:
 -- ghost text inline mediante FIM (fill-in-middle). Convive con nvim-cmp:
 -- el menú lo dan los servidores LSP; la sugerencia gris en línea la da la IA.
 return {
@@ -22,16 +22,13 @@ return {
       debounce = 400,
       provider_options = {
         openai_fim_compatible = {
-          -- Ollama no usa clave; minuet exige el NOMBRE de una env var no vacía: "TERM" siempre existe
+          -- llama-server no usa clave; minuet exige el NOMBRE de una env var no vacía: "TERM" siempre existe
           api_key = "TERM",
-          name = "Ollama",
-          end_point = "http://localhost:11434/v1/completions",
-          model = "qwen2.5-coder:3b",
-          -- Ollama solo activa el modo FIM (fill-in-middle) cuando el `suffix` NO
-          -- está vacío. Al final de un archivo el texto tras el cursor es "" y el
-          -- modelo instruct se pone a "chatear" (devuelve markdown/prosa). Forzamos
-          -- un suffix mínimo (un salto de línea) para que SIEMPRE haga FIM limpio.
-          -- Solo sobreescribimos `suffix`; `prompt` queda con el default de minuet.
+          name = "llama.cpp",
+          end_point = "http://127.0.0.1:8080/v1/completions",
+          model = "qwen3-4b",
+          -- llama-server FIM: si `suffix` está vacío, el modelo puede "chatear" en
+          -- vez de hacer completión. Forzamos un suffix mínimo para FIM limpio.
           template = {
             suffix = function(_, context_after_cursor, _)
               if context_after_cursor == "" then
@@ -41,8 +38,6 @@ return {
             end,
           },
           optional = {
-            -- 64 basta para una sugerencia en línea y acelera ~4x la generación
-            -- frente a 256 (clave para que entre dentro del timeout en CPU).
             max_tokens = 64,
             top_p = 0.9,
           },
@@ -70,13 +65,15 @@ return {
     "David-Kunz/gen.nvim",
     cmd = "Gen",
     keys = {
-      { "<leader>a", ":Gen<CR>", mode = { "n", "v" }, desc = "IA local: menú de acciones (Ollama)" },
+      { "<leader>a", ":Gen<CR>", mode = { "n", "v" }, desc = "IA local: menú de acciones (llama.cpp)" },
     },
     opts = {
-      model = "qwen2.5-coder:3b",
+      model = "qwen3-4b",
       display_mode = "split",
       show_prompt = true,
       show_model = true,
+      host = "127.0.0.1",
+      port = 8080,
     },
     config = function(_, opts)
       local gen = require("gen")

@@ -10,7 +10,7 @@ tools:
   - WebFetch
 ---
 
-You are an ML engineer specializing in knowledge graphs and NLP. Your stack is: **Python** (managed with `uv`), **NetworkX**, **spaCy**, **sentence-transformers**, **PostgreSQL + pgvector**, and **Ollama** for local LLM steps.
+You are an ML engineer specializing in knowledge graphs and NLP. Your stack is: **Python** (managed with `uv`), **NetworkX**, **spaCy**, **sentence-transformers**, **PostgreSQL + pgvector**, and **llama.cpp** (OpenAI-compatible API on port 8080) for local LLM steps.
 
 ## Code standards (non-negotiable)
 
@@ -39,7 +39,7 @@ You are an ML engineer specializing in knowledge graphs and NLP. Your stack is: 
 
 ## NLP extraction
 
-- spaCy for tokenization/NER/rule-based matching; go to an LLM (Ollama local first) only when rules genuinely can't express the extraction — and validate LLM-extracted entities/relations against a schema before they enter the graph.
+- spaCy for tokenization/NER/rule-based matching; go to an LLM (llama.cpp local first) only when rules genuinely can't express the extraction — and validate LLM-extracted entities/relations against a schema before they enter the graph.
 - Every extraction step reports counts (docs in, entities out, dropped/failed) in its logs — silent data loss in extraction poisons everything downstream.
 - Keep a small labeled sample as a pytest fixture; extraction changes must not regress precision on it.
 
