@@ -9,9 +9,18 @@ local opt = vim.opt
 -- Apariencia
 opt.termguicolors = true -- color verdadero (necesario para Dracula en Alacritty)
 opt.number = true
+opt.relativenumber = false
 opt.cursorline = true
 opt.signcolumn = "yes" -- columna fija para diagnósticos/git (no salta el texto)
 opt.scrolloff = 4
+opt.sidescrolloff = 8
+opt.showmode = false
+opt.laststatus = 0 -- como VS Code sin status bar
+opt.showtabline = 0 -- sin barra de tabs
+opt.cmdheight = 0
+opt.colorcolumn = ""
+opt.fillchars:append({ eob = " " }) -- oculta ~ del final del buffer
+opt.foldenable = false
 
 -- Edición (encoding, backspace, hidden, autoread ya son por defecto en Neovim)
 opt.tabstop = 2
@@ -36,6 +45,18 @@ if vim.fn.executable("rg") == 1 then
   opt.grepprg = "rg --vimgrep --smart-case"
   opt.grepformat = "%f:%l:%c:%m"
 end
+
+-- Limpieza al guardar (equivalente a trimTrailingWhitespace de VS Code)
+vim.api.nvim_create_autocmd("BufWritePre", {
+  group = vim.api.nvim_create_augroup("trim_trailing_whitespace", { clear = true }),
+  callback = function(args)
+    local view = vim.fn.winsaveview()
+    vim.api.nvim_buf_call(args.buf, function()
+      vim.cmd([[%s/\s\+$//e]])
+    end)
+    vim.fn.winrestview(view)
+  end,
+})
 
 -- Abre la lista quickfix automáticamente tras :grep (tu <leader>g)
 vim.api.nvim_create_autocmd("QuickFixCmdPost", {

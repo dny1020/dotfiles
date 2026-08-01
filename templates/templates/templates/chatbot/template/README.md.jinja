@@ -12,7 +12,6 @@
 
 ```bash
 uv sync
-ollama pull {{ ollama_model }}   # si corres Ollama fuera de Docker
 uv run uvicorn app.main:app --reload
 ```
 
@@ -26,14 +25,15 @@ uv run ruff check . && uv run ruff format --check . && uv run pyright app tests 
 
 Durante el desarrollo, `uv run pytest` a secas basta; el flujo completo es lo que corre CI.
 
-Los tests reemplazan el agente y la memoria por stubs (`tests/conftest.py`), asi que corren sin necesidad de Ollama.
+Los tests reemplazan el agente y la memoria por stubs (`tests/conftest.py`), asi que corren sin necesidad de llama.cpp.
 
 ## Docker
 
 ```bash
 docker compose up --build
-docker compose exec ollama ollama pull {{ ollama_model }}
 ```
+
+`docker compose` asume que `llama-server` ya esta levantado en el host en `:8080`.
 
 ## Conectar un canal (WhatsApp / Telegram / webchat)
 

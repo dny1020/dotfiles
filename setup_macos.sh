@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Despliegue para macOS: paquetes brew + dotfiles nvim, zsh y alacritty.
+# Despliegue para macOS: paquetes brew + dotfiles nvim, zsh, alacritty, opencode y claude.
 # Uso: bash setup_macos.sh
 set -euo pipefail
 

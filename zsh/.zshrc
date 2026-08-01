@@ -101,3 +101,4 @@ alias awsl='aws --endpoint-url=http://localhost:4566'
 alias awsp='aws --profile produccion'
 # alias aws-dev: alias directo sin perfil (default)
 alias aws-default='aws --profile default'
+DOCTION_MCP_TOKEN=REMOVED
