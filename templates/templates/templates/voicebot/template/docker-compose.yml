@@ -2,20 +2,12 @@ services:
   api:
     build: .
     env_file: .env
+    environment:
+      LLAMA_BASE_URL: http://host.docker.internal:8080/v1
     ports:
       - "8000:8000"
     volumes:
       - ./logs:/app/logs
       - ./models:/app/models
-    depends_on:
-      - ollama
-
-  ollama:
-    image: ollama/ollama:latest
-    volumes:
-      - ollama_data:/root/.ollama
-    ports:
-      - "11434:11434"
-
-volumes:
-  ollama_data:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

@@ -26,10 +26,10 @@ author_name:
   help: Nombre del autor
   default: ""
 
-ollama_model:
+llama_model:
   type: str
-  help: Modelo de Ollama a usar por defecto
-  default: "llama3.2"
+  help: Modelo de llama.cpp (OpenAI-compatible) a usar por defecto
+  default: "qwen3-4b"
 
 use_auth:
   type: bool

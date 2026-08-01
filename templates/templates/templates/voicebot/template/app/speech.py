@@ -3,7 +3,7 @@ from functools import lru_cache
 from typing import Any
 
 from langchain_core.tools import tool
-from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 
 from app.config import get_settings
@@ -16,7 +16,11 @@ from app.tts import synthesize
 @lru_cache
 def get_agent() -> Any:
     settings = get_settings()
-    model = ChatOllama(model=settings.ollama_model, base_url=settings.ollama_base_url)
+    model = ChatOpenAI(
+        model=settings.llama_model,
+        base_url=settings.llama_base_url,
+        api_key=settings.llama_api_key,
+    )
     return create_react_agent(model, tools=[tool(get_current_time)], prompt=SYSTEM_PROMPT)
 
 

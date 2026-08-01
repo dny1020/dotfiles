@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Despliegue para Debian/WSL: paquetes (packages.txt) + Neovim + dotfiles nvim y zsh.
+# Despliegue para Debian/WSL: paquetes (packages.txt) + Neovim + dotfiles nvim, zsh, opencode y claude.
 # Uso: sudo bash setup_debian.sh
 set -euo pipefail
 
@@ -98,7 +98,7 @@ backup_target ".zshrc"
 as_user mkdir -p "$REAL_HOME/.config/opencode"      # solo enlaza opencode.json; runtime/node_modules fuera del repo
 as_user mkdir -p "$REAL_HOME/.config/tealdeer"      # solo enlaza config.toml; el cache vive en ~/.cache
 as_user mkdir -p "$REAL_HOME/.claude"               # solo enlaza agents/skills/AGENTS.md/CLAUDE.md; credenciales/sesiones/cache fuera del repo
-for pkg in nvim zsh tmux alacritty i3 dunst rofi picom redshift libinput-gestures opencode tealdeer pi claude templates; do
+for pkg in nvim zsh tmux alacritty i3 dunst rofi picom redshift libinput-gestures opencode tealdeer claude templates; do
   as_user stow -d "$SCRIPT_DIR" -t "$REAL_HOME" "$pkg"
   ok "stow $pkg"
 done

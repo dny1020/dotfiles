@@ -53,7 +53,13 @@ if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s "$LLAMA_HOST/v1/
   # --- cmd: genera un comando y lo DEJA en el prompt para que tú lo revises ----
   #     (nunca se auto-ejecuta: aparece editable, pulsa Enter si te convence)
   cmd() {
-    [[ -z "$*" ]] && { echo "uso: cmd '<lo que quieres hacer>'"; return 1; }
+    # Atajo compatible con "cmd why" para analizar el último fallo.
+    if [[ "$1" == "why" ]]; then
+      shift
+      why "$@"
+      return $?
+    fi
+    [[ -z "$*" ]] && { echo "uso: cmd '<lo que quieres hacer>' | cmd why"; return 1; }
     local out
     out=$(_ai_cmdgen "$*")
     [[ -n "$out" ]] && print -z "$out"

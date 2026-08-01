@@ -12,11 +12,10 @@
 
 ```bash
 uv sync
-ollama pull {{ ollama_model }}   # si corres Ollama fuera de Docker
 uv run uvicorn app.main:app --reload
 ```
 
-Por defecto `OLLAMA_BASE_URL` apunta a `http://ollama:11434` (el servicio de docker-compose). Si corres Ollama en tu maquina sin Docker, cambia esa variable en `.env` a `http://localhost:11434`.
+Por defecto `.env` apunta a `LLAMA_BASE_URL=http://127.0.0.1:8080/v1` (llama.cpp local). Si corres el API en Docker, `docker-compose.yml` lo sobreescribe a `http://host.docker.internal:8080/v1`.
 
 ## Tests
 
@@ -28,14 +27,15 @@ uv run ruff check . && uv run ruff format --check . && uv run pyright app tests 
 
 Durante el desarrollo, `uv run pytest` a secas basta; el flujo completo es lo que corre CI.
 
-Los tests reemplazan el agente real por un stub (`tests/conftest.py`), asi que corren sin necesidad de Ollama.
+Los tests reemplazan el agente real por un stub (`tests/conftest.py`), asi que corren sin necesidad de un servidor llama.cpp.
 
 ## Docker
 
 ```bash
 docker compose up --build
-docker compose exec ollama ollama pull {{ ollama_model }}
 ```
+
+`docker compose` asume que `llama-server` ya esta levantado en el host en `:8080`.
 {% if use_mcp %}
 
 ## Servidor MCP

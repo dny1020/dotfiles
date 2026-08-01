@@ -1,6 +1,6 @@
 # Template: voicebot
 
-Genera un voicebot (FastAPI + faster-whisper + LangGraph/Ollama + Piper) listo para IVR/voice AI, siguiendo la arquitectura fija definida en `SPEC.md` (raiz del repo).
+Genera un voicebot (FastAPI + faster-whisper + LangGraph/llama.cpp + Piper) listo para IVR/voice AI, siguiendo la arquitectura fija definida en `SPEC.md` (raiz del repo).
 
 ## Uso
 
@@ -17,7 +17,7 @@ Antes de correrlo de verdad necesitas descargar un modelo de voz de [Piper](http
 | Variable | Que controla |
 |---|---|
 | `project_name` / `project_slug` / `project_description` / `author_name` | Metadatos del proyecto |
-| `ollama_model` | Modelo por defecto que usa `ChatOllama` (`OLLAMA_MODEL` en `.env`) |
+| `llama_model` | Modelo por defecto que usa `ChatOpenAI` (`LLAMA_MODEL` en `.env`) |
 | `whisper_model` | Modelo de faster-whisper para STT (`tiny`, `base`, `small`, ...) |
 | `piper_model_path` | Ruta al modelo `.onnx` de Piper para TTS |
 | `use_auth` | Protege `/voice` con un API key simple (header `X-API-Key`) |
@@ -28,7 +28,7 @@ Antes de correrlo de verdad necesitas descargar un modelo de voz de [Piper](http
 - `app/` plano: `main.py`, `config.py`, `speech.py` (arma el agente LangGraph y orquesta el pipeline voz -> texto -> agente -> voz), `stt.py` (faster-whisper), `tts.py` (Piper), `prompts.py`, `tools.py`, `routes.py` (`POST /voice`, audio en/audio fuera), `utils.py`
 - `POST /voice` recibe un archivo de audio y devuelve WAV con el `X-Transcript` en el header (util para depurar sin necesitar reproducir el audio)
 - `tests/`: el pipeline completo se inyecta via `Depends(get_pipeline)` y se reemplaza por un stub en los tests — no requieren modelos de Whisper/Piper descargados
-- `docker-compose.yml` con un servicio `ollama` incluido y un volumen `models/` para los pesos de Whisper/Piper
+- `docker-compose.yml` con un servicio de modelo no incluido (usa llama.cpp en host) y un volumen `models/` para los pesos de Whisper/Piper
 - `pyproject.toml` gestionado con `uv` (ruff (lint+format) + pyright + pytest configurados)
 
 ## Validar el template despues de editarlo

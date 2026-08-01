@@ -13,7 +13,6 @@
 
 ```bash
 uv sync
-ollama pull {{ ollama_model }}   # si corres Ollama fuera de Docker
 uv run uvicorn app.main:app --reload
 ```
 
@@ -37,8 +36,9 @@ curl -X POST http://localhost:8000/voice -F "file=@grabacion.wav" -o respuesta.w
 
 ```bash
 docker compose up --build
-docker compose exec ollama ollama pull {{ ollama_model }}
 ```
+
+`docker compose` asume que `llama-server` ya esta levantado en el host en `:8080`.
 
 ## Estructura
 

@@ -1,4 +1,4 @@
--- Autocompletado con IA local (llama.cpp + Qwen3-4B) estilo Copilot:
+-- Autocompletado con IA local (llama.cpp + Qwen2.5-Coder-1.5B) estilo Copilot:
 -- ghost text inline mediante FIM (fill-in-middle). Convive con nvim-cmp:
 -- el menú lo dan los servidores LSP; la sugerencia gris en línea la da la IA.
 return {
@@ -14,10 +14,9 @@ return {
       provider = "openai_fim_compatible",
       n_completions = 1, -- una sola sugerencia: el modelo local va más fluido
       context_window = 1024, -- contexto enviado (tokens); bajo = más rápido en CPU
-      -- En CPU el FIM tarda 5-9s (más en arranque en frío al cargar el modelo).
-      -- Con timeout=4 minuet generaba la sugerencia pero la DESCARTABA -> nunca
-      -- aparecía el ghost text. Damos margen suficiente para que llegue.
-      request_timeout = 10, -- segundos antes de descartar (modelo local en CPU)
+      -- Con el endpoint de qwen2.5-coder-1.5b el FIM responde notablemente más
+      -- rápido en CPU; timeout más corto evita sugerencias "viejas".
+      request_timeout = 6,
       throttle = 1000,
       debounce = 400,
       provider_options = {
@@ -25,8 +24,8 @@ return {
           -- llama-server no usa clave; minuet exige el NOMBRE de una env var no vacía: "TERM" siempre existe
           api_key = "TERM",
           name = "llama.cpp",
-          end_point = "http://127.0.0.1:8080/v1/completions",
-          model = "qwen3-4b",
+          end_point = "http://127.0.0.1:8082/v1/completions",
+          model = "qwen2.5-coder-1.5b",
           -- llama-server FIM: si `suffix` está vacío, el modelo puede "chatear" en
           -- vez de hacer completión. Forzamos un suffix mínimo para FIM limpio.
           template = {
@@ -59,8 +58,7 @@ return {
 
   -- Acciones IA sobre selección/buffer: selecciona código, <espacio>a y eliges
   -- del menú (Explicar, Fix_Code, Review_Code, Ask, Chat...). Usa el MISMO
-  -- modelo que minuet ya tiene residente en RAM -> no añade carga ni espera
-  -- de carga en frío. Sale del split con `q`.
+  -- backend local llama.cpp. Sale del split con `q`.
   {
     "David-Kunz/gen.nvim",
     cmd = "Gen",
