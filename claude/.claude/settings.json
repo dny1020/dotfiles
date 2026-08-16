@@ -1,0 +1,59 @@
+{
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "model": "opus",
+  "disableClaudeAiConnectors": true,
+  "enabledPlugins": {
+    "pyright-lsp@claude-plugins-official": true
+  },
+  "effortLevel": "high",
+  "awaySummaryEnabled": false,
+  "tui": "fullscreen",
+  "theme": "dark",
+  "editorMode": "vim",
+  "preferredNotifChannel": "auto",
+  "autoCompactEnabled": true,
+  "skipAutoPermissionPrompt": true,
+  "mcpServers": {
+    "doction": {
+      "url": "https://doction.danilocloud.me/api/mcp",
+      "headers": {
+        "Authorization": "Bearer ${env:DOCTION_MCP_TOKEN}"
+      }
+    }
+  },
+  "autoMode": {
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Cloud provider(s)**: AWS (aws CLI used in shell history; no further org-wide corroboration found)",
+      "**Repository visibility**: Private — dny1020/rpi_recuperation (per gh)",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: None configured — repo keeps secrets in gitignored files (opt/**/.env, cloudflare.ini, wg0.conf, terraform.tfvars) restored manually from /mnt/ssd/backups on the RPi host",
+      "**Default / protected branches**: Default branch unknown (origin/HEAD unset); no rulesets or protected branches listed via gh",
+      "**CI/CD deploy targets**: None configured — deployment is via ./recover.sh and systemd timers (doction-deploy, pulse-deploy) on the RPi host itself, not a CI/CD pipeline",
+      "**Network posture**: Home/self-hosted RPi/miniPC Docker host behind UFW + fail2ban, reachable via SSH (configurable port) and WireGuard (wg0.conf); services proxied internally on proxy_net",
+      "**Source control**: The trusted repo (dny1020/rpi_recuperation) and its origin remote only (no additional orgs configured)",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: doction (ghcr.io custom image context), pulse_bogota (ghcr.io/dny1020/pulse_bogota, internal on proxy_net, no public subdomain), Immich (photo backup, pg_dump target), filebrowser",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: opt/**/.env, opt/**/cloudflare.ini, opt/nginx/certs/, terraform/files/etc/wireguard/wg0.conf, terraform/terraform.tfvars (gitignored secrets); /mnt/ssd/backups/** and USB backup stick (contains .env, pg_dump, sshd_config, fail2ban, wg0.conf) — restricted to the host owner/operator only",
+      "**Data retention / declassification**: None configured — backup chain retains rolling snapshots (opt/db/etc/volumes) on SSD with periodic (8-day) USB transfer; USB backup retired 2026-07, manually re-established 2026-08, holds critical data only",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment (e.g. opt/webrtc/.env.production) — matches default heuristic, no additional org-specific prod namespace found",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: terraform/ (main.tf, variables.tf, providers.tf, outputs.tf, terraform.tfvars) provisions the RPi host: bootstrap, packages, Docker, configs, UFW, SSH restart, services — treat as protected IaC scope; also IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+      "### User-specific",
+      "**Primary use of Claude Code**: personal/hobby homelab infrastructure — recovery/provisioning kit for a self-hosted RPi/miniPC Docker host",
+      "**Trusted repo**: dny1020/rpi_recuperation (private) at ~/rpi and its origin remote",
+      "**Org-specific CLIs**: None configured",
+      "routine under ~/rpi/ prefix: recover.sh, sync.sh, terraform plan/apply within terraform/, docker compose operations under opt/"
+    ],
+    "soft_deny": [
+      "$defaults",
+      "Bash(terraform destroy:*) in ~/rpi/terraform — irreversible host reprovisioning",
+      "Bash(rm:*) targeting /mnt/ssd/backups/** or /mnt/usb_backup/** — backup destruction"
+    ]
+  }
+}

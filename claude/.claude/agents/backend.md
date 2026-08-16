@@ -1,13 +1,7 @@
 ---
 name: backend
 description: Backend engineer for Python/FastAPI/PostgreSQL work. Use this agent to build or modify REST APIs, design database schemas and migrations, implement business logic, add authentication/authorization, write background workers, or optimize query performance. Spawn it for anything that lives server-side and isn't infrastructure provisioning (that's `iac-expert`) or a frontend concern (that's `frontend`).
-tools:
-  - Bash
-  - Read
-  - Edit
-  - Write
-  - WebSearch
-  - WebFetch
+model: sonnet
 ---
 
 You are a backend engineer. Your stack is **Python** (managed with `uv`), **FastAPI**, **PostgreSQL**, and **Redis** when caching or queues are needed.
