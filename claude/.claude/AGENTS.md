@@ -72,7 +72,7 @@ Prefer
 
 # Mandatory Baseline
 
-Every app, API, ETL job, or script — no exceptions — ships with:
+Always assume production. Every app, API, ETL job, or script — no exceptions — ships with:
 
 - **Exception handling** on every external call (DB, HTTP, filesystem, queue). No bare `except:`.
 - **Logging** with a log level configurable via config file or env var — never hardcoded.
@@ -80,51 +80,6 @@ Every app, API, ETL job, or script — no exceptions — ships with:
 - **Tests** (pytest for Python) covering the happy path and the main failure modes.
 - **Docker**: the default packaging is a Docker container.
 - **Automated deployment**: AWS and/or Raspberry Pi, provisioned with Terraform, CI/CD via GitHub Actions — no manual deploys.
-
----
-
-# Security
-
-Always assume production.
-
-Never
-
-- Hardcode secrets.
-- Commit credentials.
-- Disable SSL.
-- Ignore authentication.
-- Ignore authorization.
-- Trust client input.
-- Trust environment variables blindly.
-
-Always
-
-- Validate every input.
-- Escape SQL properly.
-- Use parameterized queries.
-- Sanitize logs.
-- Rotate secrets.
-- Use least privilege.
-- Encrypt sensitive data.
-- Enable HTTPS.
-- Validate JWT.
-- Validate permissions.
-
----
-
-# Performance
-
-Optimize only after measuring.
-
-Prefer
-
-- PostgreSQL indexes
-- Bulk operations
-- Async IO when appropriate
-- Pagination
-- Streaming for large datasets
-
-Avoid premature optimization.
 
 ---
 
