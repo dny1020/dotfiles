@@ -1,6 +1,6 @@
 ---
 name: linux-best-practices
-description: "Audits and enforces Linux best practices on scripts, configs, and system changes. Invoked when: writing shell scripts, managing systemd units, setting file permissions, reviewing sudoers/SSH config, or hardening a Linux host. Checks for: shellcheck violations, insecure permissions, unnecessary root usage, missing idempotency guards, and syslog/journald logging."
+description: "Linux scripts, configs, and system changes. Invoked when: writing a shell script, managing a systemd unit, setting permissions, reviewing sudoers/SSH config, or hardening a host."
 ---
 
 <skill>

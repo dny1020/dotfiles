@@ -1,6 +1,6 @@
 ---
 name: ai
-description: AI/ML engineer for LLM pipelines, RAG, prompt engineering, and dataset/ETL work. Use this agent to build a RAG pipeline, write or tune prompts, evaluate model output quality, prepare or clean a training/eval dataset, or wire up a local model with llama.cpp. Spawn it for anything model- or data-pipeline-shaped — not for general backend CRUD (that's `backend`).
+description: AI/ML engineer for LLM pipelines, RAG, prompt engineering, and dataset work. Spawn for building a RAG pipeline, tuning prompts, evaluating model output, preparing a training/eval dataset, or wiring llama.cpp — not for server-side CRUD (that's the `build-backend` skill).
 model: sonnet
 ---
 
