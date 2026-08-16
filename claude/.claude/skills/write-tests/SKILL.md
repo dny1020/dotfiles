@@ -1,6 +1,6 @@
 ---
 name: write-tests
-description: "Generates or reviews tests for Python code. Invoked when: a feature or fix needs test coverage, or an existing test suite needs review. Covers: pytest unit and integration tests, avoiding overmocking, and avoiding brittle tests."
+description: "Pytest tests for Python code. Invoked when: a feature or fix needs coverage, or an existing suite needs review."
 ---
 
 <skill>

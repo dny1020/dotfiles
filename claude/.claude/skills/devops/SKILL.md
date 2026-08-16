@@ -1,6 +1,6 @@
 ---
 name: devops
-description: "DevOps skill for CI/CD pipelines, container workflows, observability, and release practices. Invoked when: writing Gitea/GitHub Actions/Drone CI pipelines, building Docker images, managing secrets in pipelines, setting up health checks, or reviewing deployment strategies. Covers: pipeline lint, image build hygiene, zero-downtime deploys, rollback procedures, and monitoring hooks."
+description: "CI/CD, containers, and release practice. Invoked when: writing a Gitea/GitHub Actions pipeline, building a Docker image, handling secrets in CI, adding health checks, or reviewing a deploy/rollback strategy."
 ---
 
 <skill>

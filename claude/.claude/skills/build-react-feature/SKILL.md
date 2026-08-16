@@ -1,24 +1,25 @@
 ---
 name: build-react-feature
-description: "Builds or reviews a React feature end to end. Invoked when: adding a new UI feature or component, wiring a component to an API, or reviewing a React PR for production-readiness. Covers: functional components, TypeScript typing, reusable hooks, loading/error states, and accessibility."
+description: "React/TypeScript UI work. Invoked when: adding or changing a component or UI feature, wiring a component to an API, or reviewing a React PR."
 ---
 
 <skill>
 Build or review the React feature and apply the following checklist. Fix every issue found and explain each change in one line.
 
-## Style
-- No AI-looking code: no filler comments, no single-call helper components — inline logic until a second real use case justifies extracting it.
-- Types only where they aid comprehension, not padding every prop with redundant annotation.
+Stack: **React**, **TypeScript**, **Tailwind** for styling. Style rules live in AGENTS.md and already apply — here that mostly means inlining logic until a second real use case justifies extracting a hook or component, and typing props where it aids comprehension rather than padding every prop.
 
 ## Components
 - Functional components only — no class components, no `this`.
 - Component stays small: if the JSX scrolls past one screen, split it into subcomponents.
 - Props are explicitly typed with an interface or type, not `any` or implicit `object`.
+- Co-locate a component's styles, types, and tests with the component, not in far-away parallel trees.
 
-## Hooks
+## Hooks and state
 - Any stateful logic used in more than one place is extracted into a custom hook, not copy-pasted.
 - `useEffect` dependency arrays are complete — no suppressed lint warnings papering over stale closures.
 - Data fetching goes through a typed hook/client, not inline `fetch` scattered through components.
+- Server state (API data) and client state (UI toggles, form drafts) stay in separate mechanisms — don't shove both into one global store.
+- Prop drilling more than two levels means a hook or context is missing, not that Redux is needed. Reach for local state and a hook before any global store.
 
 ## Loading and error state
 - Every async operation (fetch, mutation) has an explicit loading state shown to the user, not a blank screen.
@@ -41,5 +42,5 @@ For each issue found:
 [ISSUE] <file>:<line or section> — <description>
 [FIX]   <what was changed and why>
 ```
-Then show the corrected component code.
+Then show the corrected component code. Call out any interactive element missing an accessible name or keyboard handler.
 </skill>

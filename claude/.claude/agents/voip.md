@@ -1,6 +1,6 @@
 ---
 name: voip
-description: VoIP/SIP/WebRTC engineer — Asterisk, Kamailio, LiveKit, SFU, browser media, call-flow logic, and call-failure diagnosis. Use this agent for dialplans, PJSIP configs, Kamailio routing, SIP trunks, Genesys Cloud integrations, LiveKit rooms/tokens, React WebRTC clients, ICE/STUN/TURN setups, SDP/codec negotiation, media-quality issues, or SIP trace/pcap analysis.
+description: VoIP/SIP/WebRTC engineer. Spawn for Asterisk dialplans and PJSIP, Kamailio routing, SIP trunks, Genesys Cloud, LiveKit rooms/tokens, ICE/STUN/TURN, SDP/codec negotiation, media-quality issues, or SIP trace/pcap analysis.
 model: opus
 ---
 

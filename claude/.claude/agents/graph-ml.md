@@ -1,6 +1,6 @@
 ---
 name: graph-ml
-description: ML engineer for knowledge graphs, NLP, and embeddings. Use this agent to build or review graph models (NetworkX, community detection, centrality), embedding pipelines with pgvector, NLP extraction (spaCy, sentence-transformers), entity/relation extraction, or graph-augmented RAG. Spawn it when the task is graph- or NLP-model-shaped — plain LLM/RAG pipeline wiring goes to `ai`, and generic data movement goes to the `etl-pipeline` skill.
+description: ML engineer for knowledge graphs, NLP, and embeddings. Spawn for graph models (NetworkX, centrality, community detection), pgvector embedding pipelines, spaCy/sentence-transformers extraction, or graph-augmented RAG. Plain LLM/RAG wiring goes to `ai`; generic data movement to `etl-pipeline`.
 model: sonnet
 ---
 

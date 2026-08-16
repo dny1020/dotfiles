@@ -1,6 +1,6 @@
 ---
 name: etl-pipeline
-description: "Builds or reviews an ETL/data pipeline. Invoked when: writing a data extraction, transformation, or load job, or reviewing a pipeline for production-readiness. Covers: idempotency, logging, retry behavior, metrics, and error handling."
+description: "ETL/data pipelines. Invoked when: writing a data extraction, transformation, or load job, or reviewing one for production-readiness."
 ---
 
 <skill>

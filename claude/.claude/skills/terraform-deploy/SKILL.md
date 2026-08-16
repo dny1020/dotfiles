@@ -1,6 +1,6 @@
 ---
 name: terraform-deploy
-description: "Writes or reviews Terraform for AWS deployments. Invoked when: provisioning AWS infrastructure, writing or reviewing Terraform modules, or setting up remote state. Covers: module structure, variables/outputs, state management, and least-privilege IAM. For self-hosted Raspberry Pi/Ansible/Docker Compose deployments, use the `iac-expert` agent or `devops` skill instead — this one is AWS/Terraform specific."
+description: "Terraform for AWS. Invoked when: provisioning AWS infrastructure, writing or reviewing modules, or setting up remote state. Self-hosted RPi/Ansible/Compose goes to the `iac-expert` agent instead."
 ---
 
 <skill>
