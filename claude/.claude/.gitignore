@@ -1,10 +1,13 @@
 # Allowlist: ignore everything, track only declarative config.
 # Runtime state, sessions, history, and credentials must never be committed.
-# settings.json is excluded on purpose: it contains an MCP auth token.
+# settings.json is tracked: the MCP token is an ${env:...} reference, not a literal.
+# settings.local.json stays out — it is per-machine permission state.
 *
 !.gitignore
 !AGENTS.md
 !CLAUDE.md
+!settings.json
+!skills-index.md
 !agents/
 !agents/**
 !skills/
