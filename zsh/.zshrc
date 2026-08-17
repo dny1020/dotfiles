@@ -51,6 +51,7 @@ export PAGER=less
 # PATH personal
 export PATH="$HOME/.local/bin:$PATH"
 [[ -d "$HOME/.opencode/bin" ]] && export PATH="$HOME/.opencode/bin:$PATH"
+[[ -d "$HOME/.bin" ]] && export PATH="$HOME/.bin:$PATH"
 
 # Alias
 alias vim='nvim'   # migrado a Neovim; el comando `vim` sigue funcionando

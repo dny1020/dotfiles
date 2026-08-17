@@ -1,0 +1,20 @@
+#!/bin/bash
+# Toggle between normal (100%) and loud (150%) volume
+
+VOL=$(wpctl get-volume @DEFAULT_SINK@ 2>/dev/null | awk '{print $2}')
+
+if [ -z "$VOL" ]; then
+    notify-send -u critical "Audio" "No hay sink disponible"
+    exit 1
+fi
+
+# Compare: if volume >= 1.45 treat as loud, otherwise normal
+LOUD=$(echo "$VOL >= 1.45" | bc -l 2>/dev/null)
+
+if [ "$LOUD" = "1" ]; then
+    wpctl set-volume @DEFAULT_SINK@ 1.0
+    notify-send -t 1500 "🔊 Volumen" "Normal (100%)"
+else
+    wpctl set-volume @DEFAULT_SINK@ 1.5
+    notify-send -t 1500 "🔊 Volumen" "Fuerte (150%)"
+fi

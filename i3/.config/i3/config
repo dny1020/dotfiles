@@ -70,6 +70,7 @@ bindsym XF86AudioMute        exec --no-startup-id $osd vol_mute
 bindsym XF86AudioMicMute     exec --no-startup-id $osd mic_mute
 bindsym XF86MonBrightnessUp   exec --no-startup-id $osd bri_up
 bindsym XF86MonBrightnessDown exec --no-startup-id $osd bri_down
+bindsym $mod+u exec --no-startup-id ~/.bin/vol-boost
 
 # Teclas multimedia (playerctl)
 bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause

@@ -57,6 +57,11 @@ php-cli
 # Datos
 sqlite3
 
+# Escritorio (i3): bc lo usa bin/.bin/vol-boost para comparar el volumen actual.
+# Nota: el resto del stack de escritorio (i3, dunst, rofi, picom, redshift,
+# playerctl, wireplumber) no está listado aquí todavía.
+bc
+
 # Infra / cloud
 ansible
 awscli
