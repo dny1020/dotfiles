@@ -1,0 +1,46 @@
+! ~/.Xresources  -  config minima para xterm/lxterm/uxterm
+
+! --- Fuente (TrueType antialias) ---
+*faceName:   DejaVu Sans Mono
+*faceSize:   12
+*renderFont: true
+
+! --- 256 colores (para que el prompt de zsh muestre color) ---
+XTerm*termName:  xterm-256color
+UXTerm*termName: xterm-256color
+
+! --- Comportamiento minimo ---
+XTerm*saveLines:  10000
+XTerm*scrollBar:  false
+UXTerm*saveLines: 10000
+UXTerm*scrollBar: false
+
+! --- Paleta: Gruvbox Dark ---
+*background:  #282828
+*foreground:  #ebdbb2
+*cursorColor: #ebdbb2
+
+! negro / gris
+*color0:  #282828
+*color8:  #928374
+! rojo
+*color1:  #cc241d
+*color9:  #fb4934
+! verde
+*color2:  #98971a
+*color10: #b8bb26
+! amarillo
+*color3:  #d79921
+*color11: #fabd2f
+! azul
+*color4:  #458588
+*color12: #83a598
+! magenta / purpura
+*color5:  #b16286
+*color13: #d3869b
+! cian / aqua
+*color6:  #689d6a
+*color14: #8ec07c
+! blanco
+*color7:  #a89984
+*color15: #ebdbb2
