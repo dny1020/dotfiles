@@ -28,6 +28,11 @@ opt.shiftwidth = 2
 opt.expandtab = true
 opt.autoindent = true
 
+-- Portapapeles del sistema (xclip en X11): `y` copia y `p` pega contra el
+-- clipboard, así que pegar de la web es `p` en modo normal y no pasa por el
+-- teclado del terminal — no hay autoindent que lo escalone.
+opt.clipboard = "unnamedplus"
+
 -- Búsqueda
 opt.ignorecase = true
 opt.smartcase = true
