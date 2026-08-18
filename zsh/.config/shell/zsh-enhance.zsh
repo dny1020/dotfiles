@@ -8,8 +8,6 @@ setopt HIST_FIND_NO_DUPS      # al buscar, no repite entradas iguales
 setopt HIST_REDUCE_BLANKS     # normaliza espacios al guardar
 setopt HIST_VERIFY            # al expandir !! deja editar antes de ejecutar
 setopt EXTENDED_HISTORY       # guarda timestamp por comando
-# Si quieres más memoria de comandos, sube esto (están en 5000 en tu .zshrc):
-# HISTSIZE=50000; SAVEHIST=50000
 
 # --- ↑/↓ buscan por prefijo --------------------------------------------------
 # Escribe "curl" y pulsa ↑ -> recorre SOLO comandos que empiezan por "curl".
