@@ -37,11 +37,14 @@ zstyle ':completion:*' menu select
 
 # Historial
 HISTFILE=~/.zsh_history
-HISTSIZE=5000
-SAVEHIST=5000
+HISTSIZE=50000
+SAVEHIST=50000
 
 setopt HIST_IGNORE_ALL_DUPS
 setopt SHARE_HISTORY
+# Bloqueo fcntl al escribir el historial: con muchos paneles de tmux guardando
+# a la vez, el método por defecto puede pisarse y perder entradas.
+setopt HIST_FCNTL_LOCK
 
 # Editor
 export EDITOR=nvim
@@ -86,10 +89,6 @@ fi
 # Autosuggestions / highlighting / fzf / historial (debe ir el ÚLTIMO source)
 [[ -f ~/.config/shell/zsh-enhance.zsh ]] && source ~/.config/shell/zsh-enhance.zsh
 
-# zoxide: tu `cd` de siempre, pero recuerda a dónde sueles ir.
-# Va al final del todo porque zoxide exige inicializarse el último.
-command -v zoxide >/dev/null && eval "$(zoxide init zsh --cmd cd)"
-
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
@@ -102,4 +101,8 @@ alias awsl='aws --endpoint-url=http://localhost:4566'
 alias awsp='aws --profile produccion'
 # alias aws-dev: alias directo sin perfil (default)
 alias aws-default='aws --profile default'
-DOCTION_MCP_TOKEN=REMOVED
+
+# zoxide: tu `cd` de siempre, pero recuerda a dónde sueles ir.
+# Va al final del todo porque zoxide exige inicializarse el último; si queda
+# algo después, avisa en cada arranque con "possible configuration issue".
+command -v zoxide >/dev/null && eval "$(zoxide init zsh --cmd cd)"
