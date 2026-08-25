@@ -1,0 +1,12 @@
+[Unit]
+Description=llama.cpp server (Qwen2.5-Coder-1.5B)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/jnarvaar/llama.cpp/build/bin/llama-server -m /home/jnarvaar/models/Qwen2.5-Coder-1.5B-Instruct-Q4_K_M.gguf --host 0.0.0.0 --port 8082 -t 4 -c 8192 -np 1 -n 512
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

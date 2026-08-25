@@ -13,3 +13,7 @@
 
 # OS junk
 .DS_Store
+
+# systemd `systemctl --user enable` artifacts (machine-specific symlinks created
+# inside the stowed unit dir; the unit files themselves stay versioned)
+**/systemd/user/*.wants/
