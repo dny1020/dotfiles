@@ -14,9 +14,10 @@ return {
       provider = "openai_fim_compatible",
       n_completions = 1, -- una sola sugerencia: el modelo local va más fluido
       context_window = 1024, -- contexto enviado (tokens); bajo = más rápido en CPU
-      -- Con el endpoint de qwen2.5-coder-1.5b el FIM responde notablemente más
-      -- rápido en CPU; timeout más corto evita sugerencias "viejas".
-      request_timeout = 6,
+      -- Con 64 max_tokens el modelo cortaba funciones a medias (finish_reason
+      -- "length": código roto, ej. un string sin cerrar). Con más presupuesto
+      -- la generación tarda más en CPU, así que el timeout sube en consecuencia.
+      request_timeout = 10,
       throttle = 1000,
       debounce = 400,
       provider_options = {
@@ -24,11 +25,19 @@ return {
           -- llama-server no usa clave; minuet exige el NOMBRE de una env var no vacía: "TERM" siempre existe
           api_key = "TERM",
           name = "llama.cpp",
-          end_point = "http://127.0.0.1:8082/v1/completions",
+          end_point = "http://" .. (vim.fn.system("hostname -I"):match("%S+") or "127.0.0.1") .. ":8082/v1/completions",
           model = "qwen2.5-coder-1.5b",
           -- llama-server FIM: si `suffix` está vacío, el modelo puede "chatear" en
           -- vez de hacer completión. Forzamos un suffix mínimo para FIM limpio.
           template = {
+            -- El default de minuet antepone "# language: python" + "# indentation:
+            -- use N spaces..." antes del código. Con qwen2.5-coder-1.5b eso "primea"
+            -- al modelo a escribir un comentario por cada línea (a veces sin llegar
+            -- nunca al código real, cortándose en max_tokens). El modelo ya infiere
+            -- el lenguaje de la sintaxis, así que mandamos el contexto tal cual.
+            prompt = function(context_before_cursor, _, _)
+              return context_before_cursor
+            end,
             suffix = function(_, context_after_cursor, _)
               if context_after_cursor == "" then
                 return "\n"
@@ -37,8 +46,13 @@ return {
             end,
           },
           optional = {
-            max_tokens = 64,
+            max_tokens = 96,
             top_p = 0.9,
+            temperature = 0.3,
+            -- Sin suffix real (fin de archivo), el modelo no sabe dónde parar y
+            -- sigue escribiendo la siguiente función/clase. Estas stop sequences
+            -- cortan la sugerencia en el límite natural de la función actual.
+            stop = { "\ndef ", "\nclass ", "\n\n" },
           },
         },
       },
@@ -57,8 +71,9 @@ return {
   },
 
   -- Acciones IA sobre selección/buffer: selecciona código, <espacio>a y eliges
-  -- del menú (Explicar, Fix_Code, Review_Code, Ask, Chat...). Usa el MISMO
-  -- backend local llama.cpp. Sale del split con `q`.
+  -- del menú (Explicar, Fix_Code, Review_Code, Ask, Chat...). Servidor separado
+  -- (puerto 8083, Qwen3-4B): modelo de chat de propósito general, distinto del
+  -- Coder-1.5B que usa minuet para el FIM en 8082.
   {
     "David-Kunz/gen.nvim",
     cmd = "Gen",
@@ -70,8 +85,8 @@ return {
       display_mode = "split",
       show_prompt = true,
       show_model = true,
-      host = "127.0.0.1",
-      port = 8080,
+      host = vim.fn.system("hostname -I"):match("%S+") or "127.0.0.1",
+      port = 8083,
     },
     config = function(_, opts)
       local gen = require("gen")

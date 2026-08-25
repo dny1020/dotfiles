@@ -1,0 +1,12 @@
+[Unit]
+Description=llama.cpp server (Qwen3-4B chat/shortcuts)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=~/llama.cpp/build/bin/llama-server -m ~/models/Qwen3-4B-Q4_K_M.gguf --host 0.0.0.0 --port 8083 -t 4 -c 16384 -np 1 -n 512 --reasoning off
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

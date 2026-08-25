@@ -1,27 +1,39 @@
 # ~/.config/shell/ai.zsh
-# Copiloto local con llama.cpp (Qwen2.5-Coder-1.5B). Son funciones (coste de arranque ~0).
-# Modelo por defecto: qwen2.5-coder-1.5b (puerto 8082, ~19 tokens/s en CPU).
+# Copiloto local con llama.cpp. Son funciones (coste de arranque ~0).
+# Dos servidores separados:
+#   - qwen2.5-coder-1.5b (puerto 8082): solo FIM/autocompletado en nvim (minuet-ai.nvim).
+#   - qwen3-4b (puerto 8083): shortcuts de shell (ai/cmd/why/gitai) y gen.nvim,
+#     modelo de chat de propósito general, no entrenado para FIM.
 # Cambia con export AI_MODEL=otro-modelo o export LLAMA_HOST=otro-puerto.
 # (Versionado en el repo dotfiles; sourceado desde ~/.zshrc.)
 
-: ${AI_MODEL:=qwen2.5-coder-1.5b}
-: ${LLAMA_HOST:=http://127.0.0.1:8082}
+: ${AI_MODEL:=qwen3-4b}
+# En WSL2 localhost no funciona; detectamos la IP real de la interfaz.
+: ${LLAMA_HOST:=http://$(hostname -I | awk '{print $1}'):8083}
+# Si alguien exportó 127.0.0.1 manualmente, lo corregimos:
+[[ "$LLAMA_HOST" == *127.0.0.1* ]] && LLAMA_HOST="http://$(hostname -I | awk '{print $1}'):8083"
 
-if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s "$LLAMA_HOST/v1/models" >/dev/null 2>&1; then
+if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s --max-time 3 "$LLAMA_HOST/v1/models" >/dev/null 2>&1; then
 
   # --- helper interno: manda un prompt al modelo y devuelve solo la respuesta -
   #     Usa la API OpenAI-compatible de llama.cpp (chat/completions para instruct models).
   #     jq extrae choices[0].message.content.
   #     2º arg opcional = temperatura (baja = más determinista, para comandos).
-  #     3º arg opcional = max_tokens (default 64 para shell rápido en CPU).
-  #     Nota: usa chat/completions porque qwen2.5-coder es un modelo instruct.
+  #     3º arg opcional = max_tokens (default 150; qwen3-4b en CPU ronda ~6 tok/s,
+  #     así que un budget alto tarda demasiado para un comando de shell).
+  #     System prompt fijo: sin él, qwen3-4b responde en modo "tutorial"
+  #     (headers markdown, listas por SO) e ignora instrucciones de brevedad
+  #     en el mensaje de usuario, cortándose a medias (finish_reason "length")
+  #     antes de llegar al punto.
+  _ai_system="Eres un asistente de terminal en Linux (WSL Debian). Respondes en texto plano, sin markdown ni listas numeradas, en máximo 3-4 líneas. Directo y práctico, sin rodeos."
+
   _ai() {
     local temp=${2:-0.4}
-    local tokens=${3:-64}
-    curl -s "$LLAMA_HOST/v1/chat/completions" \
+    local tokens=${3:-150}
+    curl -s --max-time 30 "$LLAMA_HOST/v1/chat/completions" \
       -H "Content-Type: application/json" \
-      -d "$(jq -n --arg m "$AI_MODEL" --arg p "$1" --argjson t "$temp" --argjson mx "$tokens" \
-            '{model:$m, messages:[{role:"user",content:$p}], stream:false, temperature:$t, max_tokens:$mx}')" \
+      -d "$(jq -n --arg m "$AI_MODEL" --arg s "$_ai_system" --arg p "$1" --argjson t "$temp" --argjson mx "$tokens" \
+            '{model:$m, messages:[{role:"system",content:$s},{role:"user",content:$p}], stream:false, temperature:$t, max_tokens:$mx}')" \
       | jq -r '.choices[0].message.content // empty'
   }
 
@@ -42,7 +54,7 @@ if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s "$LLAMA_HOST/v1/
   # --- explain: explica qué hace un comando (no lo ejecuta) -------------------
   explain() {
     [[ -z "$*" ]] && { echo "uso: explain '<comando>'"; return 1; }
-    _ai "En 1-2 oraciones, explica qué hace este comando: $*" 0.3 64
+    _ai "En 1-2 oraciones y en prosa (sin listas ni pasos numerados), explica qué hace este comando: $*" 0.3 120
   }
 
   # genera UNA línea de comando a partir de una descripción en lenguaje natural
@@ -87,7 +99,7 @@ if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s "$LLAMA_HOST/v1/
   why() {
     local code=${__AI_LAST_STATUS:-$?}
     [[ -z "$__AI_PREV_CMD" ]] && { echo "No hay comando previo que analizar."; return 1; }
-    _ai "Comando falló (exit $code): $__AI_PREV_CMD. Causa y solución en 1-2 líneas:" 0.3 64
+    _ai "Comando falló (exit $code): $__AI_PREV_CMD. En 1-2 líneas de prosa (sin listas), causa y solución:" 0.3 120
   }
 
   # --- gitai: mensaje de commit (Conventional Commits) desde el diff ----------
