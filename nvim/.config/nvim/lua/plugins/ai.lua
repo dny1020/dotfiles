@@ -13,7 +13,9 @@ return {
     require("minuet").setup({
       provider = "openai_fim_compatible",
       n_completions = 1, -- una sola sugerencia: el modelo local va más fluido
-      context_window = 1024, -- contexto enviado (tokens); bajo = más rápido en CPU
+      -- Contexto enviado al modelo (tokens). El servidor FIM corre con -c 8192,
+      -- así que 2048 cabe de sobra y el 1.5B procesa el prompt rápido en CPU.
+      context_window = 2048,
       -- Con 64 max_tokens el modelo cortaba funciones a medias (finish_reason
       -- "length": código roto, ej. un string sin cerrar). Con más presupuesto
       -- la generación tarda más en CPU, así que el timeout sube en consecuencia.
@@ -25,7 +27,7 @@ return {
           -- llama-server no usa clave; minuet exige el NOMBRE de una env var no vacía: "TERM" siempre existe
           api_key = "TERM",
           name = "llama.cpp",
-          end_point = "http://" .. (vim.fn.system("hostname -I"):match("%S+") or "127.0.0.1") .. ":8082/v1/completions",
+          end_point = "http://127.0.0.1:8082/v1/completions",
           model = "qwen2.5-coder-1.5b",
           -- llama-server FIM: si `suffix` está vacío, el modelo puede "chatear" en
           -- vez de hacer completión. Forzamos un suffix mínimo para FIM limpio.
@@ -85,7 +87,7 @@ return {
       display_mode = "split",
       show_prompt = true,
       show_model = true,
-      host = vim.fn.system("hostname -I"):match("%S+") or "127.0.0.1",
+      host = "127.0.0.1",
       port = 8083,
     },
     config = function(_, opts)

@@ -1,10 +1,23 @@
 [Unit]
-Description=llama.cpp server (Qwen2.5-Coder-1.5B)
+Description=llama.cpp server (Qwen2.5-Coder-1.5B, FIM/autocompletado)
+Documentation=https://github.com/ggml-org/llama.cpp
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/home/jnarvaar/llama.cpp/build/bin/llama-server -m /home/jnarvaar/models/Qwen2.5-Coder-1.5B-Instruct-Q4_K_M.gguf --host 0.0.0.0 --port 8082 -t 4 -c 8192 -np 1 -n 512
+# Solo FIM para minuet-ai.nvim. --host 127.0.0.1: el servidor no debe quedar
+# expuesto a la red (portátil que se conecta a wifis ajenas). Si otra máquina
+# necesita 0.0.0.0 (p.ej. Open WebUI en Docker), va en un drop-in local, no aquí.
+# -c 8192: el FIM manda ~2k tokens de contexto; con menos se truncaba el prompt.
+# -t 4 = núcleos físicos (Ryzen 3 7320U es 4C/8T); usar los 8 hilos no acelera.
+ExecStart=/home/jnarvaar/llama.cpp/build/bin/llama-server \
+  --model /home/jnarvaar/models/qwen2.5-coder-1.5b-instruct-q4_k_m.gguf \
+  --alias qwen2.5-coder-1.5b \
+  --host 127.0.0.1 --port 8082 \
+  --ctx-size 8192 \
+  --threads 4 \
+  --parallel 1 \
+  --n-predict 512
 Restart=on-failure
 RestartSec=5
 
