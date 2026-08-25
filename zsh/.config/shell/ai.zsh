@@ -8,10 +8,7 @@
 # (Versionado en el repo dotfiles; sourceado desde ~/.zshrc.)
 
 : ${AI_MODEL:=qwen3-4b}
-# En WSL2 localhost no funciona; detectamos la IP real de la interfaz.
-: ${LLAMA_HOST:=http://$(hostname -I | awk '{print $1}'):8083}
-# Si alguien exportó 127.0.0.1 manualmente, lo corregimos:
-[[ "$LLAMA_HOST" == *127.0.0.1* ]] && LLAMA_HOST="http://$(hostname -I | awk '{print $1}'):8083"
+: ${LLAMA_HOST:=http://127.0.0.1:8083}
 
 if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s --max-time 3 "$LLAMA_HOST/v1/models" >/dev/null 2>&1; then
 
@@ -25,7 +22,7 @@ if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s --max-time 3 "$L
   #     (headers markdown, listas por SO) e ignora instrucciones de brevedad
   #     en el mensaje de usuario, cortándose a medias (finish_reason "length")
   #     antes de llegar al punto.
-  _ai_system="Eres un asistente de terminal en Linux (WSL Debian). Respondes en texto plano, sin markdown ni listas numeradas, en máximo 3-4 líneas. Directo y práctico, sin rodeos."
+  _ai_system="Eres un asistente de terminal en Linux (Debian). Respondes en texto plano, sin markdown ni listas numeradas, en máximo 3-4 líneas. Directo y práctico, sin rodeos."
 
   _ai() {
     local temp=${2:-0.4}

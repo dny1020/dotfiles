@@ -1,10 +1,25 @@
 [Unit]
-Description=llama.cpp server (Qwen3-4B chat/shortcuts)
+Description=llama.cpp server (Qwen3-4B, chat/shortcuts)
+Documentation=https://github.com/ggml-org/llama.cpp
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=~/llama.cpp/build/bin/llama-server -m ~/models/Qwen3-4B-Q4_K_M.gguf --host 0.0.0.0 --port 8083 -t 4 -c 16384 -np 1 -n 512 --reasoning off
+# gen.nvim (<espacio>a) y los atajos de shell (ai/cmd/why/gitai).
+# --reasoning off: Qwen3 piensa por defecto y con max_tokens pequeño se gastaba
+# el presupuesto en el razonamiento oculto -> respuesta vacía.
+# -c 12288: el KV cache de Qwen3-4B cuesta ~144 KiB/token, o sea ~1.7 GiB aquí.
+# 16384 serían ~2.3 GiB residentes en una máquina de 16 GB que ya usa swap.
+ExecStart=~/llama.cpp/build/bin/llama-server \
+  --model ~/models/Qwen3-4B-Q4_K_M.gguf \
+  --alias qwen3-4b \
+  --host 127.0.0.1 --port 8083 \
+  --ctx-size 12288 \
+  --threads 4 \
+  --parallel 1 \
+  --n-predict 512 \
+  --jinja \
+  --reasoning off
 Restart=on-failure
 RestartSec=5
 
