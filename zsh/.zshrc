@@ -94,13 +94,22 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 [[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
 
-# alias awsl: AWS CLI con MiniStack
-alias awsl='aws --endpoint-url=http://localhost:4566'
+# AWS local: siempre usa el endpoint del contenedor y credenciales no reales.
+alias awslab='AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test aws'
+alias awsl='awslab'
 
-# alias awsp: AWS CLI con perfil de produccion
-alias awsp='aws --profile produccion'
-# alias aws-dev: alias directo sin perfil (default)
-alias aws-default='aws --profile default'
+# AWS production: elimina configuracion local antes de usar el perfil real.
+awsprod() {
+  env -u AWS_ENDPOINT_URL -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY \
+    -u AWS_SESSION_TOKEN -u AWS_SECURITY_TOKEN \
+    AWS_PROFILE="${AWS_PROD_PROFILE:-default}" aws "$@"
+}
+alias awsp='awsprod'
+
+# Terraform: los mismos comandos sirven desde cualquier repositorio.
+alias tf-local='AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test terraform'
+alias tf-prod='env -u AWS_ENDPOINT_URL -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u AWS_SESSION_TOKEN -u AWS_SECURITY_TOKEN AWS_PROFILE="${AWS_PROD_PROFILE:-default}" terraform'
+export PATH="$(npm prefix -g)/bin:$PATH"
 
 # zoxide: tu `cd` de siempre, pero recuerda a dónde sueles ir.
 # Va al final del todo porque zoxide exige inicializarse el último; si queda
