@@ -8,13 +8,16 @@ Type=simple
 # gen.nvim (<espacio>a) y los atajos de shell (ai/cmd/why/gitai).
 # --reasoning off: Qwen3 piensa por defecto y con max_tokens pequeño se gastaba
 # el presupuesto en el razonamiento oculto -> respuesta vacía.
-# -c 12288: el KV cache de Qwen3-4B cuesta ~144 KiB/token, o sea ~1.7 GiB aquí.
-# 16384 serían ~2.3 GiB residentes en una máquina de 16 GB que ya usa swap.
+# -c 4096 + KV en q8_0: el KV cache de Qwen3-4B cuesta ~144 KiB/token en f16.
+# A 12288 eran ~1.7 GiB residentes; 4096 cubre de sobra gen.nvim y los atajos
+# de shell, y cuantizar K/V a q8_0 lo vuelve a partir por la mitad.
 ExecStart=/home/jnarvaar/llama.cpp/build/bin/llama-server \
   --model /home/jnarvaar/models/Qwen3-4B-Q4_K_M.gguf \
   --alias qwen3-4b \
   --host 127.0.0.1 --port 8083 \
-  --ctx-size 12288 \
+  --ctx-size 4096 \
+  --cache-type-k q8_0 \
+  --cache-type-v q8_0 \
   --threads 4 \
   --parallel 1 \
   --n-predict 512 \
