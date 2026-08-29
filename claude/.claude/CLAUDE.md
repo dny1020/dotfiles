@@ -30,14 +30,13 @@
 - **VoIP debug order**: signaling → SDP → RTP → NAT → firewall → media path → codec
 
 ## Use These Agents
-- `voip-expert` — SIP, Kamailio, Asterisk, Genesys signaling
-- `webrtc-media` — LiveKit, SFU, ICE/STUN/TURN, media-plane issues
-- `backend` — FastAPI, PostgreSQL, API design, auth
-- `frontend` — React/TypeScript UI
-- `iac-expert` — Ansible, Terraform, Docker, homelab/RPi provisioning
+- `voip` — SIP, Kamailio, Asterisk, Genesys, LiveKit/SFU, ICE/STUN/TURN, media plane
+- `iac-expert` — Ansible, Docker Compose, WireGuard, systemd, homelab/RPi provisioning
 - `ai` — LLM pipelines, RAG, prompt engineering
 - `graph-ml` — knowledge graphs, NLP, embeddings (pgvector)
 - `architect` — system design, trade-off review, complexity control
+
+Backend and frontend work go through skills, not agents: `build-backend`, `build-react-feature`.
 
 ## Engineering Guidelines
 @AGENTS.md

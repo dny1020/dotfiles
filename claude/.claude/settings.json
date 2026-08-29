@@ -15,18 +15,14 @@
   "preferredNotifChannel": "auto",
   "autoCompactEnabled": true,
   "skipAutoPermissionPrompt": true,
-  "mcpServers": {
-    "doction": {
-      "url": "https://doction.danilocloud.me/api/mcp",
-      "headers": {
-        "Authorization": "Bearer ${env:DOCTION_MCP_TOKEN}"
-      }
-    }
-  },
   "autoMode": {
+    "soft_deny": [
+      "$defaults",
+      "Bash(terraform destroy:*) in ~/rpi/terraform — irreversible host reprovisioning",
+      "Bash(rm:*) targeting /mnt/ssd/backups/** or /mnt/usb_backup/** — backup destruction"
+    ],
     "environment": [
       "### Org-wide",
-      "**Organization**: None configured",
       "**Cloud provider(s)**: AWS (aws CLI used in shell history; no further org-wide corroboration found)",
       "**Repository visibility**: Private — dny1020/rpi_recuperation (per gh)",
       "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
@@ -49,11 +45,16 @@
       "**Trusted repo**: dny1020/rpi_recuperation (private) at ~/rpi and its origin remote",
       "**Org-specific CLIs**: None configured",
       "routine under ~/rpi/ prefix: recover.sh, sync.sh, terraform plan/apply within terraform/, docker compose operations under opt/"
-    ],
-    "soft_deny": [
-      "$defaults",
-      "Bash(terraform destroy:*) in ~/rpi/terraform — irreversible host reprovisioning",
-      "Bash(rm:*) targeting /mnt/ssd/backups/** or /mnt/usb_backup/** — backup destruction"
     ]
-  }
+  },
+  "mcpServers": {
+    "doction": {
+      "url": "https://doction.danilocloud.me/api/mcp",
+      "headers": {
+        "Authorization": "Bearer ${env:DOCTION_MCP_TOKEN}"
+      }
+    }
+  },
+  "agentPushNotifEnabled": true,
+  "inputNeededNotifEnabled": true
 }
