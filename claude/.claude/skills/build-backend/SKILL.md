@@ -41,7 +41,7 @@ Stack: **Python** (managed with `uv`), **FastAPI**, **PostgreSQL**, **Redis** wh
 
 ## Checks
 - New packages go in via `uv add <package>` (or `uv add --dev`) — never edit `pyproject.toml` dependencies by hand, never `pip install`.
-- The change isn't done until `uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest` passes — run it yourself. `pyright` is the type checker, not mypy; adapt the paths if the layout isn't `app`/`tests`.
+- The change isn't done until the Python check gate in AGENTS.md passes — run it yourself.
 
 ## Output format
 For each issue found:

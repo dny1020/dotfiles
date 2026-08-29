@@ -28,7 +28,7 @@ Stack: **APScheduler** (`BlockingScheduler`) + **SQLAlchemy/SQLite** + **HTTPX**
 
 ## Testing and checks
 - Each module is tested in isolation with `monkeypatch` — no real network calls, and no test that actually blocks on the scheduler's interval.
-- The change isn't done until `uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest` passes — run it yourself. `pyright` is the type checker, not mypy.
+- The change isn't done until the Python check gate in AGENTS.md passes — run it yourself.
 
 ## Output format
 For each issue found:

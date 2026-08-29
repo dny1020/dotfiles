@@ -35,7 +35,7 @@ Build or review the ETL pipeline and apply the following checklist. Fix every is
 - Schema/type mismatches are caught explicitly, not left to throw a generic exception deep in the transform step.
 
 ## Checks
-- The pipeline isn't done until `uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest` passes — run it yourself. `pyright` is the type checker, not mypy; adapt the paths if the project's layout isn't `app`/`tests`.
+- The pipeline isn't done until the Python check gate in AGENTS.md passes — run it yourself.
 - In pandas transforms, filter rows with `df.loc[mask]` rather than `df[mask]` — bare `[]` is ambiguous in the stubs and pyright can't type its return.
 
 ## Output format
