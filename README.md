@@ -1,46 +1,84 @@
 # Dotfiles
 
-Configuración minimalista de terminal/editor para **Debian (nativo o WSL)** y **macOS**, gestionada con **GNU Stow**. La shell (zsh) va sin frameworks; Neovim usa **lazy.nvim** con `lazy-lock.json` para reproducibilidad.
-
-`alacritty`, `zsh`, `tmux` y `nvim` son universales (mismo archivo en los tres sistemas); `i3`, `dunst`, `rofi`, `picom`, `redshift` y `libinput-gestures` son solo para el escritorio Linux/i3.
-
-## Contenido
-
-- `nvim/.config/nvim/` — Neovim con lazy.nvim: LSP completo (mason + lspconfig + nvim-cmp), resaltado por treesitter (rama `main`, desactivado en archivos >512 KB), tema Dracula y statusline (lualine). Conserva los atajos del antiguo `.vimrc` (`<leader>`=espacio: `e` explorador, `g` grep, `w` guardar, `h` quitar resaltado) y añade los de LSP (`gd`, `gr`, `K`, `<leader>rn`, `<leader>ca`, …).
-- IA local (llama.cpp, opcional — si no está, todo lo demás funciona igual):
-  - **nvim**: ghost text estilo Copilot vía minuet-ai (`qwen3-4b`, FIM). Aceptar `<A-y>`, una línea `<A-l>`, descartar `<A-e>`. Y **gen.nvim**: selecciona código y `<espacio>a` → menú (Explicar, Fix_Code, Review_Code, Chat…).
-  - **zsh** (`ai.zsh`): `ai`, `explain`, `cmd`, `why`, `gitai`, y `Ctrl+X Ctrl+A` (escribe lo que quieres en el prompt y se reemplaza por el comando; nunca auto-ejecuta).
-  - **opencode**: config mínima con `~/.claude/AGENTS.md` y `~/.claude/skills-index.md`; el modelo queda en selección automática.
-- `zsh/.zshrc` — zsh puro: completado con menú, historial compartido, `alias vim='nvim'`, arranque automático de tmux, carga de **nvm** (`~/.nvm`). Prompt con **Starship** (`zsh/.config/starship.toml`); si no está instalado, cae a un prompt nativo con rama git (`vcs_info`).
-- `zsh/.config/shell/` — `zsh-enhance.zsh` (autosuggestions + syntax-highlighting + fzf, rutas apt y brew), `tools.zsh` (reemplazos modernos como **alias** sobre el comando de siempre: `ls`→eza, `cd`→zoxide, `cat`→bat, `fd`, `tldr`) y `ai.zsh` (copiloto local con llama.cpp).
-- `tmux/` — prefijo `Ctrl+a`, divisiones que heredan el directorio, modo copia vi con portapapeles del sistema (pbcopy/xclip según SO), tema Gruvbox.
-- `alacritty/` — universal; overrides por máquina (p. ej. tamaño de fuente) en `~/.config/alacritty/local.toml` (no versionado).
-- `i3/`, `dunst/`, `rofi/`, `picom/`, `redshift/`, `libinput-gestures/` — escritorio Linux: i3 + barra (el config de `i3status` va dentro del paquete `i3`, con el mismo Gruvbox), OSD de volumen/brillo/batería (`osd.sh`), notificaciones, launcher, compositor, luz nocturna y gestos del touchpad.
-- `xresources/` — `~/.Xresources` para xterm/uxterm: fuente, 256 colores y paleta Gruvbox.
-- `opencode/` — configuración mínima del CLI: usa `opencode.json` sin fijar proveedor/modelo local, y hereda las instrucciones de Claude.
-- `claude/` — configuración global de **Claude Code**, enlazada a `~/.claude/`. Solo lo declarativo: `skills/` (build-agentic-agent, build-backend, build-react-feature, build-robot, devops, etl-pipeline, graphify, linux-best-practices, terraform-deploy, write-tests) para el trabajo del día a día, `agents/` (ai, architect, graph-ml, iac-expert, voip) solo donde compensa un contexto aparte, `AGENTS.md`, `CLAUDE.md`, `skills-index.md` (lo lee opencode) y `settings.json`. Este último **sí se versiona**: el token del MCP es una referencia `${env:DOCTION_MCP_TOKEN}`, no un literal, así que modelo, `effortLevel`, plugins y MCP se reproducen en una máquina nueva. Como Claude Code reescribe `settings.json` al cambiar ajustes con `/config`, comprueba de vez en cuando que sigue siendo enlace (`ls -l ~/.claude/settings.json`). **No versionado a propósito** (archivo real en `~/.claude/`, nunca dentro del repo): `.credentials.json`, `settings.local.json` (permisos por máquina), `projects/`, `sessions/`, `history.jsonl`, cache y demás estado en tiempo de ejecución. Antes vivía en un repo aparte (`dny1020/claude`); se centralizó aquí y se eliminó el `.git` anidado.
-- `templates/` — scaffolding de proyectos (`new.sh` + plantillas jinja: api, etl, frontend, webservice, agentic, chatbot, voicebot, robot), enlazado a `~/templates/`.
-- `bin/` — scripts personales, enlazado a `~/.bin/` (está en el `PATH` desde `.zshrc`). Ahora mismo: `vol-boost`, que alterna el volumen entre 100% y 150% y va atado a `$mod+u` en i3.
-- `packages.txt` — paquetes apt (Debian/WSL). En macOS los instala `setup_macos.sh` con brew.
+Terminal y editor minimalistas para **Debian** (nativo o WSL) y **macOS**, gestionados con **GNU Stow**.
+zsh sin frameworks, Neovim con lazy.nvim y `lazy-lock.json` para reproducibilidad, IA local opcional con llama.cpp.
 
 ## Instalación
 
 ```bash
 git clone <repo> ~/dotfiles && cd ~/dotfiles
 
-sudo bash setup_debian.sh   # Debian/WSL: apt + Neovim + stow + zsh por defecto
-bash setup_macos.sh         # macOS: brew + stow + zsh por defecto
+sudo bash setup_debian.sh   # Debian nativo o WSL
+bash setup_macos.sh         # macOS
 ```
 
-`setup_debian.sh` instala los paquetes de `packages.txt`, añade los repos externos
-necesarios (Docker, HashiCorp) e instala **Neovim** release oficial en `~/.local`
-(apt en trixie solo trae 0.10.4 y el LSP moderno requiere 0.11+). Tras stow,
-sincroniza los plugins en headless.
+Ambos instalan paquetes, aplican stow y dejan zsh por defecto. En Debian los paquetes salen de `packages.txt`, se añaden los repos de Docker y HashiCorp, y **Neovim se instala desde el release oficial en `~/.local`**: trixie solo trae 0.10.4 y el LSP moderno pide 0.11+. En macOS todo va por brew. Al final se sincronizan los plugins de Neovim en headless.
 
-> El prompt usa iconos de Nerd Font: instala una (JetBrainsMono NF) o quítalos en `starship.toml`.
+El prompt usa Nerd Font: instala JetBrainsMono NF o quita los iconos de `zsh/.config/starship.toml`.
 
-## Local (no versionado)
+## Paquetes
 
-- Secretos: `~/.zsh_secrets`
-- Ajustes por máquina: `~/.zshrc.local` (aliases/vars que solo aplican a un equipo)
-- Alacritty por máquina: `~/.config/alacritty/local.toml`
+| Paquete | Enlaza a | Contenido | Linux | macOS |
+|---|---|---|:-:|:-:|
+| `alacritty` | `~/.config/alacritty/` | Terminal. Overrides por máquina en `local.toml` | ✓ | ✓ |
+| `bin` | `~/.bin/` (en `PATH`) | `vol-boost`: alterna volumen 100%/150%, atado a `$mod+u` | ✓ | |
+| `claude` | `~/.claude/` | Config global de Claude Code (ver abajo) | ✓ | ✓ |
+| `dunst` | `~/.config/dunst/` | Notificaciones | ✓ | |
+| `git` | — | `.gitconfig` versionado pero **no enlazado** (ver abajo) | | |
+| `i3` | `~/.config/i3/` | WM, `i3status` (Gruvbox) y `osd.sh` (volumen/brillo/batería) | ✓ | |
+| `libinput-gestures` | `~/.config/` | Gestos del touchpad | ✓ | |
+| `nvim` | `~/.config/nvim/` | lazy.nvim, LSP (mason + lspconfig + nvim-cmp), treesitter (rama `main`, off en archivos >512 KB), tema **monokai**, lualine | ✓ | ✓ |
+| `opencode` | `~/.config/opencode/` | CLI sin proveedor/modelo fijo; hereda `~/.claude/AGENTS.md` y `skills-index.md` | ✓ | ✓ |
+| `pi` | `~/.config/systemd/user/` | Units de `llama-server` (ver abajo) | ✓ | |
+| `picom` | `~/.config/picom.conf` | Compositor | ✓ | |
+| `redshift` | `~/.config/redshift.conf` | Luz nocturna | ✓ | |
+| `rofi` | `~/.config/rofi/` | Launcher | ✓ | |
+| `tealdeer` | `~/.config/tealdeer/` | `tldr` con auto-update del cache | ✓ | ✓ |
+| `templates` | `~/templates/` | `new.sh` + plantillas jinja: api, etl, frontend, webservice, agentic, chatbot, voicebot, robot | ✓ | ✓ |
+| `tmux` | `~/.config/tmux/` | Prefijo `C-a`, divisiones que heredan el directorio, copia vi con portapapeles del SO, Gruvbox | ✓ | ✓ |
+| `xresources` | `~/.Xresources` | xterm/uxterm: fuente, 256 colores, Gruvbox | ✓ | |
+| `zsh` | `~/.zshrc`, `~/.config/shell/`, `~/.config/starship.toml` | zsh puro: completado con menú, historial compartido, `vim`→`nvim`, arranque de tmux, nvm. Prompt Starship con fallback a `vcs_info` | ✓ | ✓ |
+
+`setup_debian.sh` enlaza también los paquetes de escritorio en WSL, donde son inertes: no hay X.
+
+`zsh/.config/shell/` son tres archivos: `tools.zsh` (reemplazos como **alias** sobre el comando de siempre — `ls`→eza, `cd`→zoxide, `cat`→bat, `fd`, `tldr`; en Debian resuelve `batcat`/`fdfind`), `ai.zsh` (copiloto local) y `zsh-enhance.zsh` (autosuggestions, syntax-highlighting y fzf; **debe cargarse el último**).
+
+## IA local (opcional)
+
+Sin llama.cpp todo lo demás funciona igual. Dos servidores separados porque las tareas no se parecen:
+
+| Puerto | Modelo | Para qué | Unit |
+|---|---|---|---|
+| 8082 | `qwen2.5-coder-1.5b` | Solo FIM/autocompletado en Neovim (minuet-ai). Ghost text: aceptar `<A-y>`, una línea `<A-l>`, descartar `<A-e>` | `llama-server.service` |
+| 8083 | `qwen3-4b` | Chat: `gen.nvim` (`<espacio>a` sobre una selección) y los atajos de shell `ai`, `explain`, `cmd`, `why`, `gitai`, más `Ctrl+X Ctrl+A` | `llama-server-chat.service` |
+
+`qwen2.5-coder` **no hace tool-calling nativo** — emite la llamada como texto JSON en `content` — así que no sirve para agentes; solo completado. Los atajos que generan comandos los dejan en el prompt con `print -z` para revisar: **nunca se auto-ejecutan**.
+
+Ambas units se enlazan desde `pi/` y se activan con `systemctl --user enable --now llama-server llama-server-chat`. Escuchan solo en `127.0.0.1`: es un portátil que se conecta a wifis ajenas. Si otra máquina necesita `0.0.0.0`, va en un drop-in local, no en el repo. Cambia modelo o puerto de los atajos con `AI_MODEL` y `LLAMA_HOST`.
+
+## Claude Code (`claude/`)
+
+Solo lo declarativo: `AGENTS.md` (guías de ingeniería globales), `CLAUDE.md` (contexto personal), `skills-index.md` (lo lee opencode), `settings.json`, y:
+
+- `skills/` — build-agentic-agent, build-backend, build-react-feature, build-robot, devops, etl-pipeline, graphify, linux-best-practices, terraform-deploy, write-tests
+- `agents/` — ai, architect, graph-ml, iac-expert, voip. Solo donde compensa un contexto aparte
+
+`settings.json` **sí se versiona**: el token del MCP es la referencia `${env:DOCTION_MCP_TOKEN}`, no un literal, así que modelo, `effortLevel`, plugins y MCP se reproducen en una máquina nueva. Claude Code reescribe ese archivo al tocar `/config`, así que comprueba de vez en cuando que sigue siendo enlace: `ls -l ~/.claude/settings.json`.
+
+Fuera del repo a propósito (archivo real en `~/.claude/`): `.credentials.json`, `settings.local.json`, `projects/`, `sessions/`, `history.jsonl` y demás estado en tiempo de ejecución.
+
+## Local, no versionado
+
+| Archivo | Para qué |
+|---|---|
+| `~/.zsh_secrets` | Secretos |
+| `~/.zshrc.local` | Aliases y vars de una sola máquina |
+| `~/.config/alacritty/local.toml` | Tamaño de fuente y demás por equipo |
+| `~/.gitconfig` | Identidad de git (distinta según el equipo) |
+
+`git/.gitconfig` está versionado pero **ningún script lo enlaza**, y lleva una identidad distinta de la que usa esta máquina. Es intencionado mientras la identidad varíe por equipo; si algún día se unifica, añade `git` a las listas de stow de ambos scripts.
+
+## Cabos sueltos conocidos
+
+- `packages.txt` no lista el stack de escritorio (i3, dunst, rofi, picom, redshift, playerctl, wireplumber): en un Debian limpio hay que instalarlo a mano. Sin resolver porque `setup_debian.sh` usa el mismo `packages.txt` en WSL, donde arrastrar X11 no tiene sentido.
+- `.claudeignore.md` no lo lee nada — ni Claude Code ni ningún script del repo. Es vestigial.
