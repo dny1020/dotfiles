@@ -2,6 +2,7 @@
 
 ## Philosophy
 
+- Minimalism is the default everywhere: fewer decisions, less friction, less visual noise, less to maintain. When two options both work, ship the one with the smaller surface.
 - Prefer simplicity over cleverness.
 - Avoid over-engineering.
 - Deliver maintainable software.
