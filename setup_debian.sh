@@ -99,7 +99,7 @@ backup_target ".config/gtk-3.0/settings.ini"   # lxappearance/GTK lo crean como 
 as_user mkdir -p "$REAL_HOME/.config/opencode"      # solo enlaza opencode.json; runtime/node_modules fuera del repo
 as_user mkdir -p "$REAL_HOME/.config/tealdeer"      # solo enlaza config.toml; el cache vive en ~/.cache
 as_user mkdir -p "$REAL_HOME/.claude"               # solo enlaza agents/skills/AGENTS.md/CLAUDE.md; credenciales/sesiones/cache fuera del repo
-for pkg in nvim zsh tmux pi alacritty i3 dunst rofi picom gtk redshift libinput-gestures opencode tealdeer claude templates bin xresources; do
+for pkg in nvim zsh tmux pi alacritty i3 dunst rofi picom gtk pipewire redshift libinput-gestures opencode tealdeer claude templates bin xresources; do
   as_user stow -d "$SCRIPT_DIR" -t "$REAL_HOME" "$pkg"
   ok "stow $pkg"
 done
