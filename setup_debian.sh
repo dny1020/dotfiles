@@ -95,13 +95,24 @@ mkdir -p "$BACKUP_DIR"
 chown "$REAL_USER":"$REAL_USER" "$BACKUP_DIR"
 backup_target ".config/nvim"
 backup_target ".zshrc"
+backup_target ".config/gtk-3.0/settings.ini"   # lxappearance/GTK lo crean como archivo real y stow chocaria
 as_user mkdir -p "$REAL_HOME/.config/opencode"      # solo enlaza opencode.json; runtime/node_modules fuera del repo
 as_user mkdir -p "$REAL_HOME/.config/tealdeer"      # solo enlaza config.toml; el cache vive en ~/.cache
 as_user mkdir -p "$REAL_HOME/.claude"               # solo enlaza agents/skills/AGENTS.md/CLAUDE.md; credenciales/sesiones/cache fuera del repo
-for pkg in nvim zsh tmux pi alacritty i3 dunst rofi picom redshift libinput-gestures opencode tealdeer claude templates bin xresources; do
+for pkg in nvim zsh tmux pi alacritty i3 dunst rofi picom gtk redshift libinput-gestures opencode tealdeer claude templates bin xresources; do
   as_user stow -d "$SCRIPT_DIR" -t "$REAL_HOME" "$pkg"
   ok "stow $pkg"
 done
+
+# Tema de iconos con carpetas Gruvbox. Se genera en ~/.local a partir de las
+# variantes que ya trae papirus-icon-theme: sin sudo y sin descargar nada.
+if [ -d /usr/share/icons/Papirus-Dark ]; then
+  as_user "$REAL_HOME/.bin/papirus-recolor" >/dev/null 2>&1 &&
+    ok "tema de iconos Papirus-Gruvbox generado" ||
+    skip "no se pudo generar Papirus-Gruvbox"
+else
+  skip "papirus-icon-theme no instalado, se omite Papirus-Gruvbox"
+fi
 
 # Semilla del cache de tldr (sin esto el primer `tldr` falla pidiendo --update).
 if command -v tldr >/dev/null 2>&1; then

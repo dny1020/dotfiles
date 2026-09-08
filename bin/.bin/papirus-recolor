@@ -1,0 +1,48 @@
+#!/bin/sh
+# Recolorea las carpetas de Papirus-Dark sin tocar /usr ni pedir sudo.
+#
+# Papirus ya trae todas las variantes de color dentro del paquete de Debian
+# (folder-yellow-*.svg, folder-brown-*.svg, ...). Lo unico que hace falta es
+# un tema propio en ~/.local que herede de Papirus-Dark y reapunte los
+# nombres genericos (folder.svg, folder-documents.svg, ...) a la variante
+# elegida. Eso es exactamente lo que hace el script papirus-folders de
+# upstream, que no esta empaquetado, pero a nivel de usuario.
+#
+# Uso: papirus-recolor [color]   (por defecto: yellow, el mas cercano a Gruvbox)
+set -eu
+
+color=${1:-yellow}
+src=/usr/share/icons/Papirus-Dark
+dst="$HOME/.local/share/icons/Papirus-Gruvbox"
+
+[ -d "$src" ] || { echo "falta $src: instala papirus-icon-theme" >&2; exit 1; }
+ls "$src"/64x64/places/folder-"$color".svg >/dev/null 2>&1 ||
+    { echo "Papirus no trae el color '$color'" >&2; exit 1; }
+
+rm -rf "$dst"
+mkdir -p "$dst"
+
+# index.theme heredado: lo que no se sobreescriba cae en Papirus-Dark.
+sed -e 's/^Name=.*/Name=Papirus-Gruvbox/' \
+    -e 's/^Comment=.*/Comment=Papirus-Dark con carpetas Gruvbox/' \
+    -e "s/^Inherits=.*/Inherits=Papirus-Dark,breeze-dark,hicolor/" \
+    "$src/index.theme" > "$dst/index.theme"
+
+n=0
+for dir in "$src"/*/places; do
+    [ -d "$dir" ] || continue
+    size=$(basename "$(dirname "$dir")")
+    for f in "$dir"/folder-"$color"*.svg; do
+        [ -e "$f" ] || continue
+        base=$(basename "$f")
+        # folder-yellow.svg -> folder.svg ; folder-yellow-docs.svg -> folder-docs.svg
+        link=$(printf '%s' "$base" | sed "s/^folder-$color/folder/")
+        mkdir -p "$dst/$size/places"
+        ln -sf "$(readlink -f "$f")" "$dst/$size/places/$link"
+        n=$((n + 1))
+    done
+done
+
+gtk-update-icon-cache -q -f "$dst" 2>/dev/null || true
+echo "Papirus-Gruvbox generado: $n iconos en $dst"
+echo "Activalo con gtk-icon-theme-name=Papirus-Gruvbox en gtk-3.0/settings.ini"

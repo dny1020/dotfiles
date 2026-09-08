@@ -21,7 +21,7 @@ font pango:JetBrainsMono Nerd Font 10
 
 # Colores de ventana (Gruvbox dark, sin azul)
 # class                 border  backgr. text    indicator child_border
-client.focused          #1d2021 #1d2021 #ebdbb2 #d79921   #1d2021
+client.focused          #d79921 #1d2021 #ebdbb2 #d79921   #d79921
 client.focused_inactive #3c3836 #3c3836 #a89984 #3c3836   #3c3836
 client.unfocused        #504945 #504945 #928374 #504945   #504945
 client.urgent           #cc241d #cc241d #ebdbb2 #cc241d   #cc241d
@@ -43,7 +43,7 @@ exec --no-startup-id dex --autostart --environment i3
 
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
 # screen before suspend. Use loginctl lock-session to lock your screen.
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork -c 1d2021
+exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/.bin/lock
 
 # NetworkManager: applet GTK desactivado (sin icono en la barra).
 # Gestiona la red desde terminal con:  nmtui   (o:  nmcli dev wifi)
@@ -116,8 +116,8 @@ bindsym Print exec --no-startup-id flameshot gui
 bindsym Ctrl+Print exec --no-startup-id flameshot full -c
 bindsym Shift+Print exec --no-startup-id flameshot screen -c
 
-# Bloquear pantalla manualmente -> i3lock (solo pide contraseña, sin greeter)
-bindsym $mod+Shift+x exec --no-startup-id i3lock -c 1d2021
+# Bloquear pantalla manualmente -> ~/.bin/lock (i3lock con el wallpaper difuminado)
+bindsym $mod+Shift+x exec --no-startup-id ~/.bin/lock
 
 # Activar/desactivar luz nocturna (redshift) al instante
 bindsym $mod+Shift+n exec --no-startup-id "pkill -x redshift && redshift -x || redshift"
@@ -249,21 +249,28 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
+        # --transparency habilita colores RGBA (#rrggbbaa) en la barra.
+        # El difuminado del fondo lo pone picom (blur) -> ~/.config/picom.conf
+        i3bar_command i3bar --transparency
         font pango:JetBrainsMono Nerd Font 11
         status_command i3status
+        tray_output none
+        separator_symbol "·"
+        workspace_min_width 26
+        padding 2px 8px
 
         # Colores acorde a rofi (Super+D) y a las ventanas: Gruvbox dark + amarillo opaco.
         # Paleta tomada de ~/.config/rofi/config.rasi (bg/bg-sel/fg/fg-dim/accent).
         colors {
-                background #1d2021
+                background #1d2021b3
                 statusline #d79921
-                separator  #928374
+                separator  #504945
 
-                #                  borde    fondo    texto
-                focused_workspace  #d79921  #3c3836  #d79921
-                active_workspace   #3c3836  #3c3836  #928374
-                inactive_workspace #1d2021  #1d2021  #928374
-                urgent_workspace   #cc241d  #cc241d  #1d2021
-                binding_mode       #d79921  #3c3836  #d79921
+                #                  borde      fondo      texto
+                focused_workspace  #d79921    #d7992133  #d79921
+                active_workspace   #3c383600  #3c383699  #928374
+                inactive_workspace #1d202100  #1d202100  #928374
+                urgent_workspace   #cc241d    #cc241dcc  #1d2021
+                binding_mode       #d79921    #d7992133  #d79921
         }
 }

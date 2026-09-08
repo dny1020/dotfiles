@@ -15,12 +15,17 @@ configuration {
     fg-dim:  #928374;
     accent:  #d79921;
 
-    background-color: @bg;
+    /* Solo la ventana lleva alfa. Si cada capa la llevara, las opacidades
+       se acumularian y el centro acabaria casi opaco. Sube o baja el ultimo
+       par hex (cc = 80%) para ajustar el difuminado. */
+    bg-trans: #1d2021cc;
+
+    background-color: transparent;
     text-color: @fg;
 }
 
 window {
-    background-color: @bg;
+    background-color: @bg-trans;
     border: 1px;
     border-color: @bg-sel;
     width: 600px;
@@ -28,45 +33,45 @@ window {
 }
 
 mainbox {
-    background-color: @bg;
+    background-color: transparent;
     padding: 8px;
     spacing: 6px;
 }
 
 inputbar {
-    background-color: @bg;
+    background-color: transparent;
     text-color: @fg;
     padding: 6px 8px;
     spacing: 6px;
     children: [ prompt, entry ];
 }
 
-prompt { background-color: @bg; text-color: @accent; }
-entry  { background-color: @bg; text-color: @fg; placeholder: ""; }
+prompt { background-color: transparent; text-color: @accent; }
+entry  { background-color: transparent; text-color: @fg; placeholder: ""; }
 
 listview {
-    background-color: @bg;
+    background-color: transparent;
     lines: 10;
     columns: 1;
     scrollbar: false;
     spacing: 0px;
 }
 
-element { background-color: @bg; text-color: @fg; padding: 5px 8px; }
+element { background-color: transparent; text-color: @fg; padding: 5px 8px; }
 
 /* Todos los estados en oscuro (esto arregla el "blanco" de las apps abiertas) */
-element normal.normal     { background-color: @bg;     text-color: @fg; }
-element alternate.normal  { background-color: @bg;     text-color: @fg; }
-element normal.active     { background-color: @bg;     text-color: @fg-dim; }
-element alternate.active  { background-color: @bg;     text-color: @fg-dim; }
-element normal.urgent     { background-color: @bg;     text-color: @fg; }
-element alternate.urgent  { background-color: @bg;     text-color: @fg; }
+element normal.normal     { background-color: transparent;     text-color: @fg; }
+element alternate.normal  { background-color: transparent;     text-color: @fg; }
+element normal.active     { background-color: transparent;     text-color: @fg-dim; }
+element alternate.active  { background-color: transparent;     text-color: @fg-dim; }
+element normal.urgent     { background-color: transparent;     text-color: @fg; }
+element alternate.urgent  { background-color: transparent;     text-color: @fg; }
 element selected.normal   { background-color: @bg-sel; text-color: @accent; }
 element selected.active   { background-color: @bg-sel; text-color: @accent; }
 element selected.urgent   { background-color: @bg-sel; text-color: @accent; }
 
 element-text { background-color: inherit; text-color: inherit; }
 
-mode-switcher { background-color: @bg; spacing: 0; }
-button          { background-color: @bg;     text-color: @fg-dim; padding: 4px; }
+mode-switcher { background-color: transparent; spacing: 0; }
+button          { background-color: transparent; text-color: @fg-dim; padding: 4px; }
 button selected { background-color: @bg-sel; text-color: @accent; }

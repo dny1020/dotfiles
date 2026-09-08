@@ -21,16 +21,17 @@ El prompt usa Nerd Font: instala JetBrainsMono NF o quita los iconos de `zsh/.co
 | Paquete | Enlaza a | Contenido | Linux | macOS |
 |---|---|---|:-:|:-:|
 | `alacritty` | `~/.config/alacritty/` | Terminal. Overrides por máquina en `local.toml` | ✓ | ✓ |
-| `bin` | `~/.bin/` (en `PATH`) | `vol-boost`: alterna volumen 100%/150%, atado a `$mod+u` | ✓ | |
+| `bin` | `~/.bin/` (en `PATH`) | `vol-boost` (volumen 100%/150%, `$mod+u`), `lock` (i3lock con el wallpaper difuminado), `papirus-recolor` (carpetas Gruvbox sin sudo) | ✓ | |
 | `claude` | `~/.claude/` | Config global de Claude Code (ver abajo) | ✓ | ✓ |
 | `dunst` | `~/.config/dunst/` | Notificaciones | ✓ | |
 | `git` | — | `.gitconfig` versionado pero **no enlazado** (ver abajo) | | |
+| `gtk` | `~/.config/gtk-3.0/` | Adwaita-dark repintado a Gruvbox por CSS + iconos Papirus. Afecta a PCManFM y a los diálogos de Firefox | ✓ | |
 | `i3` | `~/.config/i3/` | WM, `i3status` (Gruvbox) y `osd.sh` (volumen/brillo/batería) | ✓ | |
 | `libinput-gestures` | `~/.config/` | Gestos del touchpad | ✓ | |
-| `nvim` | `~/.config/nvim/` | lazy.nvim, LSP (mason + lspconfig + nvim-cmp), treesitter (rama `main`, off en archivos >512 KB), tema **monokai**, lualine | ✓ | ✓ |
+| `nvim` | `~/.config/nvim/` | lazy.nvim, LSP (mason + lspconfig + nvim-cmp), treesitter (rama `main`, off en archivos >512 KB), tema **gruvbox** (dark hard), lualine | ✓ | ✓ |
 | `opencode` | `~/.config/opencode/` | CLI sin proveedor/modelo fijo; hereda `~/.claude/AGENTS.md` y `skills-index.md` | ✓ | ✓ |
 | `pi` | `~/.config/systemd/user/` | Units de `llama-server` (ver abajo) | ✓ | |
-| `picom` | `~/.config/picom.conf` | Compositor | ✓ | |
+| `picom` | `~/.config/picom.conf` | Compositor: sin tearing, sombras y blur `dual_kawase` | ✓ | |
 | `redshift` | `~/.config/redshift.conf` | Luz nocturna | ✓ | |
 | `rofi` | `~/.config/rofi/` | Launcher | ✓ | |
 | `tealdeer` | `~/.config/tealdeer/` | `tldr` con auto-update del cache | ✓ | ✓ |
@@ -40,6 +41,16 @@ El prompt usa Nerd Font: instala JetBrainsMono NF o quita los iconos de `zsh/.co
 | `zsh` | `~/.zshrc`, `~/.config/shell/`, `~/.config/starship.toml` | zsh puro: completado con menú, historial compartido, `vim`→`nvim`, arranque de tmux, nvm. Prompt Starship con fallback a `vcs_info` | ✓ | ✓ |
 
 `setup_debian.sh` enlaza también los paquetes de escritorio en WSL, donde son inertes: no hay X.
+
+## Tema
+
+Todo lo visual comparte una paleta Gruvbox dark hard: fondo `#1d2021`, acento `#d79921`. La comparten i3bar, rofi, dunst, alacritty, tmux, xterm, GTK y el tema de VS Code, que viaja por Settings Sync y no por este repo.
+
+El cristal esmerilado lo pone picom con `blur-background`: cada programa solo declara su propio alfa y picom difumina lo que quede detrás. Por eso lo tienen i3bar, rofi, dunst y alacritty, y **no** VS Code, Firefox ni PCManFM, que abren su ventana sin canal alfa. Forzarlo con una regla de opacidad de picom volvería translúcido también el texto, no solo el fondo.
+
+En GTK los `@define-color` no bastan: desde 3.20 Adwaita compila sus colores como literales, así que `gtk/.config/gtk-3.0/gtk.css` lleva reglas explícitas por widget. `bin/.bin/papirus-recolor` genera `~/.local/share/icons/Papirus-Gruvbox` reapuntando las carpetas a las variantes amarillas que **ya trae** `papirus-icon-theme`, sin sudo ni descargas. No se versiona porque son enlaces a rutas del sistema; lo regenera `setup_debian.sh`.
+
+Esta máquina no usa gestor de sesión: lightdm está enmascarado, `getty@tty1` autologuea y `.zprofile` lanza `startx`. El bloqueo manual es `$mod+Shift+x` → `~/.bin/lock`.
 
 `zsh/.config/shell/` son tres archivos: `tools.zsh` (reemplazos como **alias** sobre el comando de siempre — `ls`→eza, `cd`→zoxide, `cat`→bat, `fd`, `tldr`; en Debian resuelve `batcat`/`fdfind`), `ai.zsh` (copiloto local) y `zsh-enhance.zsh` (autosuggestions, syntax-highlighting y fzf; **debe cargarse el último**).
 
@@ -80,5 +91,5 @@ Fuera del repo a propósito (archivo real en `~/.claude/`): `.credentials.json`,
 
 ## Cabos sueltos conocidos
 
-- `packages.txt` no lista el stack de escritorio (i3, dunst, rofi, picom, redshift, playerctl, wireplumber): en un Debian limpio hay que instalarlo a mano. Sin resolver porque `setup_debian.sh` usa el mismo `packages.txt` en WSL, donde arrastrar X11 no tiene sentido.
+- `packages.txt` no lista el stack de escritorio (i3, dunst, rofi, picom, redshift, playerctl, wireplumber, papirus-icon-theme): en un Debian limpio hay que instalarlo a mano. Sin resolver porque `setup_debian.sh` usa el mismo `packages.txt` en WSL, donde arrastrar X11 no tiene sentido.
 - `.claudeignore.md` no lo lee nada — ni Claude Code ni ningún script del repo. Es vestigial.

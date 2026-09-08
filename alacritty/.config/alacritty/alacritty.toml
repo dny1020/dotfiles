@@ -11,7 +11,7 @@ import = ["~/.config/alacritty/local.toml"]
 
 [window]
 padding = { x = 6, y = 6 }
-opacity = 1.0
+opacity = 0.92
 dynamic_title = true
 
 [font]
@@ -30,3 +30,38 @@ save_to_clipboard = true
 
 [cursor]
 style = { shape = "Block", blinking = "On" }
+
+# Paleta Gruvbox dark. Los 16 ANSI son los mismos valores que ~/.Xresources,
+# asi que xterm y alacritty pintan igual. El fondo es #1d2021 (bg0_hard),
+# el mismo que i3bar, rofi y el tema de VS Code.
+[colors.primary]
+background = "#1d2021"
+foreground = "#ebdbb2"
+
+[colors.cursor]
+text   = "#1d2021"
+cursor = "#d79921"
+
+[colors.selection]
+background = "#3c3836"
+text       = "#ebdbb2"
+
+[colors.normal]
+black   = "#282828"
+red     = "#cc241d"
+green   = "#98971a"
+yellow  = "#d79921"
+blue    = "#458588"
+magenta = "#b16286"
+cyan    = "#689d6a"
+white   = "#a89984"
+
+[colors.bright]
+black   = "#928374"
+red     = "#fb4934"
+green   = "#b8bb26"
+yellow  = "#fabd2f"
+blue    = "#83a598"
+magenta = "#d3869b"
+cyan    = "#8ec07c"
+white   = "#ebdbb2"

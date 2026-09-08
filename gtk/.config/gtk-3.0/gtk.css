@@ -1,0 +1,78 @@
+/* Gruvbox dark sobre Adwaita-dark.
+   Mismos hexes que i3bar, rofi, dunst, alacritty, tmux y VS Code.
+   Afecta a PCManFM, a los dialogos de abrir/guardar de Firefox y a
+   cualquier otra ventana GTK3.
+
+   Los @define-color de abajo NO bastan por si solos: desde GTK 3.20 Adwaita
+   compila sus colores como literales en el CSS en vez de referenciar estos
+   nombres, asi que el azul de seleccion sobrevive. Se quedan porque algunas
+   apps GTK si los respetan. Lo que de verdad pinta es el bloque de reglas
+   explicitas que viene despues. */
+
+@define-color theme_bg_color   #282828;
+@define-color theme_base_color #1d2021;
+@define-color theme_fg_color   #ebdbb2;
+@define-color theme_text_color #ebdbb2;
+@define-color theme_selected_bg_color #d79921;
+@define-color theme_selected_fg_color #1d2021;
+@define-color insensitive_fg_color #928374;
+@define-color borders #3c3836;
+@define-color warning_color #fe8019;
+@define-color error_color   #cc241d;
+@define-color success_color #98971a;
+
+/* ── Fondos ──────────────────────────────────────────────────────────── */
+window, dialog, .background, popover, menu, .menu {
+    background-color: #282828;
+    color: #ebdbb2;
+}
+
+/* Zonas de contenido: listas, arboles, iconos, texto */
+treeview.view, iconview, textview, textview text, .view, list, list row,
+scrolledwindow, viewport, .frame, notebook > stack {
+    background-color: #1d2021;
+    color: #ebdbb2;
+}
+
+menubar, headerbar, toolbar, .toolbar, statusbar, notebook header {
+    background-color: #1d2021;
+    color: #ebdbb2;
+    border-color: #3c3836;
+}
+
+statusbar { color: #a89984; }
+
+/* ── Seleccion: aqui vivia el azul de Adwaita ────────────────────────── */
+*:selected, *:selected:focus, selection,
+treeview.view:selected, iconview:selected, list row:selected,
+menuitem:hover, modelbutton:hover {
+    background-color: #d79921;
+    color: #1d2021;
+}
+
+/* ── Controles ───────────────────────────────────────────────────────── */
+button {
+    background-image: none;
+    background-color: #3c3836;
+    color: #ebdbb2;
+    border-color: #504945;
+}
+button:hover  { background-color: #504945; }
+button:active, button:checked { background-color: #d79921; color: #1d2021; }
+button:disabled { background-color: #32302f; color: #928374; }
+
+entry, spinbutton, combobox button {
+    background-image: none;
+    background-color: #1d2021;
+    color: #ebdbb2;
+    border-color: #3c3836;
+}
+entry:focus { border-color: #d79921; }
+
+scrollbar { background-color: #282828; border-color: #3c3836; }
+scrollbar slider { background-color: #504945; }
+scrollbar slider:hover { background-color: #665c54; }
+
+tooltip, tooltip.background { background-color: #3c3836; color: #ebdbb2; }
+
+*:link, *:visited { color: #d79921; }
