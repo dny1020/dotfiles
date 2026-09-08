@@ -16,7 +16,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   spec = { { import = "plugins" } }, -- carga todo lua/plugins/*.lua
-  install = { colorscheme = { "dracula" } },
+  install = { colorscheme = { "gruvbox" } },
   checker = { enabled = false }, -- sin chequeo automático de updates (reproducible vía lockfile)
   change_detection = { notify = false },
 })

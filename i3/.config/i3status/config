@@ -1,6 +1,5 @@
-# ~/.config/i3status/config — themed (Gruvbox dark + amarillo opaco), acorde a rofi/barra.
-# Mismos módulos que el default de Debian; SOLO cambian los colores.
-# i3status lo lee automáticamente desde aquí (XDG), antes que /etc/i3status.conf.
+# ~/.config/i3status/config — Gruvbox dark + amarillo opaco, acorde a rofi/barra.
+# Iconos Material Design de JetBrainsMono Nerd Font. El separador "·" lo pinta i3bar.
 
 general {
         colors = true
@@ -10,7 +9,7 @@ general {
         color_bad      = "#cc241d"   # crítico    -> rojo
 }
 
-order += "ipv6"
+order += "volume master"
 order += "wireless _first_"
 order += "ethernet _first_"
 order += "battery all"
@@ -19,34 +18,61 @@ order += "load"
 order += "memory"
 order += "tztime local"
 
-wireless _first_ {
-        format_up = "W: (%quality at %essid) %ip"
-        format_down = "W: down"
+volume master {
+        format = "󰕾 %volume"
+        format_muted = "󰖁 %volume"
+        device = "pulse"
+        min_width = "󰕾 100%"
+        align = "left"
 }
 
+wireless _first_ {
+        format_up = "󰖩 %essid%quality"
+        format_down = "󰖪"
+}
+
+# Sin cable no imprime nada. separator/separator_block_width a 0 evitan
+# que el bloque vacio deje un "·" y un hueco sueltos en la barra.
 ethernet _first_ {
-        format_up = "E: %ip (%speed)"
-        format_down = "E: down"
+        format_up = "󰈀 %ip"
+        format_down = ""
+        separator = false
+        separator_block_width = 0
 }
 
 battery all {
         format = "%status %percentage %remaining"
+        format_percentage = "%.00f%s"
+        status_chr  = "󰂄"
+        status_bat  = "󰁹"
+        status_unk  = "󰂑"
+        status_full = "󰁹"
+        low_threshold = 15
+        threshold_type = percentage
+        min_width = "󰂄 100% 00:00"
+        align = "left"
 }
 
 disk "/" {
-        format = "%avail"
+        format = "󰋊 %avail"
+        low_threshold = 10
+        threshold_type = percentage_avail
 }
 
 load {
-        format = "%1min"
+        format = "󰘚 %1min"
+        min_width = "󰘚 00.00"
+        align = "left"
 }
 
 memory {
-        format = "%used | %available"
+        format = "󰍛 %used"
+        format_degraded = "󰍛 %used (%available)"
         threshold_degraded = "1G"
-        format_degraded = "MEMORY < %available"
+        min_width = "󰍛 00.0 GiB"
+        align = "left"
 }
 
 tztime local {
-        format = "%Y-%m-%d %H:%M:%S"
+        format = "󰅐 %Y-%m-%d %H:%M"
 }

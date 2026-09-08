@@ -1,0 +1,27 @@
+#!/bin/sh
+# Bloquea la pantalla con el wallpaper difuminado en vez de un color plano.
+# i3lock 2.15 solo acepta PNG y no escala la imagen, asi que se genera al
+# tamano exacto de la pantalla y se cachea hasta que cambie el wallpaper.
+#
+# Nada aqui puede impedir el bloqueo: si falta el wallpaper, falla ffmpeg o
+# cambia la resolucion, se cae al bloqueo con color plano. Dejar la pantalla
+# sin bloquear no es una opcion.
+set -u
+
+wall="$HOME/.config/i3/wallpaper.jpg"
+img="$HOME/.cache/i3lock-bg.png"
+
+if [ -f "$wall" ] && { [ ! -f "$img" ] || [ "$wall" -nt "$img" ]; }; then
+    res=$(xrandr 2>/dev/null | awk '/\*/ {print $1; exit}')
+    if [ -n "$res" ]; then
+        mkdir -p "$(dirname "$img")"
+        ffmpeg -loglevel error -y -i "$wall" -vf \
+"scale=${res%x*}:${res#*x}:force_original_aspect_ratio=increase,crop=${res%x*}:${res#*x},boxblur=8:1,eq=brightness=-0.15" \
+            "$img" || rm -f "$img"
+    fi
+fi
+
+# -e ignora Enter en vacio, -f muestra el numero de intentos fallidos.
+# -c pinta el resto si la resolucion cambio desde que se cacheo la imagen.
+[ -f "$img" ] && exec i3lock --nofork -i "$img" -e -f -c 1d2021
+exec i3lock --nofork -e -f -c 1d2021
