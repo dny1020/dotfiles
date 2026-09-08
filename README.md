@@ -32,6 +32,7 @@ El prompt usa Nerd Font: instala JetBrainsMono NF o quita los iconos de `zsh/.co
 | `opencode` | `~/.config/opencode/` | CLI sin proveedor/modelo fijo; hereda `~/.claude/AGENTS.md` y `skills-index.md` | ✓ | ✓ |
 | `pi` | `~/.config/systemd/user/` | Units de `llama-server` (ver abajo) | ✓ | |
 | `picom` | `~/.config/picom.conf` | Compositor: sin tearing, sombras y blur `dual_kawase` | ✓ | |
+| `pipewire` | `~/.config/pipewire/`, `~/.config/wireplumber/` | Cancelación de eco para llamadas y Bluetooth fijado en A2DP | ✓ | |
 | `redshift` | `~/.config/redshift.conf` | Luz nocturna | ✓ | |
 | `rofi` | `~/.config/rofi/` | Launcher | ✓ | |
 | `tealdeer` | `~/.config/tealdeer/` | `tldr` con auto-update del cache | ✓ | ✓ |
@@ -51,6 +52,16 @@ El cristal esmerilado lo pone picom con `blur-background`: cada programa solo de
 En GTK los `@define-color` no bastan: desde 3.20 Adwaita compila sus colores como literales, así que `gtk/.config/gtk-3.0/gtk.css` lleva reglas explícitas por widget. `bin/.bin/papirus-recolor` genera `~/.local/share/icons/Papirus-Gruvbox` reapuntando las carpetas a las variantes amarillas que **ya trae** `papirus-icon-theme`, sin sudo ni descargas. No se versiona porque son enlaces a rutas del sistema; lo regenera `setup_debian.sh`.
 
 Esta máquina no usa gestor de sesión: lightdm está enmascarado, `getty@tty1` autologuea y `.zprofile` lanza `startx`. El bloqueo manual es `$mod+Shift+x` → `~/.bin/lock`.
+
+## Audio
+
+PipeWire con compatibilidad PulseAudio; el PulseAudio clásico no está instalado. Firefox decodifica con el `ffmpeg` del sistema (sin él no hay H.264 ni AAC), Chrome trae los suyos compilados.
+
+`99-echo-cancel.conf` carga `libpipewire-module-echo-cancel`, que Debian instala pero WirePlumber no activa. Va en `monitor.mode`, así que usa el monitor de la salida actual como referencia en vez de crear un sink virtual: solo hay que elegir la fuente **Micro (eco cancelado)**, y la salida puede cambiar libremente sin reconfigurar nada.
+
+`51-bluetooth.conf` desactiva `bluetooth.autoswitch-to-headset-profile`. Bluetooth no puede dar estéreo de calidad y micrófono a la vez: A2DP es solo salida y al abrir el micro el auricular cae a HFP, mono y de banda estrecha. Con el autoswitch apagado los auriculares se quedan en A2DP y el micro sale del portátil, ya con cancelación de eco. **Contrapartida: el micrófono del auricular deja de ofrecerse**; para recuperarlo hay que cambiar el perfil a mano con `pactl set-card-profile`.
+
+Bluetooth tiene SBC, aptX, LDAC, LC3 y Opus, pero **no AAC**: `fdk-aac` es non-free en Debian. Solo afecta a auriculares Apple, que caen a SBC.
 
 `zsh/.config/shell/` son tres archivos: `tools.zsh` (reemplazos como **alias** sobre el comando de siempre — `ls`→eza, `cd`→zoxide, `cat`→bat, `fd`, `tldr`; en Debian resuelve `batcat`/`fdfind`), `ai.zsh` (copiloto local) y `zsh-enhance.zsh` (autosuggestions, syntax-highlighting y fzf; **debe cargarse el último**).
 
