@@ -6,7 +6,7 @@ description: "LangGraph tool-calling agents (the `templates/agentic`/`chatbot`/`
 <skill>
 Build or review the agentic feature and apply the following checklist. Fix every issue found and explain each change in one line.
 
-Stack: **FastAPI** + **LangGraph** + **llama.cpp** (OpenAI-compatible API), managed with **`uv`**; MCP exposure and local RAG (`sentence-transformers` + Chroma) are opt-in per project. Style rules live in AGENTS.md and already apply.
+Stack: **FastAPI** + **LangGraph** + **llama.cpp** (OpenAI-compatible API), managed with **`uv`**; MCP exposure, local RAG (`sentence-transformers` + Chroma), and Langfuse tracing are opt-in per project. Style rules live in AGENTS.md and already apply.
 
 ## Graph and tools
 - Tools are plain functions in `tools.py`, not classes or a tool-registry abstraction — LangGraph and MCP both call the same function.
