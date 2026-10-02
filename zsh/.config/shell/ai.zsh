@@ -8,9 +8,14 @@
 
 : ${AI_MODEL:=qwen2.5-coder-1.5b}
 # El llama-server directo en WSL2 no escucha en loopback; se usa la IP real.
-: ${LLAMA_HOST:=http://$(hostname -I | awk '{print $1}'):8082}
-# Si alguien exportó 127.0.0.1 manualmente, lo corregimos:
-[[ "$LLAMA_HOST" == *127.0.0.1* ]] && LLAMA_HOST="http://$(hostname -I | awk '{print $1}'):8082"
+# Fuera de WSL escucha solo en 127.0.0.1 (ver llama-server.service).
+if [[ -n "$WSL_DISTRO_NAME" ]]; then
+  : ${LLAMA_HOST:=http://$(hostname -I | awk '{print $1}'):8082}
+  # Si alguien exportó 127.0.0.1 manualmente, lo corregimos:
+  [[ "$LLAMA_HOST" == *127.0.0.1* ]] && LLAMA_HOST="http://$(hostname -I | awk '{print $1}'):8082"
+else
+  : ${LLAMA_HOST:=http://127.0.0.1:8082}
+fi
 
 if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s --max-time 3 "$LLAMA_HOST/v1/models" >/dev/null 2>&1; then
 
