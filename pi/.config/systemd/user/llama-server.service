@@ -1,12 +1,16 @@
 [Unit]
-Description=llama.cpp server (Qwen2.5-Coder-1.5B)
+Description=llama.cpp server (Qwen2.5-Coder-1.5B-Instruct)
 After=network.target
 
 [Service]
 Type=simple
-# -fa on + --cache-reuse: el FIM de las extensiones reenvía el mismo contexto (ring)
-# en cada pulsación; con cache-reuse el server hace KV-shift en vez de reprocesarlo.
-ExecStart=~/llama.cpp/build/bin/llama-server -m ~/models/Qwen2.5-Coder-1.5B-Instruct-Q4_K_M.gguf --host 0.0.0.0 --port 8082 -t 4 -c 16384 -np 1 -n 512 -fa on -b 2048 -ub 1024 --cache-reuse 256
+# Servidor unico: FIM/autocompletado (nvim minuet, llama-vscode) y chat/acciones
+# (gen.nvim, helpers de zsh, apps locales de prueba). Qwen2.5-Coder-1.5B hace FIM
+# nativo y sirve de instruct decente; se cambio desde el 7B por RAM/velocidad
+# en este WSL de 20GB (el 7B iba a ~3-4 tok/s y era pesado en memoria).
+# -fa on + --cache-reuse: las extensiones reenvian el mismo contexto (ring) en
+# cada pulsacion; con cache-reuse el server hace KV-shift en vez de reprocesarlo.
+ExecStart=~/llama.cpp/build/bin/llama-server -m ~/models/Qwen2.5-Coder-1.5B-Instruct-Q4_K_M.gguf --host 0.0.0.0 --port 8082 -t 8 -c 16384 -np 1 -n 768 -fa on -b 2048 -ub 512 --cache-reuse 256
 Restart=on-failure
 RestartSec=5
 
