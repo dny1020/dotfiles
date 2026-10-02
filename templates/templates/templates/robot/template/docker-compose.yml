@@ -1,8 +1,0 @@
-services:
-  robot:
-    build: .
-    env_file: .env
-    volumes:
-      - ./logs:/app/logs
-      - ./data:/app/data
-    restart: unless-stopped
