@@ -12,3 +12,6 @@
 !agents/**
 !skills/
 !skills/**
+
+# Skills synced from claude.ai: Claude Code manages them at runtime (lands here via the ~/.claude/skills symlink).
+skills/synced/
