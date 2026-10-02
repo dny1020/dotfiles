@@ -5,7 +5,8 @@
   "model": "opus",
   "disableClaudeAiConnectors": true,
   "enabledPlugins": {
-    "pyright-lsp@claude-plugins-official": true
+    "pyright-lsp@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true
   },
   "effortLevel": "high",
   "awaySummaryEnabled": false,
@@ -14,6 +15,8 @@
   "editorMode": "vim",
   "preferredNotifChannel": "auto",
   "autoCompactEnabled": true,
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "autoMode": {
     "soft_deny": [
@@ -54,7 +57,5 @@
         "Authorization": "Bearer ${env:DOCTION_MCP_TOKEN}"
       }
     }
-  },
-  "agentPushNotifEnabled": true,
-  "inputNeededNotifEnabled": true
+  }
 }

@@ -195,7 +195,7 @@ General
 
 Every project repository has, at minimum:
 
-- **`CLAUDE.md`** — project-specific facts only: build/run/test commands, architecture, naming conventions, gotchas. Global rules in this file already load automatically every session — don't repeat them here.
+- **`CLAUDE.md`** — project-specific facts only: build/run/test commands, architecture, naming conventions, gotchas. Global rules in this file already load automatically every session — don't repeat them here. It is a **local, gitignored** file, never committed: add it to `.gitignore` and `.dockerignore` when setting up the repo.
 - **`SPEC.md`** — the design/spec doc for that project: problem statement, chosen approach, key decisions and why. Write it before large changes; update it when the approach changes.
 
 Agents and skills are global (`~/.claude/agents/`, `~/.claude/skills/`) and apply to every project automatically. Don't redefine or duplicate them per repo — only add a project-local agent/skill for something genuinely specific to that codebase that doesn't belong globally.

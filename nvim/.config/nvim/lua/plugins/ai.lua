@@ -13,7 +13,7 @@ return {
     require("minuet").setup({
       provider = "openai_fim_compatible",
       n_completions = 1, -- una sola sugerencia: el modelo local va más fluido
-      -- Contexto enviado al modelo (tokens). El servidor FIM corre con -c 8192,
+      -- Contexto enviado al modelo (tokens). Cada slot del servidor tiene 8192,
       -- así que 2048 cabe de sobra y el 1.5B procesa el prompt rápido en CPU.
       context_window = 2048,
       -- Con 64 max_tokens el modelo cortaba funciones a medias (finish_reason
@@ -73,9 +73,8 @@ return {
   },
 
   -- Acciones IA sobre selección/buffer: selecciona código, <espacio>a y eliges
-  -- del menú (Explicar, Fix_Code, Review_Code, Ask, Chat...). Servidor separado
-  -- (puerto 8083, Qwen3-4B): modelo de chat de propósito general, distinto del
-  -- Coder-1.5B que usa minuet para el FIM en 8082.
+  -- del menú (Explicar, Fix_Code, Review_Code, Ask, Chat...). Mismo servidor que
+  -- el FIM: qwen2.5-coder-1.5b es instruct, así que sirve chat y completado.
   {
     "David-Kunz/gen.nvim",
     cmd = "Gen",
@@ -83,12 +82,21 @@ return {
       { "<leader>a", ":Gen<CR>", mode = { "n", "v" }, desc = "IA local: menú de acciones (llama.cpp)" },
     },
     opts = {
-      model = "qwen3-4b",
+      model = "qwen2.5-coder-1.5b",
       display_mode = "split",
       show_prompt = true,
       show_model = true,
       host = "127.0.0.1",
-      port = 8083,
+      port = 8082,
+      -- gen.nvim habla la API de Ollama (/api/chat) por defecto y llama-server
+      -- devuelve 404 ahí. Su parser ya entiende el SSE OpenAI (choices[].delta),
+      -- así que basta con reapuntar el curl al endpoint compatible.
+      command = function(opts)
+        return "curl -q --silent --no-buffer -X POST http://"
+          .. opts.host .. ":" .. opts.port .. "/v1/chat/completions -d $body"
+      end,
+      -- El default lanza `ollama serve`; aquí el modelo lo levanta systemd.
+      init = function() end,
     },
     config = function(_, opts)
       local gen = require("gen")

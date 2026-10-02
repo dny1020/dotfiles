@@ -30,7 +30,7 @@ El prompt usa Nerd Font: instala JetBrainsMono NF o quita los iconos de `zsh/.co
 | `libinput-gestures` | `~/.config/` | Gestos del touchpad | ✓ | |
 | `nvim` | `~/.config/nvim/` | lazy.nvim, LSP (mason + lspconfig + nvim-cmp), treesitter (rama `main`, off en archivos >512 KB), tema **gruvbox** (dark hard), lualine | ✓ | ✓ |
 | `opencode` | `~/.config/opencode/` | CLI sin proveedor/modelo fijo; hereda `~/.claude/AGENTS.md` y `skills-index.md` | ✓ | ✓ |
-| `pi` | `~/.config/systemd/user/` | Units de `llama-server` (ver abajo) | ✓ | |
+| `pi` | `~/.config/systemd/user/` | Unit de `llama-server` (ver abajo) | ✓ | |
 | `picom` | `~/.config/picom.conf` | Compositor: sin tearing, sombras y blur `dual_kawase` | ✓ | |
 | `pipewire` | `~/.config/pipewire/`, `~/.config/wireplumber/` | Cancelación de eco para llamadas y Bluetooth fijado en A2DP | ✓ | |
 | `redshift` | `~/.config/redshift.conf` | Luz nocturna | ✓ | |
@@ -67,16 +67,19 @@ Bluetooth tiene SBC, aptX, LDAC, LC3 y Opus, pero **no AAC**: `fdk-aac` es non-f
 
 ## IA local (opcional)
 
-Sin llama.cpp todo lo demás funciona igual. Dos servidores separados porque las tareas no se parecen:
+Sin llama.cpp todo lo demás funciona igual. **Un solo servidor**, `llama-server.service`, con `qwen2.5-coder-1.5b` en el puerto 8082. Es un modelo instruct con tokens FIM, así que cubre completado y chat sin un segundo proceso residente:
 
-| Puerto | Modelo | Para qué | Unit |
-|---|---|---|---|
-| 8082 | `qwen2.5-coder-1.5b` | Solo FIM/autocompletado en Neovim (minuet-ai). Ghost text: aceptar `<A-y>`, una línea `<A-l>`, descartar `<A-e>` | `llama-server.service` |
-| 8083 | `qwen3-4b` | Chat: `gen.nvim` (`<espacio>a` sobre una selección) y los atajos de shell `ai`, `explain`, `cmd`, `why`, `gitai`, más `Ctrl+X Ctrl+A` | `llama-server-chat.service` |
+| Uso | Cliente | Atajos |
+|---|---|---|
+| FIM/autocompletado | minuet-ai.nvim, llama-vscode | Ghost text: aceptar `<A-y>`, una línea `<A-l>`, descartar `<A-e>` |
+| Chat | gen.nvim, llama-vscode | `<espacio>a` sobre una selección en Neovim |
+| Chat | atajos de shell | `ai`, `explain`, `cmd`, `why`, `gitai`, más `Ctrl+X Ctrl+A` |
 
-`qwen2.5-coder` **no hace tool-calling nativo** — emite la llamada como texto JSON en `content` — así que no sirve para agentes; solo completado. Los atajos que generan comandos los dejan en el prompt con `print -z` para revisar: **nunca se auto-ejecutan**.
+Arranca con `-np 2`, así que una respuesta de chat (lenta en CPU) no deja el autocompletado esperando en la cola.
 
-Ambas units se enlazan desde `pi/` y se activan con `systemctl --user enable --now llama-server llama-server-chat`. Escuchan solo en `127.0.0.1`: es un portátil que se conecta a wifis ajenas. Si otra máquina necesita `0.0.0.0`, va en un drop-in local, no en el repo. Cambia modelo o puerto de los atajos con `AI_MODEL` y `LLAMA_HOST`.
+`qwen2.5-coder` **no hace tool-calling nativo** — emite la llamada como texto JSON en `content` — así que no sirve para agentes. Los atajos que generan comandos los dejan en el prompt con `print -z` para revisar: **nunca se auto-ejecutan**.
+
+La unit se enlaza desde `pi/` y se activa con `systemctl --user enable --now llama-server`. Escucha solo en `127.0.0.1`: es un portátil que se conecta a wifis ajenas. Si otra máquina necesita `0.0.0.0`, va en un drop-in local, no en el repo. Cambia modelo o puerto de los atajos con `AI_MODEL` y `LLAMA_HOST`.
 
 ## Claude Code (`claude/`)
 

@@ -114,4 +114,5 @@ export PATH="$(npm prefix -g)/bin:$PATH"
 # zoxide: tu `cd` de siempre, pero recuerda a dónde sueles ir.
 # Va al final del todo porque zoxide exige inicializarse el último; si queda
 # algo después, avisa en cada arranque con "possible configuration issue".
+export _ZO_DOCTOR=0   # zoxide health check: noise in non-interactive shells
 command -v zoxide >/dev/null && eval "$(zoxide init zsh --cmd cd)"

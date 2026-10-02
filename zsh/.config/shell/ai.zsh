@@ -1,14 +1,12 @@
 # ~/.config/shell/ai.zsh
 # Copiloto local con llama.cpp. Son funciones (coste de arranque ~0).
-# Dos servidores separados:
-#   - qwen2.5-coder-1.5b (puerto 8082): solo FIM/autocompletado en nvim (minuet-ai.nvim).
-#   - qwen3-4b (puerto 8083): shortcuts de shell (ai/cmd/why/gitai) y gen.nvim,
-#     modelo de chat de propósito general, no entrenado para FIM.
+# Un solo servidor (llama-server.service, puerto 8082) con qwen2.5-coder-1.5b:
+# sirve el FIM de nvim/vscode y estos atajos de shell.
 # Cambia con export AI_MODEL=otro-modelo o export LLAMA_HOST=otro-puerto.
 # (Versionado en el repo dotfiles; sourceado desde ~/.zshrc.)
 
-: ${AI_MODEL:=qwen3-4b}
-: ${LLAMA_HOST:=http://127.0.0.1:8083}
+: ${AI_MODEL:=qwen2.5-coder-1.5b}
+: ${LLAMA_HOST:=http://127.0.0.1:8082}
 
 if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s --max-time 3 "$LLAMA_HOST/v1/models" >/dev/null 2>&1; then
 
@@ -16,9 +14,9 @@ if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s --max-time 3 "$L
   #     Usa la API OpenAI-compatible de llama.cpp (chat/completions para instruct models).
   #     jq extrae choices[0].message.content.
   #     2º arg opcional = temperatura (baja = más determinista, para comandos).
-  #     3º arg opcional = max_tokens (default 150; qwen3-4b en CPU ronda ~6 tok/s,
-  #     así que un budget alto tarda demasiado para un comando de shell).
-  #     System prompt fijo: sin él, qwen3-4b responde en modo "tutorial"
+  #     3º arg opcional = max_tokens (default 150; un budget alto tarda
+  #     demasiado para un comando de shell).
+  #     System prompt fijo: sin él el modelo responde en modo "tutorial"
   #     (headers markdown, listas por SO) e ignora instrucciones de brevedad
   #     en el mensaje de usuario, cortándose a medias (finish_reason "length")
   #     antes de llegar al punto.

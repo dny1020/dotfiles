@@ -1,23 +1,33 @@
 [Unit]
-Description=llama.cpp server (Qwen2.5-Coder-1.5B, FIM/autocompletado)
+Description=llama.cpp server (Qwen2.5-Coder-1.5B, FIM + chat)
 Documentation=https://github.com/ggml-org/llama.cpp
 After=network.target
 
 [Service]
 Type=simple
-# Solo FIM para minuet-ai.nvim. --host 127.0.0.1: el servidor no debe quedar
-# expuesto a la red (portátil que se conecta a wifis ajenas). Si otra máquina
-# necesita 0.0.0.0 (p.ej. Open WebUI en Docker), va en un drop-in local, no aquí.
-# -c 8192: el FIM manda ~2k tokens de contexto; con menos se truncaba el prompt.
-# -t 4 = núcleos físicos (Ryzen 3 7320U es 4C/8T); usar los 8 hilos no acelera.
+# Un unico servidor para todo: FIM de minuet-ai.nvim y llama-vscode, mas el
+# chat de gen.nvim y los atajos de shell (ai/cmd/why/gitai). Qwen2.5-Coder es
+# instruct y trae tokens FIM, asi que cubre ambos usos sin un segundo modelo.
+# --host 127.0.0.1: el servidor no debe quedar expuesto a la red (portatil que
+# se conecta a wifis ajenas). Si otra maquina necesita 0.0.0.0 (p.ej. Open WebUI
+# en Docker), va en un drop-in local, no aqui.
+# -c 16384 con -np 2: llama.cpp reparte el contexto entre slots, o sea 8192 por
+# slot. El FIM manda ~2k tokens y con menos se truncaba el prompt. El segundo
+# slot evita que una respuesta de chat (lenta) deje el autocompletado en cola.
+# El KV de este modelo cuesta ~14 KiB/token, asi que los dos slots son ~230 MiB.
+# --cache-reuse: llama-vscode reenvia un ring de contexto casi identico en cada
+# pulsacion; reaprovecharlo por KV-shift es lo que hace usable el FIM en CPU.
+# -t 4 = nucleos fisicos (Ryzen 3 7320U es 4C/8T); usar los 8 hilos no acelera.
 ExecStart=~/llama.cpp/build/bin/llama-server \
   --model ~/models/qwen2.5-coder-1.5b-instruct-q4_k_m.gguf \
   --alias qwen2.5-coder-1.5b \
   --host 127.0.0.1 --port 8082 \
-  --ctx-size 8192 \
+  --ctx-size 16384 \
+  --parallel 2 \
+  --cache-reuse 256 \
   --threads 4 \
-  --parallel 1 \
-  --n-predict 512
+  --n-predict 512 \
+  --jinja
 Restart=on-failure
 RestartSec=5
 
