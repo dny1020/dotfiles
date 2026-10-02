@@ -1,12 +1,21 @@
 # ~/.config/shell/ai.zsh
 # Copiloto local con llama.cpp. Son funciones (coste de arranque ~0).
-# Un solo servidor (llama-server.service, puerto 8082) con qwen2.5-coder-1.5b:
-# sirve el FIM de nvim/vscode y estos atajos de shell.
+# Un solo servidor: qwen2.5-coder-1.5b-instruct (puerto 8082). Hace FIM nativo
+# (nvim minuet, llama-vscode) y de instruct para los shortcuts de shell
+# (ai/cmd/why/gitai), gen.nvim y apps locales de prueba.
 # Cambia con export AI_MODEL=otro-modelo o export LLAMA_HOST=otro-puerto.
 # (Versionado en el repo dotfiles; sourceado desde ~/.zshrc.)
 
 : ${AI_MODEL:=qwen2.5-coder-1.5b}
-: ${LLAMA_HOST:=http://127.0.0.1:8082}
+# El llama-server directo en WSL2 no escucha en loopback; se usa la IP real.
+# Fuera de WSL escucha solo en 127.0.0.1 (ver llama-server.service).
+if [[ -n "$WSL_DISTRO_NAME" ]]; then
+  : ${LLAMA_HOST:=http://$(hostname -I | awk '{print $1}'):8082}
+  # Si alguien exportó 127.0.0.1 manualmente, lo corregimos:
+  [[ "$LLAMA_HOST" == *127.0.0.1* ]] && LLAMA_HOST="http://$(hostname -I | awk '{print $1}'):8082"
+else
+  : ${LLAMA_HOST:=http://127.0.0.1:8082}
+fi
 
 if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s --max-time 3 "$LLAMA_HOST/v1/models" >/dev/null 2>&1; then
 
@@ -14,18 +23,18 @@ if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s --max-time 3 "$L
   #     Usa la API OpenAI-compatible de llama.cpp (chat/completions para instruct models).
   #     jq extrae choices[0].message.content.
   #     2º arg opcional = temperatura (baja = más determinista, para comandos).
-  #     3º arg opcional = max_tokens (default 150; un budget alto tarda
+  #     3º arg opcional = max_tokens (default 150; en CPU un budget alto tarda
   #     demasiado para un comando de shell).
   #     System prompt fijo: sin él el modelo responde en modo "tutorial"
   #     (headers markdown, listas por SO) e ignora instrucciones de brevedad
   #     en el mensaje de usuario, cortándose a medias (finish_reason "length")
   #     antes de llegar al punto.
-  _ai_system="Eres un asistente de terminal en Linux (Debian). Respondes en texto plano, sin markdown ni listas numeradas, en máximo 3-4 líneas. Directo y práctico, sin rodeos."
+  _ai_system="Eres un asistente de terminal en Linux (WSL Debian). Respondes en texto plano, sin markdown ni listas numeradas, en máximo 3-4 líneas. Directo y práctico, sin rodeos."
 
   _ai() {
     local temp=${2:-0.4}
     local tokens=${3:-150}
-    curl -s --max-time 30 "$LLAMA_HOST/v1/chat/completions" \
+    curl -s --max-time 60 "$LLAMA_HOST/v1/chat/completions" \
       -H "Content-Type: application/json" \
       -d "$(jq -n --arg m "$AI_MODEL" --arg s "$_ai_system" --arg p "$1" --argjson t "$temp" --argjson mx "$tokens" \
             '{model:$m, messages:[{role:"system",content:$s},{role:"user",content:$p}], stream:false, temperature:$t, max_tokens:$mx}')" \

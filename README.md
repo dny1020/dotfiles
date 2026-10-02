@@ -25,6 +25,7 @@ El prompt usa Nerd Font: instala JetBrainsMono NF o quita los iconos de `zsh/.co
 | `claude` | `~/.claude/` | Config global de Claude Code (ver abajo) | ✓ | ✓ |
 | `dunst` | `~/.config/dunst/` | Notificaciones | ✓ | |
 | `git` | — | `.gitconfig` versionado pero **no enlazado** (ver abajo) | | |
+| `herdr` | `~/.config/herdr/` | Multiplexor por defecto (orientado a agentes), arranca solo desde `.zshrc`. Prefijo `C-a`, Gruvbox. Binario aparte en `~/.local/bin/herdr` | ✓ | ✓ |
 | `gtk` | `~/.config/gtk-3.0/` | Adwaita-dark repintado a Gruvbox por CSS + iconos Papirus. Afecta a PCManFM y a los diálogos de Firefox | ✓ | |
 | `i3` | `~/.config/i3/` | WM, `i3status` (Gruvbox) y `osd.sh` (volumen/brillo/batería) | ✓ | |
 | `libinput-gestures` | `~/.config/` | Gestos del touchpad | ✓ | |
@@ -36,10 +37,9 @@ El prompt usa Nerd Font: instala JetBrainsMono NF o quita los iconos de `zsh/.co
 | `redshift` | `~/.config/redshift.conf` | Luz nocturna | ✓ | |
 | `rofi` | `~/.config/rofi/` | Launcher | ✓ | |
 | `tealdeer` | `~/.config/tealdeer/` | `tldr` con auto-update del cache | ✓ | ✓ |
-| `templates` | `~/templates/` | `new.sh` + plantillas jinja: api, etl, frontend, webservice, agentic, chatbot, voicebot, robot | ✓ | ✓ |
-| `tmux` | `~/.config/tmux/` | Prefijo `C-a`, divisiones que heredan el directorio, copia vi con portapapeles del SO, Gruvbox | ✓ | ✓ |
+| `tmux` | `~/.config/tmux/` | Alternativa a herdr (no arranca solo). Prefijo `C-a`, divisiones que heredan el directorio, copia vi con portapapeles del SO, Gruvbox | ✓ | ✓ |
 | `xresources` | `~/.Xresources` | xterm/uxterm: fuente, 256 colores, Gruvbox | ✓ | |
-| `zsh` | `~/.zshrc`, `~/.config/shell/`, `~/.config/starship.toml` | zsh puro: completado con menú, historial compartido, `vim`→`nvim`, arranque de tmux, nvm. Prompt Starship con fallback a `vcs_info` | ✓ | ✓ |
+| `zsh` | `~/.zshrc`, `~/.config/shell/`, `~/.config/starship.toml` | zsh puro: completado con menú, historial compartido, `vim`→`nvim`, arranque de herdr. Prompt Starship con iconos Nerd Font | ✓ | ✓ |
 
 `setup_debian.sh` enlaza también los paquetes de escritorio en WSL, donde son inertes: no hay X.
 
@@ -67,25 +67,21 @@ Bluetooth tiene SBC, aptX, LDAC, LC3 y Opus, pero **no AAC**: `fdk-aac` es non-f
 
 ## IA local (opcional)
 
-Sin llama.cpp todo lo demás funciona igual. **Un solo servidor**, `llama-server.service`, con `qwen2.5-coder-1.5b` en el puerto 8082. Es un modelo instruct con tokens FIM, así que cubre completado y chat sin un segundo proceso residente:
+Sin llama.cpp todo lo demás funciona igual. Un único servidor para FIM y chat:
 
-| Uso | Cliente | Atajos |
-|---|---|---|
-| FIM/autocompletado | minuet-ai.nvim, llama-vscode | Ghost text: aceptar `<A-y>`, una línea `<A-l>`, descartar `<A-e>` |
-| Chat | gen.nvim, llama-vscode | `<espacio>a` sobre una selección en Neovim |
-| Chat | atajos de shell | `ai`, `explain`, `cmd`, `why`, `gitai`, más `Ctrl+X Ctrl+A` |
-
-Arranca con `-np 2`, así que una respuesta de chat (lenta en CPU) no deja el autocompletado esperando en la cola.
+| Puerto | Modelo | Para qué | Unit |
+|---|---|---|---|
+| 8082 | `qwen2.5-coder-1.5b-instruct` | FIM/autocompletado en Neovim (minuet-ai; aceptar `<A-y>`, una línea `<A-l>`, descartar `<A-e>`), `gen.nvim` (`<espacio>a` sobre una selección) y los atajos de shell `ai`, `explain`, `cmd`, `why`, `gitai`, más `Ctrl+X Ctrl+A` | `llama-server.service` |
 
 `qwen2.5-coder` **no hace tool-calling nativo** — emite la llamada como texto JSON en `content` — así que no sirve para agentes. Los atajos que generan comandos los dejan en el prompt con `print -z` para revisar: **nunca se auto-ejecutan**.
 
-La unit se enlaza desde `pi/` y se activa con `systemctl --user enable --now llama-server`. Escucha solo en `127.0.0.1`: es un portátil que se conecta a wifis ajenas. Si otra máquina necesita `0.0.0.0`, va en un drop-in local, no en el repo. Cambia modelo o puerto de los atajos con `AI_MODEL` y `LLAMA_HOST`.
+La unit se enlaza desde `pi/` y se activa con `systemctl --user enable --now llama-server`. Escucha solo en `127.0.0.1`: es un portátil que se conecta a wifis ajenas. Si otra máquina necesita `0.0.0.0` (WSL2, donde los clientes llegan por la IP de la VM), se pone `LLAMA_BIND=0.0.0.0` en `~/.config/llama-server.env`, no versionado; zsh y Neovim usan esa IP automáticamente en WSL. Cambia modelo o puerto de los atajos con `AI_MODEL` y `LLAMA_HOST`.
 
 ## Claude Code (`claude/`)
 
 Solo lo declarativo: `AGENTS.md` (guías de ingeniería globales), `CLAUDE.md` (contexto personal), `skills-index.md` (lo lee opencode), `settings.json`, y:
 
-- `skills/` — build-agentic-agent, build-backend, build-react-feature, build-robot, devops, etl-pipeline, graphify, linux-best-practices, terraform-deploy, write-tests
+- `skills/` — build-agentic-agent, build-backend, build-robot, devops, etl-pipeline, graphify, linux-best-practices, terraform-deploy, write-tests, más archify, codebase-discovery, excalidraw-skill, knowledge-curation y security-audit. `skills/synced/` (skills sincronizados desde claude.ai) es estado en tiempo de ejecución y no se versiona
 - `agents/` — ai, architect, graph-ml, iac-expert, voip. Solo donde compensa un contexto aparte
 
 `settings.json` **sí se versiona**: el token del MCP es la referencia `${env:DOCTION_MCP_TOKEN}`, no un literal, así que modelo, `effortLevel`, plugins y MCP se reproducen en una máquina nueva. Claude Code reescribe ese archivo al tocar `/config`, así que comprueba de vez en cuando que sigue siendo enlace: `ls -l ~/.claude/settings.json`.

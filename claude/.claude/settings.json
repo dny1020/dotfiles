@@ -15,6 +15,7 @@
   "editorMode": "vim",
   "preferredNotifChannel": "auto",
   "autoCompactEnabled": true,
+  "fileCheckpointingEnabled": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,

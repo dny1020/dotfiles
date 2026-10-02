@@ -1,0 +1,31 @@
+# ~/.config/herdr/config.toml
+# Solo los atajos de tmux que se usan: Ctrl+a como prefijo, p (tab anterior),
+# c (tab nueva, ya por defecto), % (dividir) y flechas entre paneles.
+onboarding = false
+
+[theme]
+name = "gruvbox"
+
+# Misma paleta que tmux.conf: Gruvbox dark + amarillo opaco #d79921 (barra de i3)
+auto_switch = false
+[theme.custom]
+accent = "#d79921"
+sidebar_bg = "#1d2021"
+active_row_bg = "#3c3836"
+surface0 = "#3c3836"
+text = "#d5c4a1"
+overlay0 = "#928374"
+
+[ui]
+accent = "#d79921"
+status_indicators = "symbols"
+
+[keys]
+prefix = "ctrl+a"
+previous_tab = "prefix+p"
+new_workspace = "prefix+t"
+split_vertical = 'prefix+%'
+focus_pane_left = "prefix+left"
+focus_pane_down = "prefix+down"
+focus_pane_up = "prefix+up"
+focus_pane_right = "prefix+right"

@@ -8,12 +8,15 @@ palette = "suave"
 
 # Orden visible. Todo módulo NO listado aquí queda oculto automáticamente.
 format = """
+$os\
 $username\
 $directory\
 $git_branch\
 $git_status\
 $python\
 $nodejs\
+$golang\
+$docker_context\
 $terraform\
 $aws\
 $kubernetes\
@@ -35,11 +38,12 @@ gris     = "#939ab7"  # todo lo demás (lenguajes, cloud, duración)
 
 [directory]
 style = "azul"
+home_symbol = " ~"
 truncation_length = 3
 truncate_to_repo = true
 read_only = " "
 read_only_style = "rojo"
-format = "[$path]($style)[$read_only]($read_only_style) "
+format = "[ $path]($style)[$read_only]($read_only_style) "
 
 [git_branch]
 symbol = " "
@@ -49,16 +53,38 @@ format = "[$symbol$branch]($style) "
 [git_status]
 style = "amarillo"
 format = "([$all_status$ahead_behind]($style))"
-ahead      = "⇡${count}"
-behind     = "⇣${count}"
-diverged   = "⇕⇡${ahead_count}⇣${behind_count}"
-modified   = "!"
-staged     = "+"
-untracked  = "?"
-stashed    = "≡"
-renamed    = "»"
-deleted    = "✘"
-conflicted = "="
+ahead      = "${count} "
+behind     = "${count} "
+diverged   = "${ahead_count}${behind_count} "
+modified   = "${count} "
+staged     = "${count} "
+untracked  = "${count} "
+stashed    = " "
+renamed    = "${count} "
+deleted    = "${count} "
+conflicted = "${count} "
+
+[os]
+disabled = false
+style = "gris"
+format = "[$symbol]($style)"
+
+[os.symbols]
+Debian   = " "
+Ubuntu   = " "
+Raspbian = " "
+Macos    = " "
+Linux    = " "
+
+[golang]
+symbol = " "
+style = "gris"
+format = "[$symbol$version]($style) "
+
+[docker_context]
+symbol = " "
+style = "gris"
+format = "[$symbol$context]($style) "
 
 [python]
 symbol = " "
@@ -95,7 +121,7 @@ detect_folders = ["k8s", ".kube"]
 [cmd_duration]
 min_time = 2000  # solo si el último comando tardó > 2 s
 style = "gris"
-format = "[$duration]($style) "
+format = "[ $duration]($style) "
 
 [character]
 success_symbol = "[❯](verde)"

@@ -1,33 +1,21 @@
 [Unit]
-Description=llama.cpp server (Qwen2.5-Coder-1.5B, FIM + chat)
-Documentation=https://github.com/ggml-org/llama.cpp
+Description=llama.cpp server (Qwen2.5-Coder-1.5B-Instruct)
 After=network.target
 
 [Service]
 Type=simple
-# Un unico servidor para todo: FIM de minuet-ai.nvim y llama-vscode, mas el
-# chat de gen.nvim y los atajos de shell (ai/cmd/why/gitai). Qwen2.5-Coder es
-# instruct y trae tokens FIM, asi que cubre ambos usos sin un segundo modelo.
-# --host 127.0.0.1: el servidor no debe quedar expuesto a la red (portatil que
-# se conecta a wifis ajenas). Si otra maquina necesita 0.0.0.0 (p.ej. Open WebUI
-# en Docker), va en un drop-in local, no aqui.
-# -c 16384 con -np 2: llama.cpp reparte el contexto entre slots, o sea 8192 por
-# slot. El FIM manda ~2k tokens y con menos se truncaba el prompt. El segundo
-# slot evita que una respuesta de chat (lenta) deje el autocompletado en cola.
-# El KV de este modelo cuesta ~14 KiB/token, asi que los dos slots son ~230 MiB.
-# --cache-reuse: llama-vscode reenvia un ring de contexto casi identico en cada
-# pulsacion; reaprovecharlo por KV-shift es lo que hace usable el FIM en CPU.
-# -t 4 = nucleos fisicos (Ryzen 3 7320U es 4C/8T); usar los 8 hilos no acelera.
-ExecStart=~/llama.cpp/build/bin/llama-server \
-  --model ~/models/qwen2.5-coder-1.5b-instruct-q4_k_m.gguf \
-  --alias qwen2.5-coder-1.5b \
-  --host 127.0.0.1 --port 8082 \
-  --ctx-size 16384 \
-  --parallel 2 \
-  --cache-reuse 256 \
-  --threads 4 \
-  --n-predict 512 \
-  --jinja
+# Servidor unico: FIM/autocompletado (nvim minuet, llama-vscode) y chat/acciones
+# (gen.nvim, helpers de zsh, apps locales de prueba). Qwen2.5-Coder-1.5B hace FIM
+# nativo y sirve de instruct decente; se cambio desde el 7B por RAM/velocidad
+# en este WSL de 20GB (el 7B iba a ~3-4 tok/s y era pesado en memoria).
+# -fa on + --cache-reuse: las extensiones reenvian el mismo contexto (ring) en
+# cada pulsacion; con cache-reuse el server hace KV-shift en vez de reprocesarlo.
+# Solo loopback por defecto: el portatil se conecta a wifis ajenas. En WSL los
+# clientes llegan por la IP de la VM, asi que ahi ~/.config/llama-server.env
+# (no versionado) pone LLAMA_BIND=0.0.0.0.
+Environment=LLAMA_BIND=127.0.0.1
+EnvironmentFile=-%h/.config/llama-server.env
+ExecStart=~/llama.cpp/build/bin/llama-server -m ~/models/Qwen2.5-Coder-1.5B-Instruct-Q4_K_M.gguf --host ${LLAMA_BIND} --port 8082 -t 8 -c 16384 -np 1 -n 768 -fa on -b 2048 -ub 512 --cache-reuse 256
 Restart=on-failure
 RestartSec=5
 

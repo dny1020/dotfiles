@@ -1,33 +1,22 @@
 # ~/.zshrc
 
-# ── Arrancar tmux automáticamente al abrir la terminal ───────────────────────
-# Se adjunta a la sesión 'main' si ya existe, o la crea (new-session -A).
-# Guardas: solo en shell interactiva, si no estamos ya dentro de tmux, si no es
-# una terminal "tonta" (TTY de rescate/dumb) ni el shell integrado de un editor.
+# herdr vive en ~/.local/bin: tiene que estar en el PATH antes del autoarranque
+export PATH="$HOME/.local/bin:$PATH"
+
+# ── Arrancar herdr automáticamente al abrir la terminal ──────────────────────
+# Se adjunta a su sesión persistente o la crea. Guardas: solo en shell
+# interactiva, si no estamos ya dentro de herdr/tmux, si no es una terminal
+# "tonta" (TTY de rescate/dumb) ni el shell integrado de un editor.
 # Para desactivarlo, comenta este bloque.
-if command -v tmux >/dev/null \
-   && [[ $- == *i* ]] && [[ -z "$TMUX" ]] \
+if command -v herdr >/dev/null \
+   && [[ $- == *i* ]] && [[ -z "$HERDR_ENV$TMUX" ]] \
    && [[ "$TERM" != dumb && "$TERM" != linux ]] \
    && [[ -z "$VSCODE_INJECTION$INSIDE_EMACS" ]]; then
-  exec tmux new-session -A -s main
+  exec herdr
 fi
 
-# Prompt: Starship si está instalado; si no, prompt nativo zsh (fallback)
-autoload -Uz add-zsh-hook
-if command -v starship >/dev/null; then
-  eval "$(starship init zsh)"
-else
-  # Prompt Git nativo
-  autoload -Uz vcs_info
-  add-zsh-hook precmd vcs_info   # via hook para poder anteponer otros precmd (p.ej. ai.zsh)
-
-  zstyle ':vcs_info:git:*' formats ' %F{176}(%b)%f'
-
-  setopt PROMPT_SUBST
-
-  PROMPT='%F{114}%n%f %F{222}%1~%f${vcs_info_msg_0_} %(?.%F{114}.%F{203})%#%f '
-  RPROMPT='%(?..%F{203}[%?]%f)'
-fi
+# Prompt
+command -v starship >/dev/null && eval "$(starship init zsh)"
 
 # Completado
 autoload -Uz compinit
@@ -52,9 +41,7 @@ export VISUAL=nvim
 export PAGER=less
 
 # PATH personal
-export PATH="$HOME/.local/bin:$PATH"
 [[ -d "$HOME/.opencode/bin" ]] && export PATH="$HOME/.opencode/bin:$PATH"
-[[ -d "$HOME/.bin" ]] && export PATH="$HOME/.bin:$PATH"
 
 # Alias
 alias vim='nvim'   # migrado a Neovim; el comando `vim` sigue funcionando
@@ -89,27 +76,20 @@ fi
 # Autosuggestions / highlighting / fzf / historial (debe ir el ÚLTIMO source)
 [[ -f ~/.config/shell/zsh-enhance.zsh ]] && source ~/.config/shell/zsh-enhance.zsh
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-[[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
-
 # AWS local: siempre usa el endpoint del contenedor y credenciales no reales.
-alias awslab='AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test aws'
-alias awsl='awslab'
+alias awsl='AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test aws'
 
 # AWS production: elimina configuracion local antes de usar el perfil real.
-awsprod() {
+awsp() {
   env -u AWS_ENDPOINT_URL -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY \
     -u AWS_SESSION_TOKEN -u AWS_SECURITY_TOKEN \
     AWS_PROFILE="${AWS_PROD_PROFILE:-default}" aws "$@"
 }
-alias awsp='awsprod'
 
 # Terraform: los mismos comandos sirven desde cualquier repositorio.
 alias tf-local='AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test terraform'
 alias tf-prod='env -u AWS_ENDPOINT_URL -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u AWS_SESSION_TOKEN -u AWS_SECURITY_TOKEN AWS_PROFILE="${AWS_PROD_PROFILE:-default}" terraform'
-export PATH="$(npm prefix -g)/bin:$PATH"
+[[ -d "$HOME/.npm-global/bin" ]] && export PATH="$HOME/.npm-global/bin:$PATH"
 
 # zoxide: tu `cd` de siempre, pero recuerda a dónde sueles ir.
 # Va al final del todo porque zoxide exige inicializarse el último; si queda

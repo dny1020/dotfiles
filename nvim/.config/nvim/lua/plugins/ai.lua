@@ -1,6 +1,14 @@
 -- Autocompletado con IA local (llama.cpp + Qwen2.5-Coder-1.5B) estilo Copilot:
 -- ghost text inline mediante FIM (fill-in-middle). Convive con nvim-cmp:
 -- el menú lo dan los servidores LSP; la sugerencia gris en línea la da la IA.
+-- Mismo servidor y host que ~/.config/shell/ai.zsh: en WSL2 llama-server
+-- escucha en la IP de la VM; fuera de WSL solo en loopback.
+local llama_host = "127.0.0.1"
+if vim.env.WSL_DISTRO_NAME then
+  llama_host = vim.fn.system("hostname -I"):match("%S+") or llama_host
+end
+local llama_url = "http://" .. llama_host .. ":8082"
+
 return {
   {
   "milanglacier/minuet-ai.nvim",
@@ -13,13 +21,11 @@ return {
     require("minuet").setup({
       provider = "openai_fim_compatible",
       n_completions = 1, -- una sola sugerencia: el modelo local va más fluido
-      -- Contexto enviado al modelo (tokens). Cada slot del servidor tiene 8192,
-      -- así que 2048 cabe de sobra y el 1.5B procesa el prompt rápido en CPU.
-      context_window = 2048,
+      context_window = 1024, -- contexto enviado (tokens); bajo = más rápido en CPU
       -- Con 64 max_tokens el modelo cortaba funciones a medias (finish_reason
       -- "length": código roto, ej. un string sin cerrar). Con más presupuesto
       -- la generación tarda más en CPU, así que el timeout sube en consecuencia.
-      request_timeout = 10,
+      request_timeout = 20,
       throttle = 1000,
       debounce = 400,
       provider_options = {
@@ -27,13 +33,13 @@ return {
           -- llama-server no usa clave; minuet exige el NOMBRE de una env var no vacía: "TERM" siempre existe
           api_key = "TERM",
           name = "llama.cpp",
-          end_point = "http://127.0.0.1:8082/v1/completions",
+          end_point = llama_url .. "/v1/completions",
           model = "qwen2.5-coder-1.5b",
           -- llama-server FIM: si `suffix` está vacío, el modelo puede "chatear" en
           -- vez de hacer completión. Forzamos un suffix mínimo para FIM limpio.
           template = {
             -- El default de minuet antepone "# language: python" + "# indentation:
-            -- use N spaces..." antes del código. Con qwen2.5-coder-1.5b eso "primea"
+            -- use N spaces..." antes del código. Con este modelo eso "primea"
             -- al modelo a escribir un comentario por cada línea (a veces sin llegar
             -- nunca al código real, cortándose en max_tokens). El modelo ya infiere
             -- el lenguaje de la sintaxis, así que mandamos el contexto tal cual.
@@ -73,8 +79,11 @@ return {
   },
 
   -- Acciones IA sobre selección/buffer: selecciona código, <espacio>a y eliges
-  -- del menú (Explicar, Fix_Code, Review_Code, Ask, Chat...). Mismo servidor que
-  -- el FIM: qwen2.5-coder-1.5b es instruct, así que sirve chat y completado.
+  -- del menú (Explicar, Fix_Code, Review_Code, Ask, Chat...). Habla directo con
+  -- el llama-server (:8082, sin auth).
+  -- El default de gen.nvim habla la API nativa de Ollama (/api/chat); llama.cpp
+  -- solo expone /v1/..., así que se sobreescribe `command` con formato OpenAI.
+  -- gen.nvim ya sabe parsear el streaming OpenAI (rama choices[].delta.content).
   {
     "David-Kunz/gen.nvim",
     cmd = "Gen",
@@ -83,20 +92,15 @@ return {
     },
     opts = {
       model = "qwen2.5-coder-1.5b",
-      display_mode = "split",
+      display_mode = "horizontal-split",
       show_prompt = true,
       show_model = true,
-      host = "127.0.0.1",
-      port = 8082,
-      -- gen.nvim habla la API de Ollama (/api/chat) por defecto y llama-server
-      -- devuelve 404 ahí. Su parser ya entiende el SSE OpenAI (choices[].delta),
-      -- así que basta con reapuntar el curl al endpoint compatible.
-      command = function(opts)
-        return "curl -q --silent --no-buffer -X POST http://"
-          .. opts.host .. ":" .. opts.port .. "/v1/chat/completions -d $body"
+      command = function()
+        return "curl --silent --no-buffer -X POST "
+          .. llama_url .. "/v1/chat/completions "
+          .. "-H 'Content-Type: application/json' "
+          .. "-d $body"
       end,
-      -- El default lanza `ollama serve`; aquí el modelo lo levanta systemd.
-      init = function() end,
     },
     config = function(_, opts)
       local gen = require("gen")
