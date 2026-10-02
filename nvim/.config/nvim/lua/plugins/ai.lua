@@ -17,25 +17,21 @@ return {
       -- Con 64 max_tokens el modelo cortaba funciones a medias (finish_reason
       -- "length": código roto, ej. un string sin cerrar). Con más presupuesto
       -- la generación tarda más en CPU, así que el timeout sube en consecuencia.
-      request_timeout = 10,
+      request_timeout = 20,
       throttle = 1000,
       debounce = 400,
       provider_options = {
         openai_fim_compatible = {
-          -- minuet exige el NOMBRE de una env var no vacía. Exporta LITELLM_NVIM_KEY
-          -- con la virtual key para que LiteLLM contabilice el gasto de autocompletado.
-          -- Nota: LiteLLM descarta `suffix`, así que el FIM pierde el contexto tras
-          -- el cursor; los `stop` de abajo compensan. Para FIM completo, vuelve a
-          -- end_point ":8082/v1/completions", api_key "TERM", model "qwen2.5-coder-1.5b".
-          api_key = "LITELLM_NVIM_KEY",
-          name = "litellm",
-          end_point = "http://127.0.0.1:4000/v1/completions",
-          model = "qwen-coder",
+          -- llama-server no usa clave; minuet exige el NOMBRE de una env var no vacía: "TERM" siempre existe
+          api_key = "TERM",
+          name = "llama.cpp",
+          end_point = "http://" .. (vim.fn.system("hostname -I"):match("%S+") or "127.0.0.1") .. ":8082/v1/completions",
+          model = "qwen2.5-coder-1.5b",
           -- llama-server FIM: si `suffix` está vacío, el modelo puede "chatear" en
           -- vez de hacer completión. Forzamos un suffix mínimo para FIM limpio.
           template = {
             -- El default de minuet antepone "# language: python" + "# indentation:
-            -- use N spaces..." antes del código. Con qwen2.5-coder-1.5b eso "primea"
+            -- use N spaces..." antes del código. Con este modelo eso "primea"
             -- al modelo a escribir un comentario por cada línea (a veces sin llegar
             -- nunca al código real, cortándose en max_tokens). El modelo ya infiere
             -- el lenguaje de la sintaxis, así que mandamos el contexto tal cual.
@@ -75,8 +71,8 @@ return {
   },
 
   -- Acciones IA sobre selección/buffer: selecciona código, <espacio>a y eliges
-  -- del menú (Explicar, Fix_Code, Review_Code, Ask, Chat...). Va por el gateway
-  -- LiteLLM (qwen3-4b → :8083) para que el gasto se contabilice igual que zsh/minuet.
+  -- del menú (Explicar, Fix_Code, Review_Code, Ask, Chat...). Habla directo con
+  -- el llama-server (:8082, sin auth).
   -- El default de gen.nvim habla la API nativa de Ollama (/api/chat); llama.cpp
   -- solo expone /v1/..., así que se sobreescribe `command` con formato OpenAI.
   -- gen.nvim ya sabe parsear el streaming OpenAI (rama choices[].delta.content).
@@ -84,20 +80,17 @@ return {
     "David-Kunz/gen.nvim",
     cmd = "Gen",
     keys = {
-      { "<leader>a", ":Gen<CR>", mode = { "n", "v" }, desc = "IA local: menú de acciones (LiteLLM)" },
+      { "<leader>a", ":Gen<CR>", mode = { "n", "v" }, desc = "IA local: menú de acciones (llama.cpp)" },
     },
     opts = {
-      model = "qwen3-4b",
+      model = "qwen2.5-coder-1.5b",
       display_mode = "horizontal-split",
       show_prompt = true,
       show_model = true,
-      -- minuet exige el NOMBRE de la env var; aquí la expande el shell de jobstart.
-      -- LITELLM_NVIM_KEY sale de ~/.zshrc.local (virtual key nvim-autocomplete).
       command = function()
         return "curl --silent --no-buffer -X POST "
-          .. "http://127.0.0.1:4000/v1/chat/completions "
+          .. "http://" .. (vim.fn.system("hostname -I"):match("%S+") or "127.0.0.1") .. ":8082/v1/chat/completions "
           .. "-H 'Content-Type: application/json' "
-          .. '-H "Authorization: Bearer $LITELLM_NVIM_KEY" '
           .. "-d $body"
       end,
     },

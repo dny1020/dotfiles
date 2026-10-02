@@ -1,23 +1,16 @@
 # ~/.config/shell/ai.zsh
 # Copiloto local con llama.cpp. Son funciones (coste de arranque ~0).
-# Dos servidores separados:
-#   - qwen2.5-coder-1.5b (puerto 8082): solo FIM/autocompletado en nvim (minuet-ai.nvim).
-#   - qwen3-4b (puerto 8083): shortcuts de shell (ai/cmd/why/gitai) y gen.nvim,
-#     modelo de chat de propósito general, no entrenado para FIM.
+# Un solo servidor: qwen2.5-coder-1.5b-instruct (puerto 8082). Hace FIM nativo
+# (nvim minuet, llama-vscode) y de instruct para los shortcuts de shell
+# (ai/cmd/why/gitai), gen.nvim y apps locales de prueba.
 # Cambia con export AI_MODEL=otro-modelo o export LLAMA_HOST=otro-puerto.
-# Para ir por el gateway LiteLLM (contabiliza gasto y aplica budget):
-#   export LLAMA_HOST=http://127.0.0.1:4000
-#   export LLAMA_API_KEY=sk-<virtual-key>
 # (Versionado en el repo dotfiles; sourceado desde ~/.zshrc.)
 
-: ${AI_MODEL:=qwen3-4b}
+: ${AI_MODEL:=qwen2.5-coder-1.5b}
 # El llama-server directo en WSL2 no escucha en loopback; se usa la IP real.
-: ${LLAMA_HOST:=http://$(hostname -I | awk '{print $1}'):8083}
-# Virtual key de LiteLLM; vacía = llamada directa al llama-server sin auth.
-: ${LLAMA_API_KEY:=}
-# Autocorrige 127.0.0.1 solo cuando apunta a un puerto directo (808x); un host
-# hacia el gateway (127.0.0.1:4000) se respeta tal cual.
-[[ "$LLAMA_HOST" == *127.0.0.1*:808[0-9]* ]] && LLAMA_HOST="http://$(hostname -I | awk '{print $1}'):8083"
+: ${LLAMA_HOST:=http://$(hostname -I | awk '{print $1}'):8082}
+# Si alguien exportó 127.0.0.1 manualmente, lo corregimos:
+[[ "$LLAMA_HOST" == *127.0.0.1* ]] && LLAMA_HOST="http://$(hostname -I | awk '{print $1}'):8082"
 
 if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s --max-time 3 "$LLAMA_HOST/v1/models" >/dev/null 2>&1; then
 
@@ -25,9 +18,9 @@ if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s --max-time 3 "$L
   #     Usa la API OpenAI-compatible de llama.cpp (chat/completions para instruct models).
   #     jq extrae choices[0].message.content.
   #     2º arg opcional = temperatura (baja = más determinista, para comandos).
-  #     3º arg opcional = max_tokens (default 150; qwen3-4b en CPU ronda ~6 tok/s,
-  #     así que un budget alto tarda demasiado para un comando de shell).
-  #     System prompt fijo: sin él, qwen3-4b responde en modo "tutorial"
+  #     3º arg opcional = max_tokens (default 150; en CPU un budget alto tarda
+  #     demasiado para un comando de shell).
+  #     System prompt fijo: sin él el modelo responde en modo "tutorial"
   #     (headers markdown, listas por SO) e ignora instrucciones de brevedad
   #     en el mensaje de usuario, cortándose a medias (finish_reason "length")
   #     antes de llegar al punto.
@@ -36,20 +29,11 @@ if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s --max-time 3 "$L
   _ai() {
     local temp=${2:-0.4}
     local tokens=${3:-150}
-    local body resp
-    body=$(jq -n --arg m "$AI_MODEL" --arg s "$_ai_system" --arg p "$1" --argjson t "$temp" --argjson mx "$tokens" \
-            '{model:$m, messages:[{role:"system",content:$s},{role:"user",content:$p}], stream:false, temperature:$t, max_tokens:$mx}')
-    local auth=(); [[ -n "$LLAMA_API_KEY" ]] && auth=(-H "Authorization: Bearer $LLAMA_API_KEY")
-    resp=$(curl -s --max-time 60 "$LLAMA_HOST/v1/chat/completions" \
-      "${auth[@]}" -H "Content-Type: application/json" -d "$body")
-    # Fallback: si vamos por el gateway LiteLLM y no responde, tiramos directo al
-    # llama-server (:8083, sin auth) para no quedarnos sin copiloto con el lab caído.
-    if [[ -z "$resp" && "$LLAMA_HOST" == *:4000* ]]; then
-      print -u2 "ai: gateway LiteLLM ($LLAMA_HOST) sin respuesta — usando llama-server directo :8083"
-      resp=$(curl -s --max-time 60 "http://$(hostname -I | awk '{print $1}'):8083/v1/chat/completions" \
-        -H "Content-Type: application/json" -d "$body")
-    fi
-    print -r -- "$resp" | jq -r '.choices[0].message.content // empty'
+    curl -s --max-time 60 "$LLAMA_HOST/v1/chat/completions" \
+      -H "Content-Type: application/json" \
+      -d "$(jq -n --arg m "$AI_MODEL" --arg s "$_ai_system" --arg p "$1" --argjson t "$temp" --argjson mx "$tokens" \
+            '{model:$m, messages:[{role:"system",content:$s},{role:"user",content:$p}], stream:false, temperature:$t, max_tokens:$mx}')" \
+      | jq -r '.choices[0].message.content // empty'
   }
 
   # limpia la respuesta del modelo a UNA línea de comando (quita fences/backticks)
