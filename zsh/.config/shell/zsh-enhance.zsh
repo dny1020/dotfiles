@@ -42,6 +42,11 @@ fi
 
 # --- fzf: Ctrl-R historial fuzzy, Ctrl-T archivos, Alt-C cd ------------------
 if command -v fzf >/dev/null; then
+  # Ctrl-T over ripgrep: respects .gitignore, skips .git/node_modules on big repos
+  if command -v rg >/dev/null; then
+    export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git"'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+  fi
   source <(fzf --zsh)
 fi
 
