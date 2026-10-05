@@ -106,7 +106,7 @@ if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s --max-time 3 "$L
     _ai "Comando falló (exit $code): $__AI_PREV_CMD. En 1-2 líneas de prosa (sin listas), causa y solución:" 0.3 120
   }
 
-  # --- gitai: mensaje de commit (Conventional Commits) desde el diff ----------
+  # --- gitai: mensaje de commit (Conventional Commits, en inglés) desde el diff
   #     lo deja en el prompt como `git commit -m "..."` para revisar y confirmar
   gitai() {
     local diff msg
@@ -114,7 +114,7 @@ if [[ -x "$HOME/llama.cpp/build/bin/llama-server" ]] || curl -s --max-time 3 "$L
     diff=$(git diff --cached --stat 2>/dev/null; git diff --cached 2>/dev/null | head -c 6000)
     [[ -z "${diff//[[:space:]]/}" ]] && diff=$(git diff --stat 2>/dev/null; git diff 2>/dev/null | head -c 6000)
     [[ -z "${diff//[[:space:]]/}" ]] && { echo "No hay cambios para describir (git diff vacío). ¿Hiciste 'git add'?"; return 1; }
-    msg=$(_ai "Commit message en español (Conventional Commits, 1 línea): $diff" 0.1 32 | _ai_oneline)
+    msg=$(_ai "Write a one-line Conventional Commits message in English for this diff: $diff" 0.1 32 | _ai_oneline)
     [[ -n "$msg" ]] && print -z "git commit -m \"${msg//\"/\\\"}\""
   }
 

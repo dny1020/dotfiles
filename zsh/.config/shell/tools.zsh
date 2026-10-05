@@ -18,8 +18,8 @@ elif command -v bat >/dev/null; then
   alias less='bat --style=numbers --paging=always --pager="less -RF"'
 fi
 command -v fdfind >/dev/null && alias fd='fdfind'
-# Tema Dracula para bat/cat (consistente con nvim; colores suaves)
-export BAT_THEME="Dracula"
+# Same Gruvbox as nvim, herdr and VS Code
+export BAT_THEME="gruvbox-dark"
 
 # --- eza: reemplaza a ls (mismos ls/ll/la), con iconos Nerd Font y git --------
 # ¿Demasiados iconos/color? quita --icons o añade --color=never a los alias.
