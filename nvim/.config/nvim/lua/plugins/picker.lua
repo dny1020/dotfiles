@@ -8,6 +8,7 @@ end
 
 return {
   "ibhagwan/fzf-lua",
+  dependencies = { "nvim-tree/nvim-web-devicons" },
   cmd = "FzfLua",
   keys = {
     { "<leader><space>", pick("files"), desc = "Find files" },
@@ -32,7 +33,7 @@ return {
     { "<leader>gB", pick("git_branches"), desc = "Git: branches" },
   },
   opts = {
-    defaults = { file_icons = false, git_icons = false },
+    defaults = { git_icons = false },
     files = { cwd_prompt = false },
   },
 }

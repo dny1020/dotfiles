@@ -29,7 +29,7 @@ El prompt usa Nerd Font: instala JetBrainsMono NF o quita los iconos de `zsh/.co
 | `gtk` | `~/.config/gtk-3.0/` | Adwaita-dark repintado a Gruvbox por CSS + iconos Papirus. Afecta a PCManFM y a los diálogos de Firefox | ✓ | |
 | `i3` | `~/.config/i3/` | WM, `i3status` (Gruvbox) y `osd.sh` (volumen/brillo/batería) | ✓ | |
 | `libinput-gestures` | `~/.config/` | Gestos del touchpad | ✓ | |
-| `nvim` | `~/.config/nvim/` | lazy.nvim, LSP (mason + lspconfig + nvim-cmp; pyright + ruff, gopls, ansiblels…), format on save (conform: ruff, stylua/prettier si el proyecto los configura), explorador fijo a la izquierda (nvim-tree, `<espacio>e`), fzf-lua (`<espacio><espacio>` archivos, `<espacio>/` grep, `<espacio>s…` búsquedas, `<espacio>g…` git), which-key, treesitter (rama `main`, off en archivos >512 KB), tema **gruvbox** (dark hard) | ✓ | ✓ |
+| `nvim` | `~/.config/nvim/` | lazy.nvim, LSP (mason + lspconfig + nvim-cmp; pyright + ruff, gopls, ansiblels…), format on save (conform: ruff, stylua/prettier si el proyecto los configura), explorador fijo a la izquierda (nvim-tree, `<espacio>e`), fzf-lua (`<espacio><espacio>` archivos, `<espacio>/` grep, `<espacio>s…` búsquedas, `<espacio>g…` git), which-key, lualine (barra inferior con ruta), dropbar (breadcrumbs arriba, `<espacio>;`), iconos (nvim-web-devicons), treesitter (rama `main`, off en archivos >512 KB), tema **gruvbox** (dark hard) | ✓ | ✓ |
 | `opencode` | `~/.config/opencode/` | CLI sin proveedor/modelo fijo; hereda `~/.claude/AGENTS.md` y `skills-index.md` | ✓ | ✓ |
 | `pi` | `~/.config/systemd/user/` | Units de `llama-server` (ver abajo) | ✓ | |
 | `picom` | `~/.config/picom.conf` | Compositor: sin tearing, sombras y blur `dual_kawase` | ✓ | |
