@@ -2,6 +2,7 @@
 -- follows the current file and closes with the last editor window.
 return {
   "nvim-tree/nvim-tree.lua",
+  dependencies = { "nvim-tree/nvim-web-devicons" },
   lazy = false, -- must take over directory buffers before VimEnter
   keys = {
     { "<leader>e", "<cmd>NvimTreeFocus<CR>", desc = "Explorer: focus" },
@@ -18,7 +19,7 @@ return {
       renderer = {
         group_empty = true,
         highlight_git = "name",
-        icons = { show = { file = false, folder = false } },
+        root_folder_label = ":~:s?$?/?", -- top line of the tree: project path
       },
       update_focused_file = { enable = true },
       diagnostics = { enable = true, show_on_dirs = true },

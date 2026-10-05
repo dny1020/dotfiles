@@ -29,7 +29,12 @@ return {
         "intelephense", -- PHP
       }
 
-      require("mason-lspconfig").setup({ ensure_installed = servers })
+      require("mason-lspconfig").setup({
+        ensure_installed = servers,
+        -- stylua is installed as a formatter for conform; its LSP mode would format
+        -- Lua with default settings (tabs) in projects that have no stylua config
+        automatic_enable = { exclude = { "stylua" } },
+      })
 
       -- Non-LSP tools: formatters for conform and the linter bashls calls
       local registry = require("mason-registry")

@@ -11,6 +11,58 @@ return {
     end,
   },
 
+  -- Bottom bar: mode, branch, diff, path relative to the project, diagnostics, LSP, position
+  {
+    "nvim-lualine/lualine.nvim",
+    event = "VeryLazy",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      options = {
+        theme = "gruvbox",
+        globalstatus = true,
+        component_separators = "",
+        section_separators = "",
+      },
+      sections = {
+        lualine_a = { "mode" },
+        lualine_b = { "branch", "diff" },
+        lualine_c = { { "filename", path = 1, symbols = { modified = " ●", readonly = " " } } },
+        lualine_x = {
+          "diagnostics",
+          {
+            function()
+              local names = {}
+              for _, c in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
+                table.insert(names, c.name)
+              end
+              return table.concat(names, " ")
+            end,
+          },
+          "filetype",
+        },
+        lualine_y = { "progress" },
+        lualine_z = { "location" },
+      },
+      extensions = { "nvim-tree", "fzf", "quickfix", "lazy", "mason" },
+    },
+  },
+
+  -- Top bar inside each file: path > class > function (VS Code breadcrumbs), clickable
+  {
+    "Bekaboo/dropbar.nvim",
+    event = { "BufReadPost", "BufNewFile" },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    keys = {
+      {
+        "<leader>;",
+        function()
+          require("dropbar.api").pick()
+        end,
+        desc = "Breadcrumbs: pick",
+      },
+    },
+  },
+
   -- Signos de git en la columna lateral (+ ~ -) y acciones de hunk
   {
     "lewis6991/gitsigns.nvim",
