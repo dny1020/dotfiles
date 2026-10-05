@@ -3,3 +3,12 @@
 [user]
 	email = jose.narvaez@emtelco.com.co
 	name = Danilo Narvaez
+[merge]
+	tool = nvimdiff
+	conflictstyle = zdiff3
+[mergetool]
+	keepBackup = false
+	prompt = false
+[rerere]
+	enabled = true
+	autoupdate = true
