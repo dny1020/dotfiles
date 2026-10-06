@@ -14,7 +14,9 @@ return {
       local servers = {
         "lua_ls", -- Lua (config de Neovim)
         "bashls", -- Bash/zsh scripts
-        "pyright", -- Python
+        "pyright", -- Python: types
+        "ruff", -- Python: lint, imports, format (also installs the ruff CLI for conform)
+        "gopls", -- Go
         "ts_ls", -- JavaScript/TypeScript
         "html",
         "cssls",
@@ -23,10 +25,27 @@ return {
         "taplo", -- TOML
         "dockerls",
         "terraformls", -- Terraform
+        "ansiblels", -- Ansible (filetype yaml.ansible, see options.lua)
         "intelephense", -- PHP
       }
 
-      require("mason-lspconfig").setup({ ensure_installed = servers })
+      require("mason-lspconfig").setup({
+        ensure_installed = servers,
+        -- stylua is installed as a formatter for conform; its LSP mode would format
+        -- Lua with default settings (tabs) in projects that have no stylua config
+        automatic_enable = { exclude = { "stylua" } },
+      })
+
+      -- Non-LSP tools: formatters for conform and the linter bashls calls
+      local registry = require("mason-registry")
+      registry.refresh(function()
+        for _, name in ipairs({ "stylua", "prettier", "shellcheck" }) do
+          local pkg = registry.get_package(name)
+          if not pkg:is_installed() then
+            pkg:install()
+          end
+        end
+      end)
 
       -- Capacidades extendidas por nvim-cmp
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
@@ -37,8 +56,20 @@ return {
           Lua = {
             diagnostics = { globals = { "vim" } },
             workspace = { checkThirdParty = false },
+            format = { enable = false }, -- stylua via conform
           },
         },
+      })
+
+      vim.lsp.config("ansiblels", {
+        settings = {
+          ansible = { validation = { lint = { enabled = vim.fn.executable("ansible-lint") == 1 } } },
+        },
+      })
+
+      -- ruff owns imports and lint; pyright only does types
+      vim.lsp.config("pyright", {
+        settings = { pyright = { disableOrganizeImports = true } },
       })
 
       -- Capacidades por defecto para todos los servidores
@@ -64,21 +95,32 @@ return {
           if client and client.name == "terraformls" then
             client.server_capabilities.semanticTokensProvider = nil
           end
+          if client and client.name == "ruff" then
+            client.server_capabilities.hoverProvider = false -- pyright's hover is the useful one
+          end
 
           local function m(keys, fn, desc)
             vim.keymap.set("n", keys, fn, { buffer = ev.buf, desc = "LSP: " .. desc })
           end
-          m("gd", vim.lsp.buf.definition, "ir a definición")
+          -- fzf-lua: jumps directly on a single result, otherwise a filterable list
+          m("gd", "<cmd>FzfLua lsp_definitions<CR>", "ir a definición")
           m("gD", vim.lsp.buf.declaration, "ir a declaración")
-          m("gr", vim.lsp.buf.references, "referencias")
-          m("gi", vim.lsp.buf.implementation, "implementación")
+          m("gr", "<cmd>FzfLua lsp_references<CR>", "referencias")
+          m("gi", "<cmd>FzfLua lsp_implementations<CR>", "implementación")
+          m("gy", "<cmd>FzfLua lsp_typedefs<CR>", "definición de tipo")
           m("K", vim.lsp.buf.hover, "documentación flotante")
           m("<leader>rn", vim.lsp.buf.rename, "renombrar símbolo")
           m("<leader>ca", vim.lsp.buf.code_action, "acción de código")
           m("<leader>d", vim.diagnostic.open_float, "diagnóstico de la línea")
-          m("[d", function() vim.diagnostic.jump({ count = -1 }) end, "diagnóstico anterior")
-          m("]d", function() vim.diagnostic.jump({ count = 1 }) end, "diagnóstico siguiente")
-          m("<leader>f", function() vim.lsp.buf.format({ async = true }) end, "formatear buffer")
+          m("[d", function()
+            vim.diagnostic.jump({ count = -1 })
+          end, "diagnóstico anterior")
+          m("]d", function()
+            vim.diagnostic.jump({ count = 1 })
+          end, "diagnóstico siguiente")
+          m("<leader>f", function()
+            require("conform").format({ async = true })
+          end, "formatear buffer")
         end,
       })
     end,

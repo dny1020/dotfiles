@@ -11,7 +11,7 @@ export PATH="$HOME/.local/bin:$PATH"
 if command -v herdr >/dev/null \
    && [[ $- == *i* ]] && [[ -z "$HERDR_ENV$TMUX" ]] \
    && [[ "$TERM" != dumb && "$TERM" != linux ]] \
-   && [[ -z "$VSCODE_INJECTION$INSIDE_EMACS" ]]; then
+   && [[ -z "$VSCODE_INJECTION$INSIDE_EMACS$CLAUDECODE" ]]; then
   exec herdr
 fi
 
@@ -55,6 +55,23 @@ alias gs='git status'
 alias ga='git add'
 alias gc='git commit'
 alias gd='git diff'
+alias gl='git log --oneline --graph --decorate -20'
+
+# wt <branch>: one git worktree per agent/herdr pane, next to the repo as
+# ../<repo>-<branch>, so parallel agents never share a working tree.
+# No args lists them; clean up with `git worktree remove <dir>`.
+wt() {
+  [[ -z "$1" ]] && { git worktree list; return; }
+  local root dir
+  root=$(git rev-parse --show-toplevel) || return
+  dir="${root:h}/${root:t}-${1//\//-}"
+  if git show-ref --quiet --verify "refs/heads/$1"; then
+    git worktree add "$dir" "$1" || return
+  else
+    git worktree add -b "$1" "$dir" || return
+  fi
+  cd "$dir"
+}
 
 # clip: copiar stdin al portapapeles, según el SO (macOS / Linux X11 / WSL)
 if command -v pbcopy >/dev/null; then
@@ -94,5 +111,9 @@ alias tf-prod='env -u AWS_ENDPOINT_URL -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS
 # zoxide: tu `cd` de siempre, pero recuerda a dónde sueles ir.
 # Va al final del todo porque zoxide exige inicializarse el último; si queda
 # algo después, avisa en cada arranque con "possible configuration issue".
-export _ZO_DOCTOR=0   # zoxide health check: noise in non-interactive shells
-command -v zoxide >/dev/null && eval "$(zoxide init zsh --cmd cd)"
+# Claude Code replays this shell's functions in its own non-interactive shells,
+# where zoxide's hook is missing: every `cd` printed a doctor warning and a
+# mistyped path would silently jump elsewhere. Agents get the plain builtin.
+if command -v zoxide >/dev/null && [[ -z "$CLAUDECODE" ]]; then
+  eval "$(zoxide init zsh --cmd cd)"
+fi

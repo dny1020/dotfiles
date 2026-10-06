@@ -15,7 +15,7 @@ opt.signcolumn = "yes" -- columna fija para diagnósticos/git (no salta el texto
 opt.scrolloff = 4
 opt.sidescrolloff = 8
 opt.showmode = false
-opt.laststatus = 0 -- como VS Code sin status bar
+opt.laststatus = 3 -- a single statusline across all splits (lualine)
 opt.showtabline = 0 -- sin barra de tabs
 opt.cmdheight = 0
 opt.colorcolumn = ""
@@ -27,6 +27,10 @@ opt.tabstop = 2
 opt.shiftwidth = 2
 opt.expandtab = true
 opt.autoindent = true
+
+opt.splitright = true
+opt.splitbelow = true
+opt.updatetime = 250 -- faster CursorHold: gitsigns blame and LSP highlights
 
 -- Portapapeles del sistema (xclip en X11): `y` copia y `p` pega contra el
 -- clipboard, así que pegar de la web es `p` en modo normal y no pasa por el
@@ -70,9 +74,32 @@ vim.api.nvim_create_autocmd("QuickFixCmdPost", {
   command = "cwindow",
 })
 
--- Netrw (explorador nativo, usado por <leader>e)
-vim.g.netrw_banner = 0
-vim.g.netrw_liststyle = 3
+-- autoread only applies when nvim checks the file; agents in another herdr
+-- pane write behind its back, so check on focus, buffer switch and idle.
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "TermLeave" }, {
+  group = vim.api.nvim_create_augroup("reload_external_changes", { clear = true }),
+  callback = function()
+    if vim.fn.getcmdwintype() == "" then
+      vim.cmd("checktime")
+    end
+  end,
+})
+vim.api.nvim_create_autocmd("FileChangedShellPost", {
+  group = vim.api.nvim_create_augroup("notify_external_changes", { clear = true }),
+  callback = function(args)
+    vim.notify("Reloaded (changed on disk): " .. vim.fn.fnamemodify(args.file, ":."), vim.log.levels.WARN)
+  end,
+})
+
+-- Ansible lives in plain .yml files; these paths are what ansiblels attaches to
+vim.filetype.add({
+  pattern = {
+    [".*/roles/.*/tasks/.*%.ya?ml"] = "yaml.ansible",
+    [".*/roles/.*/handlers/.*%.ya?ml"] = "yaml.ansible",
+    [".*/playbooks/.*%.ya?ml"] = "yaml.ansible",
+  },
+})
+vim.treesitter.language.register("yaml", "yaml.ansible")
 
 -- Volver al último cursor al reabrir un archivo
 vim.api.nvim_create_autocmd("BufReadPost", {

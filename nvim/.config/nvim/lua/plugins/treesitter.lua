@@ -2,10 +2,12 @@
 -- Rama `main`: la unica compatible con nvim 0.12+. La vieja `master` esta congelada
 -- y con 0.12 rompe en las inyecciones (HTML->JS/CSS) con
 -- "attempt to call method 'range' (a nil value)".
+-- stylua: ignore
 local langs = {
   "lua", "vim", "vimdoc", "bash", "python", "javascript", "typescript",
   "json", "yaml", "toml", "php", "html", "css", "markdown", "markdown_inline",
   "dockerfile", "hcl", "terraform", "sql", "gitcommit", "diff",
+  "go", "gomod", "gosum", "git_rebase", "make",
 }
 
 -- Por encima de este tamano no se activa treesitter: en archivos enormes

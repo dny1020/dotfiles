@@ -3,3 +3,12 @@
 [user]
 	email = dny1020@users.noreply.github.com
 	name = Danilo Narvaez
+[merge]
+	tool = nvimdiff
+	conflictstyle = zdiff3
+[mergetool]
+	keepBackup = false
+	prompt = false
+[rerere]
+	enabled = true
+	autoupdate = true
