@@ -2,11 +2,28 @@
   "permissions": {
     "defaultMode": "auto"
   },
-  "model": "opus",
+  "model": "sonnet",
   "disableClaudeAiConnectors": true,
+  "skillOverrides": {
+    "build-agentic-agent": "off",
+    "build-robot": "off",
+    "linux-best-practices": "off",
+    "algorithmic-art": "off",
+    "docs": "off",
+    "docx": "off",
+    "pptx": "off",
+    "xlsx": "off",
+    "pdf": "off",
+    "google-workspace": "off",
+    "morning": "off",
+    "import-memory": "off",
+    "computer-use": "off",
+    "built-in-browser": "off",
+    "deep-research": "off",
+    "skill-creator": "off"
+  },
   "enabledPlugins": {
-    "pyright-lsp@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true
+    "frontend-design@claude-plugins-official": false
   },
   "effortLevel": "high",
   "awaySummaryEnabled": false,
@@ -15,7 +32,6 @@
   "editorMode": "vim",
   "preferredNotifChannel": "auto",
   "autoCompactEnabled": true,
-  "fileCheckpointingEnabled": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
@@ -58,5 +74,6 @@
         "Authorization": "Bearer ${env:DOCTION_MCP_TOKEN}"
       }
     }
-  }
+  },
+  "fileCheckpointingEnabled": true
 }

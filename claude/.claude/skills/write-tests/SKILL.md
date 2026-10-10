@@ -13,7 +13,7 @@ Write or review tests for the given code and apply the following checklist. Fix 
 ## Structure
 - Use `pytest`, not `unittest`-style classes, unless the codebase already standardizes on the latter.
 - Run tests with `uv run pytest`, not a bare `pytest` or `python -m pytest` — keeps the venv/lockfile authoritative.
-- Before calling the work done, run the Python check gate in AGENTS.md — new tests must be lint-clean, formatted, and type-checked, not just green.
+- Before calling the work done, run the Python check gate in AGENTS.md — new tests must be lint-clean and formatted, not just green.
 - One behavior per test; test names describe the behavior (`test_returns_404_when_user_not_found`), not the implementation (`test_get_user_2`).
 - Fixtures for shared setup, not copy-pasted setup code across tests.
 
@@ -23,9 +23,9 @@ Write or review tests for the given code and apply the following checklist. Fix 
 - A bug that only shows up when a mock diverges from the real dependency's behavior is a sign the test needs to be an integration test, not a more detailed mock.
 
 ## Avoid overmocking
-- Mock external services and things you don't own (third-party APIs, clock, filesystem) — not your own domain logic.
+- Prefer real behavior: `tmp_path` for files, real local resources. Mock only what can't run locally (third-party APIs, clock) — never your own domain logic.
 - Don't mock the database in a test whose entire purpose is verifying a query or a migration works.
-- If a test needs five mocks to run, that's usually a sign the unit under test is doing too much, not that the test needs more mocking.
+- No heavy `@patch` use. If a test needs several mocks to run, that's usually a sign the unit under test is doing too much, not that the test needs more mocking.
 
 ## Avoid brittle tests
 - Assert on behavior and outputs, not on internal implementation details (private method call counts, internal state) that can change without changing behavior.

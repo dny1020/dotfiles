@@ -28,11 +28,13 @@ Avoid
 
 - Enterprise patterns without necessity: factory for everything, generic repositories, excessive interfaces, magic metaclasses.
 - Clever one-liners.
+- Classes unless complex state truly requires one: prefer plain functions, `dict` and `list`. No registries, managers or design patterns for simple tasks.
+- `async` / `await` / `asyncio` unless strictly necessary (WebSockets, massive parallel HTTP). Synchronous, blocking code is the default.
 - Single-call helper functions — inline the logic instead.
 - Regular expressions unless they're clearly the best fit — prefer plain string operations.
 - `from __future__ import annotations`.
 - Comments that restate what the code already says.
-- Type hints beyond what improves comprehension — annotation is not a goal in itself.
+- Type hints beyond basic ones in function signatures (`def fn(a: str) -> str:`) for readability and autocomplete. No complex or library-internal types (`Union`, `Literal`, advanced generics, `ChatCompletionMessageParam`). Flexibility over satisfying a static checker.
 - Exception handling for scenarios that can't happen (every external call still needs it — see Mandatory Baseline).
 
 Prefer
@@ -62,13 +64,13 @@ Every project ships with:
 Any Python change is only done once this passes, in this order:
 
 ```bash
-uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest
+uv run ruff check . && uv run ruff format --check . && uv run pytest
 ```
 
 - Run it yourself before reporting work as finished — don't hand back a change for the user to validate.
 - `ruff` covers both lint and format; `--check` never rewrites files, so fix what it reports with `uv run ruff format .`.
-- `pyright` is the type checker, not mypy. Adjust the paths to the project's real layout when it isn't `app`/`tests`.
-- Same four commands in CI, same order — the local gate and the pipeline never diverge.
+- No type checker (pyright/mypy) in any project.
+- Same three commands in CI, same order — the local gate and the pipeline never diverge.
 
 ### React check gate
 
@@ -84,7 +86,7 @@ npm run lint && npm run format:check && npm run build
 - Tests are their own step (`npm run test`, vitest) — outside this gate, but CI runs them and so should you when the change touches tested behavior.
 - A project without a `format:check` script gets prettier added rather than the gate quietly reduced.
 
-Prefer unit and integration tests. Avoid overmocking and brittle tests.
+Prefer unit and integration tests that exercise real behavior: `tmp_path`, real local resources. No heavy `unittest.mock` / `@patch`: if a test needs several mocked layers, simplify the function instead.
 
 ## Infrastructure
 

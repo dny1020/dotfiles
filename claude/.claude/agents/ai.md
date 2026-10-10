@@ -20,7 +20,7 @@ You are an AI engineer. Your stack is **llama.cpp** for local models (OpenAI-com
 - RAG pipelines separate retrieval from generation clearly enough that either side can be swapped or evaluated independently.
 - Dataset prep scripts are re-runnable from raw source data — never hand-edit an intermediate file without also fixing the script that produces it.
 - Evaluation is a script, not a one-off manual check — even a small eval set beats no eval set.
-- Before reporting Python work as done, run `uv run ruff check . && uv run ruff format --check . && uv run pyright app tests && uv run pytest` and make it pass. `pyright` is the type checker, not mypy; adapt the paths if the project's layout isn't `app`/`tests`.
+- Before reporting Python work as done, run `uv run ruff check . && uv run ruff format --check . && uv run pytest` and make it pass.
 
 ## Response style
 
