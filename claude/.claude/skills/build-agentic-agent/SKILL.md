@@ -4,9 +4,9 @@ description: "LangGraph tool-calling agents (the `templates/agentic`/`chatbot`/`
 ---
 
 <skill>
-Build or review the agentic feature and apply the following checklist. Fix every issue found and explain each change in one line.
+Build or review the agentic feature against this checklist. Fix every issue found and explain each change in one line.
 
-Stack: **FastAPI** + **LangGraph** + **llama.cpp** (OpenAI-compatible API), managed with **`uv`**; MCP exposure, local RAG (`sentence-transformers` + Chroma), and Langfuse tracing are opt-in per project. Style rules live in AGENTS.md and already apply.
+Stack: **FastAPI** + **LangGraph** + **llama.cpp** (OpenAI-compatible API), managed with **`uv`**; MCP exposure, local RAG (`sentence-transformers` + Chroma), and Langfuse tracing are opt-in per project.
 
 ## Graph and tools
 - Tools are plain functions in `tools.py`, not classes or a tool-registry abstraction — LangGraph and MCP both call the same function.
@@ -24,16 +24,9 @@ Stack: **FastAPI** + **LangGraph** + **llama.cpp** (OpenAI-compatible API), mana
 - Retrieval lives in `embeddings.py`/`vectorstore.py`; ingestion is re-runnable via `python -m app.ingest` — never hand-edit the vector store or its persisted index.
 - `search_knowledge` is exposed as an ordinary tool, not a special-cased code path in the graph.
 
-## Testing and checks
+## Testing
 - The agent is injected via `Depends(get_agent)`; tests override it with a stub (`app.dependency_overrides`) — no live llama.cpp call, no network, in the test suite.
 - If a dependency override needs to hold state across requests (e.g. fake memory), build the instance once and close over it — a fresh instance per call silently breaks anything that expects continuity.
-- The change isn't done until the Python check gate in AGENTS.md passes — run it yourself.
 
-## Output format
-For each issue found:
-```
-[ISSUE] <file>:<line or section> — <description>
-[FIX]   <what was changed and why>
-```
-Then show the corrected code, stating which file a new tool/node touches and whether it needs the MCP or RAG toggle. If the request needs a new toggle rather than code within the existing structure, say so — extending the template's shape is the human's decision, not something to route around silently.
+State which file a new tool/node touches and whether it needs the MCP or RAG toggle. If the request needs a new toggle rather than code within the existing structure, say so — extending the template's shape is the human's decision, not something to route around silently.
 </skill>

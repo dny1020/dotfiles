@@ -4,14 +4,11 @@ description: "Terraform for AWS. Invoked when: provisioning AWS infrastructure, 
 ---
 
 <skill>
-Write or review the Terraform code and apply the following checklist. Fix every issue found and explain each change in one line.
-
-## Style
-- No AI-looking code: no filler comments, no module indirection for a resource with a single call site.
+Write or review the Terraform code against this checklist. Fix every issue found and explain each change in one line.
 
 ## Module structure
-- Reusable infrastructure is a module under `modules/<name>/` with its own `variables.tf`, `outputs.tf`, `main.tf` — not copy-pasted between environments.
-- Environments (`dev`, `staging`, `prod`) are separate root modules that call shared modules with different variables, not separate copies of the same resources.
+- A module under `modules/<name>/` (`variables.tf`, `outputs.tf`, `main.tf`) only when two or more root modules use it — no module indirection for a single call site.
+- With more than one environment, each (`dev`, `prod`, ...) is its own root module calling the shared modules, not a copy of the same resources.
 - No hardcoded account IDs, regions, or ARNs — pass them as variables or look them up via data sources.
 
 ## Variables and outputs
@@ -29,11 +26,5 @@ Write or review the Terraform code and apply the following checklist. Fix every 
 - Roles are scoped to the specific resources and actions the workload needs, not the AWS managed `AdministratorAccess`.
 - Cross-account or cross-service access uses assume-role with an explicit trust policy, not shared long-lived credentials.
 
-## Output format
-For each issue found:
-```
-[ISSUE] <file>:<line or section> — <description>
-[FIX]   <what was changed and why>
-```
-Then show the corrected `.tf` file or diff, and the exact `terraform plan`/`terraform apply` command to run, including any `-var-file` needed.
+Show the exact `terraform plan`/`terraform apply` command to run, including any `-var-file` needed.
 </skill>
