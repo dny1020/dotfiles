@@ -4,9 +4,9 @@ description: "Scheduled background workers (the `templates/robot` pattern: APSch
 ---
 
 <skill>
-Build or review the scheduled-worker feature and apply the following checklist. Fix every issue found and explain each change in one line.
+Build or review the scheduled-worker feature against this checklist. Fix every issue found and explain each change in one line.
 
-Stack: **APScheduler** (`BlockingScheduler`) + **SQLAlchemy/SQLite** + **HTTPX**, managed with **`uv`**; anomaly detection (`scikit-learn` `IsolationForest`) is opt-in. Style rules live in AGENTS.md and already apply.
+Stack: **APScheduler** (`BlockingScheduler`) + **SQLAlchemy/SQLite** + **HTTPX**, managed with **`uv`**; anomaly detection (`scikit-learn` `IsolationForest`) is opt-in.
 
 ## Scheduler and jobs
 - No `routes.py`, no FastAPI — this is a background worker, not a web service. Don't add an HTTP surface for consistency with other templates.
@@ -26,15 +26,8 @@ Stack: **APScheduler** (`BlockingScheduler`) + **SQLAlchemy/SQLite** + **HTTPX**
 - `IsolationForest` trains on the real accumulated `response_time_ms` history in `JobRun` — never on synthetic/placeholder data.
 - Detection only activates once there's enough history (the template's bar: ≥10 runs) — don't flag anomalies off a handful of points.
 
-## Testing and checks
+## Testing
 - Each module is tested in isolation with `monkeypatch` — no real network calls, and no test that actually blocks on the scheduler's interval.
-- The change isn't done until the Python check gate in AGENTS.md passes — run it yourself.
 
-## Output format
-For each issue found:
-```
-[ISSUE] <file>:<line or section> — <description>
-[FIX]   <what was changed and why>
-```
-Then show the corrected code. Flag anything that changes the check interval, alert behavior, or what gets persisted to `JobRun` — those affect a process already running in production.
+Flag anything that changes the check interval, alert behavior, or what gets persisted to `JobRun` — those affect a process already running in production.
 </skill>

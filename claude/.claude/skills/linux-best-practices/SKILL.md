@@ -4,10 +4,7 @@ description: "Linux scripts, configs, and system changes. Invoked when: writing 
 ---
 
 <skill>
-Review the code or configuration provided, or the recent changes on the current branch, and apply the following Linux best practices checklist. Fix every issue you find and explain each change in one line.
-
-## Style
-- No AI-looking scripts: no filler comments, no single-call helper functions, no unneeded abstraction for a one-host script.
+Review the code or configuration provided, or the recent changes on the current branch, against this checklist. Fix every issue you find and explain each change in one line.
 
 ## Shell scripting
 - Shebang must be `#!/usr/bin/env bash` (or explicit `/bin/bash`), never `/bin/sh` for bash features.
@@ -16,7 +13,7 @@ Review the code or configuration provided, or the recent changes on the current 
 - Use `[[ ]]` not `[ ]` for conditionals.
 - Never parse `ls` output — use globs or `find`.
 - Avoid `eval` and unvalidated `$()` with user input (command injection risk).
-- Check `shellcheck` compliance mentally; flag any SC-code violations.
+- Run `shellcheck` on the script when available; otherwise flag likely SC violations.
 
 ## File permissions
 - Config files with secrets: `600` (owner read/write only).
@@ -51,12 +48,4 @@ Review the code or configuration provided, or the recent changes on the current 
 ## Logging
 - Long-running scripts should log to `journald` via `systemd-cat` or to a file under `/var/log/<service>/`.
 - Include timestamps: `date '+%Y-%m-%dT%H:%M:%S'`.
-
-## Output
-For each issue found, output:
-```
-[ISSUE] <file>:<line> — <description>
-[FIX]   <what was changed and why>
-```
-Then show the corrected file or diff.
 </skill>

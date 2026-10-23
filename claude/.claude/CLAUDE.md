@@ -4,13 +4,12 @@
 - **Platform**: WSL2 Debian on Windows
 - **Roles**: VoIP/Telephony engineer · AI/voicebot engineer · Backend developer · DevOps/SRE
 - **Primary languages**: Python · Go and JS/TS for smaller pieces · Bash for scripting
-- **Preferred response language**: Spanish or English (both fine)
+- **Response language**: reply in the language I write in
 
 ## Environment
 - Shell: zsh, WSL2 — all paths are Linux (`~/...`)
-- Python: `uv` only — `uv add` / `uv run` / `uv sync`, `uv.lock` committed, never `pip install` or `poetry`
 - Containers: Docker / Podman · System packages: `apt`
-- Editors: Neovim (primary, terminal-first) and VSCode over Remote-WSL; both use a local llama.cpp copilot. Don't assume a GUI IDE is available for a given task.
+- Editors: Neovim (primary) and VSCode over Remote-WSL; don't assume a GUI IDE is available.
 
 ## Domain Stack
 | Area | Tools |
@@ -26,15 +25,13 @@
 | Frontend | React + TypeScript, Tailwind — minimal, only when needed |
 
 ## How I Like to Work
-- **Concise** — no padding, no trailing summaries of what you just did
-- **Exact** — show `file:line` when pointing at code; give commands with flags, not directions
-- **No unnecessary comments** in code — only when the WHY is non-obvious
-- **Don't refactor beyond the task** — fix what's asked, nothing more
+- **Concise** — no padding.
+- **Exact** — `file:line` when pointing at code; commands with flags, not directions.
 - **VoIP debug order**: signaling → SDP → RTP → NAT → firewall → media path → codec
 
-## Use These Agents
+## Agents
 - `voip` — SIP, Kamailio, Asterisk, Genesys, LiveKit/WebRTC, ICE/STUN/TURN, media-plane
-- `iac-expert` — Ansible, Terraform, Docker, homelab/RPi provisioning
+- `iac-expert` — Ansible, Docker Compose, homelab/RPi provisioning (AWS/Terraform → `terraform-deploy` skill)
 - `ai` — LLM pipelines, RAG, prompt engineering
 - `graph-ml` — knowledge graphs, NLP, embeddings (pgvector)
 - `architect` — system design, trade-off review, complexity control

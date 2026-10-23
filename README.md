@@ -36,6 +36,7 @@ El prompt usa Nerd Font: instala JetBrainsMono NF o quita los iconos de `zsh/.co
 | `pipewire` | `~/.config/pipewire/`, `~/.config/wireplumber/` | Cancelación de eco para llamadas y Bluetooth fijado en A2DP | ✓ | |
 | `redshift` | `~/.config/redshift.conf` | Luz nocturna | ✓ | |
 | `rofi` | `~/.config/rofi/` | Launcher | ✓ | |
+| `scripts` | `~/.local/bin/` | `verify` (check gate del proyecto actual: ruff/pytest o lint/format/build/test) | ✓ | ✓ |
 | `tealdeer` | `~/.config/tealdeer/` | `tldr` con auto-update del cache | ✓ | ✓ |
 | `tmux` | `~/.config/tmux/` | Alternativa a herdr (no arranca solo). Prefijo `C-a`, divisiones que heredan el directorio, copia vi con portapapeles del SO, Gruvbox | ✓ | ✓ |
 | `xresources` | `~/.Xresources` | xterm/uxterm: fuente, 256 colores, Gruvbox | ✓ | |
