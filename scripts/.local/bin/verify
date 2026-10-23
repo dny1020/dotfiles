@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Runs the project's check gate (see ~/.claude/AGENTS.md) without stopping at the first failure.
+set -uo pipefail
+failed=()
+
+run() {
+    printf '\n==> %s\n' "$*"
+    "$@" || failed+=("$*")
+}
+
+if [ ! -f pyproject.toml ] && [ ! -f package.json ]; then
+    echo "verify: no pyproject.toml or package.json in $PWD" >&2
+    exit 2
+fi
+
+if [ -f pyproject.toml ]; then
+    run uv run ruff check .
+    run uv run ruff format --check .
+    run uv run pytest -q
+fi
+
+if [ -f package.json ]; then
+    run npm run lint
+    run npm run format:check
+    run npm run build
+    run npm run test --if-present -- --run
+fi
+
+echo
+if [ ${#failed[@]} -eq 0 ]; then
+    echo "✓ VERIFY PASSED"
+    exit 0
+fi
+printf '✗ FAILED: %s\n' "${failed[@]}"
+exit 1
