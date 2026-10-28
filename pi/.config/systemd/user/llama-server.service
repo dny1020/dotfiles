@@ -15,7 +15,7 @@ Type=simple
 # (no versionado) pone LLAMA_BIND=0.0.0.0.
 Environment=LLAMA_BIND=127.0.0.1
 EnvironmentFile=-%h/.config/llama-server.env
-ExecStart=~/llama.cpp/build/bin/llama-server -m ~/models/Qwen2.5-Coder-1.5B-Instruct-Q4_K_M.gguf --host ${LLAMA_BIND} --port 8082 -t 8 -c 16384 -np 1 -n 768 -fa on -b 2048 -ub 512 --cache-reuse 256
+ExecStart=%h/llama.cpp/build/bin/llama-server -m %h/models/Qwen2.5-Coder-1.5B-Instruct-Q4_K_M.gguf --host ${LLAMA_BIND} --port 8082 -t 8 -c 16384 -np 1 -n 768 -fa on -b 2048 -ub 512 --cache-reuse 256
 Restart=on-failure
 RestartSec=5
 

@@ -54,29 +54,22 @@
     "environment": [
       "### Org-wide",
       "**Organization**: None configured",
-      "**Cloud provider(s)**: AWS (DynamoDB, ALB) and Azure OpenAI — used by work-project",
       "**Repository visibility**: assume private",
       "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
       "**Secrets management**: local `.env` file (gitignored: `.env`, `.env.local`), plus AWS credential chain (boto3 standard vars/profile/role) for DynamoDB and standard Azure OpenAI API key env vars",
-      "**Default / protected branches**: work-project uses `feat/v1`; protection status unverified in every repo",
       "**CI/CD deploy targets**: None configured",
       "**Network posture**: None configured",
       "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine (WSL2 Debian on Windows) with open internet",
       "**Source control**: the current repo and its configured remote(s) only",
       "**Trusted internal domains**: None configured",
       "**Trusted cloud buckets**: None configured",
-      "**Key internal services**: internal-alb.example.com and internal-alb-2.example.com (work-project ALB hosts)",
       "**Internal package registry**: None configured",
-      "**Sensitive data locations & audiences**: `.env` / `.env.local` (gitignored, holds Azure OpenAI key, Genesys client secret, Langfuse keys, AWS-adjacent config) and DynamoDB tables `checkpoints` / `conversations` (conversation data, PII-adjacent) — share only with audiences cleared for project production data",
       "**Data retention / declassification**: None configured",
-      "**Sensitive remote targets**: any host/namespace with `prod`/`production` as a whole segment; note DynamoDB tables and ALB hosts above are live/production-adjacent infra for the project voicebot even though not literally named `prod-*`",
       "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
       "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
       "### User-specific",
       "**Primary use of Claude Code**: software development — VoIP/telephony, voicebot/backend engineering, DevOps/SRE (per ~/.claude/CLAUDE.md)",
-      "**Trusted repo**: ~/work-project and its configured origin remote",
-      "**Org-specific CLIs**: `uv` (Python env/package manager — never `pip install`/`poetry`), `openspec` (planning workflow CLI), `graphify`",
-      "routine under ~/work-project/ prefix for uv, openspec, and aws CLI usage (DynamoDB/checkpointing per .env.example)"
+      "**Org-specific CLIs**: `uv` (Python env/package manager — never `pip install`/`poetry`), `openspec` (planning workflow CLI), `graphify`"
     ]
   }
 }
