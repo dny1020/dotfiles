@@ -42,6 +42,7 @@ export PAGER=less
 
 # PATH personal
 [[ -d "$HOME/.opencode/bin" ]] && export PATH="$HOME/.opencode/bin:$PATH"
+[[ -d "$HOME/.npm-global/bin" ]] && export PATH="$HOME/.npm-global/bin:$PATH"
 
 # Alias
 alias vim='nvim'   # migrado a Neovim; el comando `vim` sigue funcionando
@@ -73,25 +74,12 @@ wt() {
   cd "$dir"
 }
 
-# clip: copiar stdin al portapapeles, según el SO (macOS / Linux X11 / WSL)
-if command -v pbcopy >/dev/null; then
-  alias clip='pbcopy'
-elif command -v xclip >/dev/null; then
+# clip: copiar stdin al portapapeles (Linux X11 / WSL)
+if command -v xclip >/dev/null; then
   alias clip='xclip -selection clipboard'
 elif command -v clip.exe >/dev/null; then
   alias clip='clip.exe'
 fi
-
-# Secretos y ajustes por máquina (no versionados; ver README)
-[[ -f ~/.zsh_secrets ]] && source ~/.zsh_secrets
-[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
-
-# Herramientas modernas como alias (eza/zoxide/bat/fd) y copiloto local llama.cpp
-[[ -f ~/.config/shell/tools.zsh ]] && source ~/.config/shell/tools.zsh
-[[ -f ~/.config/shell/ai.zsh ]] && source ~/.config/shell/ai.zsh
-
-# Autosuggestions / highlighting / fzf / historial (debe ir el ÚLTIMO source)
-[[ -f ~/.config/shell/zsh-enhance.zsh ]] && source ~/.config/shell/zsh-enhance.zsh
 
 # AWS local: siempre usa el endpoint del contenedor y credenciales no reales.
 alias awsl='AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test aws'
@@ -106,7 +94,17 @@ awsp() {
 # Terraform: los mismos comandos sirven desde cualquier repositorio.
 alias tf-local='AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test terraform'
 alias tf-prod='env -u AWS_ENDPOINT_URL -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u AWS_SESSION_TOKEN -u AWS_SECURITY_TOKEN AWS_PROFILE="${AWS_PROD_PROFILE:-default}" terraform'
-[[ -d "$HOME/.npm-global/bin" ]] && export PATH="$HOME/.npm-global/bin:$PATH"
+
+# Secretos y ajustes por máquina (no versionados; ver README)
+[[ -f ~/.zsh_secrets ]] && source ~/.zsh_secrets
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+# Herramientas modernas como alias (eza/zoxide/bat/fd) y copiloto local llama.cpp
+[[ -f ~/.config/shell/tools.zsh ]] && source ~/.config/shell/tools.zsh
+[[ -f ~/.config/shell/ai.zsh ]] && source ~/.config/shell/ai.zsh
+
+# Autosuggestions / highlighting / fzf / historial (último source; solo zoxide va detrás)
+[[ -f ~/.config/shell/zsh-enhance.zsh ]] && source ~/.config/shell/zsh-enhance.zsh
 
 # zoxide: tu `cd` de siempre, pero recuerda a dónde sueles ir.
 # Va al final del todo porque zoxide exige inicializarse el último; si queda

@@ -1,6 +1,6 @@
 # Dotfiles
 
-Terminal y editor minimalistas para **Debian** (nativo o WSL) y **macOS**, gestionados con **GNU Stow**.
+Terminal y editor minimalistas para **Debian** (nativo o WSL), gestionados con **GNU Stow**.
 zsh sin frameworks, Neovim con lazy.nvim y `lazy-lock.json` para reproducibilidad, IA local opcional con llama.cpp.
 
 ## Instalación
@@ -9,38 +9,37 @@ zsh sin frameworks, Neovim con lazy.nvim y `lazy-lock.json` para reproducibilida
 git clone <repo> ~/dotfiles && cd ~/dotfiles
 
 sudo bash setup_debian.sh   # Debian nativo o WSL
-bash setup_macos.sh         # macOS
 ```
 
-Ambos instalan paquetes, aplican stow y dejan zsh por defecto. En Debian los paquetes salen de `packages.txt`, se añaden los repos de Docker y HashiCorp, y **Neovim se instala desde el release oficial en `~/.local`**: trixie solo trae 0.10.4 y el LSP moderno pide 0.11+. En macOS todo va por brew. Al final se sincronizan los plugins de Neovim en headless.
+Instala paquetes, aplican stow y dejan zsh por defecto. En Debian los paquetes salen de `packages.txt`, se añaden los repos de Docker y HashiCorp, y **Neovim se instala desde el release oficial en `~/.local`**: trixie solo trae 0.10.4 y el LSP moderno pide 0.11+. Al final se sincronizan los plugins de Neovim en headless.
 
 El prompt usa Nerd Font: instala JetBrainsMono NF o quita los iconos de `zsh/.config/starship.toml`.
 
 ## Paquetes
 
-| Paquete | Enlaza a | Contenido | Linux | macOS |
-|---|---|---|:-:|:-:|
-| `alacritty` | `~/.config/alacritty/` | Terminal. Overrides por máquina en `local.toml` | ✓ | ✓ |
-| `bin` | `~/.bin/` (en `PATH`) | `vol-boost` (volumen 100%/150%, `$mod+u`), `lock` (i3lock con el wallpaper difuminado), `papirus-recolor` (carpetas Gruvbox sin sudo) | ✓ | |
-| `claude` | `~/.claude/` | Config global de Claude Code (ver abajo) | ✓ | ✓ |
-| `dunst` | `~/.config/dunst/` | Notificaciones | ✓ | |
-| `git` | — | `.gitconfig` versionado pero **no enlazado** (ver abajo): identidad + merges con `nvimdiff`, `zdiff3` y `rerere` | | |
-| `herdr` | `~/.config/herdr/` | Multiplexor por defecto (orientado a agentes), arranca solo desde `.zshrc`. Prefijo `C-a`, Gruvbox. Binario aparte en `~/.local/bin/herdr` | ✓ | ✓ |
-| `gtk` | `~/.config/gtk-3.0/` | Adwaita-dark repintado a Gruvbox por CSS + iconos Papirus. Afecta a PCManFM y a los diálogos de Firefox | ✓ | |
-| `i3` | `~/.config/i3/` | WM, `i3status` (Gruvbox) y `osd.sh` (volumen/brillo/batería) | ✓ | |
-| `libinput-gestures` | `~/.config/` | Gestos del touchpad | ✓ | |
-| `nvim` | `~/.config/nvim/` | lazy.nvim, LSP (mason + lspconfig + nvim-cmp; pyright + ruff, gopls, ansiblels…), format on save (conform: ruff, stylua/prettier si el proyecto los configura), explorador fijo a la izquierda (nvim-tree, `<espacio>e`), fzf-lua (`<espacio><espacio>` archivos, `<espacio>/` grep, `<espacio>s…` búsquedas, `<espacio>g…` git), which-key, lualine (barra inferior con ruta), dropbar (breadcrumbs arriba, `<espacio>;`), iconos (nvim-web-devicons), treesitter (rama `main`, off en archivos >512 KB), tema **gruvbox** (dark hard) | ✓ | ✓ |
-| `opencode` | `~/.config/opencode/` | CLI sin proveedor/modelo fijo; hereda `~/.claude/AGENTS.md` y `skills-index.md` | ✓ | ✓ |
-| `pi` | `~/.config/systemd/user/` | Unit de `llama-server` (ver abajo) | ✓ | |
-| `picom` | `~/.config/picom.conf` | Compositor: sin tearing, sombras y blur `dual_kawase` | ✓ | |
-| `pipewire` | `~/.config/pipewire/`, `~/.config/wireplumber/` | Cancelación de eco para llamadas y Bluetooth fijado en A2DP | ✓ | |
-| `redshift` | `~/.config/redshift.conf` | Luz nocturna | ✓ | |
-| `rofi` | `~/.config/rofi/` | Launcher | ✓ | |
-| `scripts` | `~/.local/bin/` | `verify` (check gate del proyecto actual: ruff/pytest o lint/format/build/test) | ✓ | ✓ |
-| `tealdeer` | `~/.config/tealdeer/` | `tldr` con auto-update del cache | ✓ | ✓ |
-| `tmux` | `~/.config/tmux/` | Alternativa a herdr (no arranca solo). Prefijo `C-a`, divisiones que heredan el directorio, copia vi con portapapeles del SO, Gruvbox | ✓ | ✓ |
-| `xresources` | `~/.Xresources` | xterm/uxterm: fuente, 256 colores, Gruvbox | ✓ | |
-| `zsh` | `~/.zshrc`, `~/.config/shell/`, `~/.config/starship.toml` | zsh puro: completado con menú, historial compartido, `vim`→`nvim`, arranque de herdr. Prompt Starship con iconos Nerd Font | ✓ | ✓ |
+| Paquete | Enlaza a | Contenido |
+|---|---|---|
+| `alacritty` | `~/.config/alacritty/` | Terminal. Overrides por máquina en `local.toml` |
+| `bin` | `~/.bin/` (en `PATH`) | `vol-boost` (volumen 100%/150%, `$mod+u`), `lock` (i3lock con el wallpaper difuminado), `papirus-recolor` (carpetas Gruvbox sin sudo) |
+| `claude` | `~/.claude/` | Config global de Claude Code (ver abajo) |
+| `dunst` | `~/.config/dunst/` | Notificaciones |
+| `git` | — | `.gitconfig` versionado pero **no enlazado** (ver abajo): identidad + merges con `nvimdiff`, `zdiff3` y `rerere` |
+| `herdr` | `~/.config/herdr/` | Multiplexor por defecto (orientado a agentes), arranca solo desde `.zshrc`. Prefijo `C-a`, Gruvbox. Binario aparte en `~/.local/bin/herdr` |
+| `gtk` | `~/.config/gtk-3.0/` | Adwaita-dark repintado a Gruvbox por CSS + iconos Papirus. Afecta a PCManFM y a los diálogos de Firefox |
+| `i3` | `~/.config/i3/` | WM, `i3status` (Gruvbox) y `osd.sh` (volumen/brillo/batería) |
+| `libinput-gestures` | `~/.config/` | Gestos del touchpad |
+| `nvim` | `~/.config/nvim/` | lazy.nvim, LSP (mason + lspconfig + nvim-cmp; pyright + ruff, gopls, ansiblels…), format on save (conform: ruff, stylua/prettier si el proyecto los configura), explorador fijo a la izquierda (nvim-tree, `<espacio>e`), fzf-lua (`<espacio><espacio>` archivos, `<espacio>/` grep, `<espacio>s…` búsquedas, `<espacio>g…` git), which-key, lualine (barra inferior con ruta), dropbar (breadcrumbs arriba, `<espacio>;`), iconos (nvim-web-devicons), treesitter (rama `main`, off en archivos >512 KB), tema **gruvbox** (dark hard) |
+| `opencode` | `~/.config/opencode/` | CLI sin proveedor/modelo fijo; hereda `~/.claude/AGENTS.md` y `skills-index.md` |
+| `pi` | `~/.config/systemd/user/` | Unit de `llama-server` (ver abajo) |
+| `picom` | `~/.config/picom.conf` | Compositor: sin tearing, sombras y blur `dual_kawase` |
+| `pipewire` | `~/.config/pipewire/`, `~/.config/wireplumber/` | Cancelación de eco para llamadas y Bluetooth fijado en A2DP |
+| `redshift` | `~/.config/redshift.conf` | Luz nocturna |
+| `rofi` | `~/.config/rofi/` | Launcher |
+| `scripts` | `~/.local/bin/` | `verify` (check gate del proyecto actual: ruff/pytest o lint/format/build/test) |
+| `tealdeer` | `~/.config/tealdeer/` | `tldr` con auto-update del cache |
+| `tmux` | `~/.config/tmux/` | Alternativa a herdr (no arranca solo). Prefijo `C-a`, divisiones que heredan el directorio, copia vi con portapapeles del SO, Gruvbox |
+| `xresources` | `~/.Xresources` | xterm/uxterm: fuente, 256 colores, Gruvbox |
+| `zsh` | `~/.zshrc`, `~/.config/shell/`, `~/.config/starship.toml` | zsh puro: completado con menú, historial compartido, `vim`→`nvim`, arranque de herdr. Prompt Starship con iconos Nerd Font |
 
 `setup_debian.sh` enlaza también los paquetes de escritorio en WSL, donde son inertes: no hay X.
 
@@ -98,9 +97,8 @@ Fuera del repo a propósito (archivo real en `~/.claude/`): `.credentials.json`,
 | `~/.config/alacritty/local.toml` | Tamaño de fuente y demás por equipo |
 | `~/.gitconfig` | Identidad de git (distinta según el equipo) |
 
-`git/.gitconfig` está versionado pero **ningún script lo enlaza**, y lleva una identidad distinta de la que usa esta máquina. Es intencionado mientras la identidad varíe por equipo; si algún día se unifica, añade `git` a las listas de stow de ambos scripts.
+`git/.gitconfig` está versionado pero **ningún script lo enlaza**, y lleva una identidad distinta de la que usa esta máquina. Es intencionado mientras la identidad varíe por equipo; si algún día se unifica, añade `git` a la lista de stow de `setup_debian.sh`.
 
 ## Cabos sueltos conocidos
 
 - `packages.txt` no lista el stack de escritorio (i3, dunst, rofi, picom, redshift, playerctl, wireplumber, papirus-icon-theme): en un Debian limpio hay que instalarlo a mano. Sin resolver porque `setup_debian.sh` usa el mismo `packages.txt` en WSL, donde arrastrar X11 no tiene sentido.
-- `.claudeignore.md` no lo lee nada — ni Claude Code ni ningún script del repo. Es vestigial.

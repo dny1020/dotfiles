@@ -17,3 +17,10 @@
 # systemd `systemctl --user enable` artifacts (machine-specific symlinks created
 # inside the stowed unit dir; the unit files themselves stay versioned)
 **/systemd/user/*.wants/
+
+# herdr runtime state (logs, sessions, plugin lock)
+herdr/.config/herdr/*.log
+herdr/.config/herdr/.plugins.lock
+herdr/.config/herdr/release-notes.json
+herdr/.config/herdr/session.json
+herdr/.config/herdr/session-snapshots/
