@@ -71,5 +71,17 @@
       "**Primary use of Claude Code**: software development — VoIP/telephony, voicebot/backend engineering, DevOps/SRE (per ~/.claude/CLAUDE.md)",
       "**Org-specific CLIs**: `uv` (Python env/package manager — never `pip install`/`poetry`), `openspec` (planning workflow CLI), `graphify`"
     ]
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r --arg h \"$(hostname -s)\" '\"\\($h)/\\(.cwd | split(\"/\") | last): \\(.message)\"' | curl -s -m 5 -H 'Title: Claude Code' -H 'Tags: robot' -d @- \"https://ntfy.sh/$(tr -d '\\n' < ~/.config/claude-ntfy-topic)\" >/dev/null"
+          }
+        ]
+      }
+    ]
   }
 }
