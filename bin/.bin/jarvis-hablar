@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Hook Stop/Notification de Claude Code: dice en voz alta qué sesión terminó o qué pide.
+[ -e ~/.config/jarvis/tts-on ] || exit 0
+entrada=$(cat)
+proyecto=$(jq -r '.cwd | split("/") | last' <<< "$entrada")
+# Solo la primera frase y sin markdown: la respuesta completa no se puede escuchar.
+# Notification viene en inglés ("Claude needs your permission…"): se traduce a una frase fija.
+texto=$(jq -r 'if .hook_event_name == "Notification" then
+    (.message // "" | if test("permission"; "i") then "necesita permiso."
+      elif test("waiting|idle"; "i") then "espera tu respuesta." else "te necesita." end)
+  else (.last_assistant_message // "listo" | split("\n")[0]) end' <<< "$entrada" \
+  | sed -E 's/[`*_#|>]//g; s/\[([^]]*)\]\([^)]*\)/\1/g; s/([.!?]) .*/\1/' | cut -c1-200)
+# edge-tts (gratis, necesita red); sin red cae a Piper local. flock: que dos sesiones no hablen a la vez.
+setsid bash -c '
+  f=$(mktemp); trap "rm -f $f" EXIT
+  flock /tmp/jarvis-hablar.lock sh -c "
+    timeout 8 edge-tts --voice es-CO-SalomeNeural --text \"\$2\" --write-media $f ||
+      echo \"\$2\" | piper -m ~/.local/share/piper/es_MX-claude-high.onnx -f $f
+    pw-play $f" _ _ "$1"' _ "$proyecto: $texto" </dev/null >/dev/null 2>&1 &

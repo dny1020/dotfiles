@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Alterna la voz de los hooks de Claude Code (Super+Shift+V).
+f=~/.config/jarvis/tts-on
+if [ -e "$f" ]; then rm "$f"; notify-send Jarvis "Voz apagada"; else mkdir -p "${f%/*}"; touch "$f"; notify-send Jarvis "Voz encendida"; fi
