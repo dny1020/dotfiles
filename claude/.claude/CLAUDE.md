@@ -38,5 +38,12 @@
 
 Backend work runs through the `build-backend` skill, not an agent.
 
+## Memory (doction MCP)
+doction is my wiki and shared memory with my agents. Workspaces: `personal` (homelab, dotfiles, projects), `work`, `bussisnes`, `agente` (my RPi agent's memory, read-only for you).
+- Before answering about my homelab, a project or a past decision, run `search_knowledge` in the matching workspace (prefer it over `search_pages`, which is keyword-only) and read with `get_rag_context` or `read_page_raw`.
+- When the question is about one specific project, service or page, also run `get_linked_knowledge` on its page: the wikilinks lead to the runbooks, decisions and incidents that a text search misses.
+- After a non-obvious fix or decision, offer to record it with `upsert_page_section` in the page it belongs to; write only once I say yes. After writing, run `suggest_links` and add the `[[links]]` that fit.
+- Never write secrets, tokens or IPs of private services to doction.
+
 ## Engineering Guidelines
 @AGENTS.md
