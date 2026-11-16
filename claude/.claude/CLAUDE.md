@@ -11,9 +11,9 @@
 
 # Environment
 
-1. WSL2 Debian, zsh. Rutas siempre Linux (`~/...`).
+1. Debian nativo con i3, zsh. Rutas siempre Linux (`~/...`).
 2. Docker y Podman; paquetes con `apt`.
-3. Neovim (principal), VSCode vía Remote-WSL. No asumir IDE gráfico.
+3. Neovim (principal), VSCode local. Esta laptop usa escritorio i3.
 
 # Domain Stack
 

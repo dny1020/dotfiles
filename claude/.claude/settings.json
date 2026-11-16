@@ -76,7 +76,7 @@
       "**Secrets management**: local `.env` file (gitignored: `.env`, `.env.local`), plus AWS credential chain (boto3 standard vars/profile/role) for DynamoDB and standard Azure OpenAI API key env vars",
       "**CI/CD deploy targets**: None configured",
       "**Network posture**: None configured",
-      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine (WSL2 Debian on Windows) with open internet",
+      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine (native Debian laptop with i3) with open internet",
       "**Source control**: the current repo and its configured remote(s) only",
       "**Trusted internal domains**: None configured",
       "**Trusted cloud buckets**: None configured",
