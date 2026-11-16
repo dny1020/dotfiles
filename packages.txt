@@ -36,6 +36,7 @@ unzip
 xclip
 lsof
 feh
+autorandr
 net-tools
 tcpdump
 gnupg

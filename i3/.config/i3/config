@@ -34,6 +34,11 @@ exec_always --no-startup-id xrdb -merge ~/.Xresources
 # Fondo de pantalla
 exec_always --no-startup-id feh --bg-fill ~/.config/i3/wallpaper.jpg
 
+# Monitores: perfiles en ~/.config/autorandr (docked/mobile); el hotplug lo aplica
+# el udev hook de autorandr. Un monitor desconocido se extiende a la derecha.
+exec_always --no-startup-id autorandr --change --default horizontal
+bindsym $mod+p exec --no-startup-id autorandr --change --default horizontal
+
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 exec --no-startup-id dex --autostart --environment i3
@@ -71,12 +76,12 @@ bindsym XF86AudioMicMute     exec --no-startup-id $osd mic_mute
 bindsym XF86MonBrightnessUp   exec --no-startup-id $osd bri_up
 bindsym XF86MonBrightnessDown exec --no-startup-id $osd bri_down
 bindsym $mod+u exec --no-startup-id ~/.bin/vol-boost
+bindsym $mod+Shift+v exec --no-startup-id ~/.bin/jarvis-tts
 
 # Teclas multimedia (playerctl)
 bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
 bindsym XF86AudioPause exec --no-startup-id playerctl play-pause
 bindsym XF86AudioNext exec --no-startup-id playerctl next
-bindsym $mod+Shift+v exec --no-startup-id ~/.bin/jarvis-tts
 bindsym XF86AudioPrev exec --no-startup-id playerctl previous
 bindsym XF86AudioStop exec --no-startup-id playerctl stop
 
