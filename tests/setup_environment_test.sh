@@ -19,6 +19,9 @@ for kernel in '6.6.87.2-microsoft-standard-WSL2' '4.4.0-Microsoft'; do
   for pkg in nvim zsh claude scripts; do
     [[ " ${STOW_PACKAGES[*]} " == *" $pkg "* ]]
   done
+  for pkg in "${STOW_PACKAGES[@]}"; do
+    [[ -d "$repo_dir/$pkg" ]]
+  done
 done
 
 if select_environment '6.12.0-amd64' debian_wsl "$repo_dir" 2>/dev/null; then
@@ -37,7 +40,7 @@ for profile in debian_nativo debian_wsl; do
   kernel='6.12.0-amd64'
   [[ "$profile" != debian_wsl ]] || kernel='6.6.87-microsoft-standard-WSL2'
   select_environment "$kernel" "$profile" "$repo_dir"
-  [[ " ${STOW_PACKAGES[*]} " == *" pi "* ]]
+  [[ " ${STOW_PACKAGES[*]} " == *" llama "* ]]
   [[ " ${PACKAGE_LISTS[*]} " != *"$repo_dir/packages_extras.txt"* ]]
   if grep -Eq '^(texlive.*|gdb|valgrind|php-cli|ansible|awscli|docker.*|terraform)$' "${PACKAGE_LISTS[@]}"; then
     echo "ERROR: paquetes pesados/extras en la base de $profile" >&2

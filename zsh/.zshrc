@@ -41,7 +41,6 @@ export VISUAL=nvim
 export PAGER=less
 
 # PATH personal
-[[ -d "$HOME/.opencode/bin" ]] && export PATH="$HOME/.opencode/bin:$PATH"
 [[ -d "$HOME/.npm-global/bin" ]] && export PATH="$HOME/.npm-global/bin:$PATH"
 
 # Alias

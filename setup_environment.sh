@@ -17,7 +17,7 @@ select_environment() {
   esac
 
   PACKAGE_LISTS=("$repo_dir/packages.txt")
-  STOW_PACKAGES=(nvim zsh tmux herdr pi opencode tealdeer claude scripts)
+  STOW_PACKAGES=(nvim zsh tmux herdr llama tealdeer claude scripts)
   if [[ "$DOTFILES_ENV" == debian_nativo ]]; then
     PACKAGE_LISTS+=("$repo_dir/packages_debian_nativo.txt")
     STOW_PACKAGES+=(alacritty i3 autorandr dunst rofi picom gtk pipewire redshift libinput-gestures templates bin xresources)

@@ -8,9 +8,16 @@ run() {
     "$@" || failed+=("$*")
 }
 
-if [ ! -f pyproject.toml ] && [ ! -f package.json ]; then
-    echo "verify: no pyproject.toml or package.json in $PWD" >&2
+if [ ! -f pyproject.toml ] && [ ! -f package.json ] && [ ! -f setup_debian.sh ]; then
+    echo "verify: no hay una configuración de comprobaciones en $PWD" >&2
     exit 2
+fi
+
+if [ -f setup_debian.sh ]; then
+    run bash -n setup_debian.sh setup_environment.sh tests/setup_environment_test.sh
+    run bash tests/setup_environment_test.sh
+    run zsh -n zsh/.zshrc
+    run git diff --check
 fi
 
 if [ -f pyproject.toml ]; then

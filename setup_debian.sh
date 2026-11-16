@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Despliegue para Debian/WSL: paquetes (packages.txt) + Neovim + dotfiles nvim, zsh, opencode y claude.
+# Despliegue para Debian/WSL: paquetes (packages.txt) + Neovim + dotfiles de terminal, escritorio e IA local.
 # Uso: sudo bash setup_debian.sh [--with-extras]
 set -euo pipefail
 
@@ -116,9 +116,15 @@ backup_target ".zshrc"
 if [[ "$DOTFILES_ENV" == debian_nativo ]]; then
   backup_target ".config/gtk-3.0/settings.ini"
 fi
-as_user mkdir -p "$REAL_HOME/.config/opencode"      # solo enlaza opencode.json; runtime/node_modules fuera del repo
 as_user mkdir -p "$REAL_HOME/.config/tealdeer"      # solo enlaza config.toml; el cache vive en ~/.cache
 as_user mkdir -p "$REAL_HOME/.claude"               # solo enlaza agents/skills/AGENTS.md/CLAUDE.md; credenciales/sesiones/cache fuera del repo
+# Repara enlaces del servicio si su paquete cambió de ubicación.
+for unit in "$REAL_HOME/.config/systemd/user/llama-server.service" \
+            "$REAL_HOME/.config/systemd/user/default.target.wants/llama-server.service"; do
+  if [[ -L "$unit" && ! -e "$unit" ]]; then
+    as_user ln -sfn "$SCRIPT_DIR/llama/.config/systemd/user/llama-server.service" "$unit"
+  fi
+done
 for pkg in "${STOW_PACKAGES[@]}"; do
   as_user stow -d "$SCRIPT_DIR" -t "$REAL_HOME" "$pkg"
   ok "stow $pkg"
