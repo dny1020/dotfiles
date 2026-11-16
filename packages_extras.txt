@@ -1,0 +1,13 @@
+# Opcionales: sudo bash setup_debian.sh --with-extras
+# Infraestructura y cloud
+ansible
+awscli
+docker.io
+docker-buildx-plugin
+docker-compose-plugin
+terraform
+
+# Depuración y runtime adicional
+gdb
+valgrind
+php-cli
