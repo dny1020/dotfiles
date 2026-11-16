@@ -36,7 +36,7 @@ availability have different remedies; avoid repeating setup for all of them.
    the package and write to npm's cache. For Codex, run
    `npx -y rea-agents@6.5.0 doctor --client codex --json`. Substitute the current
    supported client: `claude_code`, `claude_desktop`, `codex`, `cursor`,
-   `gemini_cli`, `windsurf`, `devin`, `opencode`, `antigravity`, `copilot_cli`,
+   `gemini_cli`, `windsurf`, `devin`, `antigravity`, `copilot_cli`,
    `commandcode`, `vscode`, `grok_build`, `omp`, or `grok_bot`. `grok_bot` has no local
    file registration: doctor reports the Grok Bot chat step, and setup does not
    write `mcp.json`. If the client is unknown, use `doctor --json` and
