@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-set -euo pipefail
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$repo_dir/setup_environment.sh"
 
@@ -34,4 +33,20 @@ if grep -Eq '^(xclip|feh|autorandr|bc)$' "$repo_dir/packages.txt"; then
   echo 'ERROR: paquetes de escritorio en la lista compartida' >&2
   exit 1
 fi
-echo 'OK: perfiles nativo/WSL y bloqueo de ramas incorrectas'
+for profile in debian_nativo debian_wsl; do
+  kernel='6.12.0-amd64'
+  [[ "$profile" != debian_wsl ]] || kernel='6.6.87-microsoft-standard-WSL2'
+  select_environment "$kernel" "$profile" "$repo_dir"
+  [[ " ${STOW_PACKAGES[*]} " == *" pi "* ]]
+  [[ " ${PACKAGE_LISTS[*]} " != *"$repo_dir/packages_extras.txt"* ]]
+  if grep -Eq '^(texlive.*|gdb|valgrind|php-cli|ansible|awscli|docker.*|terraform)$' "${PACKAGE_LISTS[@]}"; then
+    echo "ERROR: paquetes pesados/extras en la base de $profile" >&2
+    exit 1
+  fi
+  for pkg in build-essential cmake curl jq; do
+    grep -qxF "$pkg" "$repo_dir/packages.txt"
+  done
+  select_environment "$kernel" "$profile" "$repo_dir" true
+  [[ " ${PACKAGE_LISTS[*]} " == *"$repo_dir/packages_extras.txt"* ]]
+done
+echo 'OK: perfiles nativo/WSL, ramas, base con llama.cpp y extras opcionales'

@@ -1,7 +1,21 @@
 #!/usr/bin/env bash
 # Despliegue para Debian/WSL: paquetes (packages.txt) + Neovim + dotfiles nvim, zsh, opencode y claude.
-# Uso: sudo bash setup_debian.sh
+# Uso: sudo bash setup_debian.sh [--with-extras]
 set -euo pipefail
+
+WITH_EXTRAS=false
+for arg in "$@"; do
+  case "$arg" in
+    --with-extras) WITH_EXTRAS=true ;;
+    -h|--help)
+      echo "Uso: sudo bash $0 [--with-extras]"
+      echo "Base: terminal, desarrollo y configuración de llama.cpp."
+      echo "--with-extras: añade infraestructura, depuración y PHP."
+      exit 0
+      ;;
+    *) echo "ERROR: opción desconocida: $arg" >&2; exit 1 ;;
+  esac
+done
 
 if [[ $EUID -ne 0 ]]; then
   echo "ERROR: ejecuta con sudo: sudo bash $0"
@@ -20,7 +34,7 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/setup_environment.sh"
 BRANCH="$(git -c safe.directory="$SCRIPT_DIR" -C "$SCRIPT_DIR" branch --show-current)"
-select_environment "$(uname -r)" "$BRANCH" "$SCRIPT_DIR"
+select_environment "$(uname -r)" "$BRANCH" "$SCRIPT_DIR" "$WITH_EXTRAS"
 echo "Entorno: $DOTFILES_ENV (rama: $BRANCH)"
 BACKUP_DIR="$REAL_HOME/dotfiles_backup"
 
@@ -71,7 +85,7 @@ fi
 step "Instalando paquetes"
 apt-get update -qq
 mapfile -t PACKAGES < <(cat "${PACKAGE_LISTS[@]}" | sed '/^[[:space:]]*#/d; /^[[:space:]]*$/d')
-apt-get install -y "${PACKAGES[@]}"
+apt-get install -y --no-install-recommends "${PACKAGES[@]}"
 ok "paquetes instalados"
 
 # ── 2b. Neovim 0.11+ (apt trixie solo trae 0.10.4; el LSP moderno necesita 0.11+) ─

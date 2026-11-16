@@ -22,4 +22,7 @@ select_environment() {
     PACKAGE_LISTS+=("$repo_dir/packages_debian_nativo.txt")
     STOW_PACKAGES+=(alacritty i3 autorandr dunst rofi picom gtk pipewire redshift libinput-gestures templates bin xresources)
   fi
+  if [[ "${4:-false}" == true ]]; then
+    PACKAGE_LISTS+=("$repo_dir/packages_extras.txt")
+  fi
 }

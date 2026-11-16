@@ -1,11 +1,11 @@
-# Paquetes apt instalados manualmente — Debian/WSL (trixie)
+# Paquetes base — Debian/WSL (trixie)
 # Instala: sudo apt install $(grep -vE '^\s*(#|$)' packages.txt | xargs)
-# Regenerar referencia: apt-mark showmanual | sort
-# Repos externos (los añade setup_debian.sh): docker (buildx/compose), hashicorp (terraform)
+# Extras de infraestructura/depuración: packages_extras.txt (--with-extras).
+# Sin LaTeX; las dependencias recomendadas por apt no se instalan por defecto.
 
 # Shell, editor y forge
 # Nota: Neovim NO va por apt (trixie solo trae 0.10.4); setup_debian.sh instala
-# el release oficial 0.11+ en ~/.local. En macOS lo instala brew.
+# el release oficial 0.11+ en ~/.local.
 zsh
 # Plugins de zsh que carga ~/.config/shell/zsh-enhance.zsh desde /usr/share/*
 zsh-autosuggestions
@@ -41,28 +41,15 @@ gnupg
 # Red, descargas y compilación
 curl
 wget
+# Se conservan para compilar llama.cpp y dependencias nativas.
 build-essential
 cmake
-gdb
-valgrind
 
 # Lenguajes y runtimes
 python3-pip
 python3-venv
 nodejs
 npm
-php-cli
 
 # Datos
 sqlite3
-
-# Infra / cloud
-ansible
-awscli
-docker.io
-docker-buildx-plugin
-docker-compose-plugin
-terraform
-
-# LaTeX (grande, ~varios GB; elimina esta línea si no lo usas)
-texlive-full

@@ -16,7 +16,24 @@ git clone --branch debian_wsl <repo> ~/dotfiles && cd ~/dotfiles
 sudo bash setup_debian.sh   # Debian nativo o WSL
 ```
 
-Instala paquetes, aplican stow y dejan zsh por defecto. En Debian los paquetes salen de `packages.txt`, se añaden los repos de Docker y HashiCorp, y **Neovim se instala desde el release oficial en `~/.local`**: trixie solo trae 0.10.4 y el LSP moderno pide 0.11+. Al final se sincronizan los plugins de Neovim en headless.
+Instala paquetes, aplica stow y deja zsh por defecto. La instalación base usa
+`packages.txt` y, en Debian nativo, `packages_debian_nativo.txt`, sin paquetes
+recomendados de apt. No instala LaTeX. Conserva `build-essential` y `cmake`
+para compilar llama.cpp, su servicio y la integración de IA local en Neovim
+y zsh; no descarga modelos ni inicia el servidor automáticamente.
+
+Infraestructura (Docker, Ansible, AWS CLI y Terraform), depuración (GDB y
+Valgrind) y PHP están en `packages_extras.txt` y se instalan solo con:
+
+```bash
+sudo bash setup_debian.sh --with-extras
+```
+
+Los repos de Docker y HashiCorp se añaden solo al seleccionar esos extras.
+Estos cambios no desinstalan paquetes existentes.
+**Neovim se instala desde el release oficial en `~/.local`**: trixie solo
+trae 0.10.4 y el LSP moderno pide 0.11+. Al final se sincronizan los plugins
+de Neovim en headless.
 
 El prompt usa Nerd Font: instala JetBrainsMono NF o quita los iconos de `zsh/.config/starship.toml`.
 
