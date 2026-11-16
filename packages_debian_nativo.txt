@@ -1,0 +1,5 @@
+# Paquetes exclusivos del escritorio Debian nativo.
+xclip
+feh
+autorandr
+bc

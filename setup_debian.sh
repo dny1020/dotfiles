@@ -18,14 +18,17 @@ else
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKAGE_LIST="$SCRIPT_DIR/packages.txt"
+source "$SCRIPT_DIR/setup_environment.sh"
+BRANCH="$(git -c safe.directory="$SCRIPT_DIR" -C "$SCRIPT_DIR" branch --show-current)"
+select_environment "$(uname -r)" "$BRANCH" "$SCRIPT_DIR"
+echo "Entorno: $DOTFILES_ENV (rama: $BRANCH)"
 BACKUP_DIR="$REAL_HOME/dotfiles_backup"
 
 as_user() { sudo -u "$REAL_USER" env HOME="$REAL_HOME" "$@"; }
 step()    { echo; echo "──> $*"; }
 ok()      { echo "    [ok] $*"; }
 skip()    { echo "    [skip] $*"; }
-need()    { grep -qxF "$1" "$PACKAGE_LIST"; }
+need()    { grep -qxF "$1" "${PACKAGE_LISTS[@]}"; }
 
 backup_target() {
   local rel="$1" target="$REAL_HOME/$1" backup="$BACKUP_DIR/$1"
@@ -67,7 +70,8 @@ fi
 # ── 2. Paquetes ───────────────────────────────────────────────────────────────
 step "Instalando paquetes"
 apt-get update -qq
-apt-get install -y $(grep -vE '^\s*(#|$)' "$PACKAGE_LIST" | xargs)
+mapfile -t PACKAGES < <(cat "${PACKAGE_LISTS[@]}" | sed '/^[[:space:]]*#/d; /^[[:space:]]*$/d')
+apt-get install -y "${PACKAGES[@]}"
 ok "paquetes instalados"
 
 # ── 2b. Neovim 0.11+ (apt trixie solo trae 0.10.4; el LSP moderno necesita 0.11+) ─
@@ -95,18 +99,20 @@ mkdir -p "$BACKUP_DIR"
 chown "$REAL_USER":"$REAL_USER" "$BACKUP_DIR"
 backup_target ".config/nvim"
 backup_target ".zshrc"
-backup_target ".config/gtk-3.0/settings.ini"   # lxappearance/GTK lo crean como archivo real y stow chocaria
+if [[ "$DOTFILES_ENV" == debian_nativo ]]; then
+  backup_target ".config/gtk-3.0/settings.ini"
+fi
 as_user mkdir -p "$REAL_HOME/.config/opencode"      # solo enlaza opencode.json; runtime/node_modules fuera del repo
 as_user mkdir -p "$REAL_HOME/.config/tealdeer"      # solo enlaza config.toml; el cache vive en ~/.cache
 as_user mkdir -p "$REAL_HOME/.claude"               # solo enlaza agents/skills/AGENTS.md/CLAUDE.md; credenciales/sesiones/cache fuera del repo
-for pkg in nvim zsh tmux herdr pi alacritty i3 dunst rofi picom gtk pipewire redshift libinput-gestures opencode tealdeer claude templates bin scripts xresources; do
+for pkg in "${STOW_PACKAGES[@]}"; do
   as_user stow -d "$SCRIPT_DIR" -t "$REAL_HOME" "$pkg"
   ok "stow $pkg"
 done
 
 # Tema de iconos con carpetas Gruvbox. Se genera en ~/.local a partir de las
 # variantes que ya trae papirus-icon-theme: sin sudo y sin descargar nada.
-if [ -d /usr/share/icons/Papirus-Dark ]; then
+if [[ "$DOTFILES_ENV" == debian_nativo && -d /usr/share/icons/Papirus-Dark ]]; then
   as_user "$REAL_HOME/.bin/papirus-recolor" >/dev/null 2>&1 &&
     ok "tema de iconos Papirus-Gruvbox generado" ||
     skip "no se pudo generar Papirus-Gruvbox"
