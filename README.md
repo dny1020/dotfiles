@@ -5,8 +5,13 @@ zsh sin frameworks, Neovim con lazy.nvim y `lazy-lock.json` para reproducibilida
 
 ## Instalación
 
+Usa `debian_wsl` en Debian sobre WSL y `debian_nativo` en la laptop con
+escritorio. Guarda y sube los cambios desde la rama de cada equipo. Para
+compartir cambios puntuales usa `git cherry-pick <commit>`; evita fusionar
+las ramas completas.
+
 ```bash
-git clone <repo> ~/dotfiles && cd ~/dotfiles
+git clone --branch debian_wsl <repo> ~/dotfiles && cd ~/dotfiles
 
 sudo bash setup_debian.sh   # Debian nativo o WSL
 ```
