@@ -75,7 +75,9 @@ wt() {
 }
 
 # clip: copiar stdin al portapapeles (Linux X11 / WSL)
-if command -v xclip >/dev/null; then
+if [[ -n "$WSL_DISTRO_NAME$WSL_INTEROP" ]] && command -v clip.exe >/dev/null; then
+  alias clip='clip.exe'
+elif command -v xclip >/dev/null; then
   alias clip='xclip -selection clipboard'
 elif command -v clip.exe >/dev/null; then
   alias clip='clip.exe'

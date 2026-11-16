@@ -52,7 +52,21 @@ El prompt usa Nerd Font: instala JetBrainsMono NF o quita los iconos de `zsh/.co
 | `xresources` | `~/.Xresources` | xterm/uxterm: fuente, 256 colores, Gruvbox |
 | `zsh` | `~/.zshrc`, `~/.config/shell/`, `~/.config/starship.toml` | zsh puro: completado con menú, historial compartido, `vim`→`nvim`, arranque de herdr. Prompt Starship con iconos Nerd Font |
 
-`setup_debian.sh` enlaza también los paquetes de escritorio en WSL, donde son inertes: no hay X.
+`setup_debian.sh` detecta WSL por el kernel y comprueba que la rama coincida
+con el entorno antes de modificar el sistema.
+
+| Configuración | Debian nativo | Debian WSL |
+|---|---|---|
+| Neovim, zsh, tmux, herdr, IA local, opencode, tealdeer, Claude y scripts | Sí | Sí |
+| i3, autorandr, alacritty, dunst, rofi, picom, GTK, PipeWire, redshift y gestos | Sí | No |
+| Plantillas, scripts de escritorio de `bin` y Xresources | Sí | No |
+| `packages.txt` (herramientas compartidas) | Sí | Sí |
+| `packages_debian_nativo.txt` (xclip, feh, autorandr, bc) | Sí | No |
+
+En WSL el portapapeles usa `clip.exe`. El instalador no elimina paquetes ni
+enlaces de escritorio que se hayan aplicado previamente; este filtro evita
+aplicarlos en nuevas ejecuciones. Los archivos de escritorio heredados en
+la rama WSL quedan como referencia, sin instalarse ni enlazarse.
 
 ## Tema
 
