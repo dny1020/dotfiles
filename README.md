@@ -1,140 +1,106 @@
 # Dotfiles
 
-Terminal y editor minimalistas para **Debian** (nativo o WSL), gestionados con **GNU Stow**.
-zsh sin frameworks, Neovim con lazy.nvim y `lazy-lock.json` para reproducibilidad, IA local opcional con llama.cpp.
+Configuración para Debian nativo y Debian WSL con GNU Stow: zsh, Neovim,
+terminal y Claude Code. Escritorio i3 en Debian nativo e IA local con
+llama.cpp opcional.
 
-## Instalación
+## Ramas e instalación
 
-Usa `debian_wsl` en Debian sobre WSL y `debian_nativo` en la laptop con
-escritorio. Guarda y sube los cambios desde la rama de cada equipo. Para
-compartir cambios puntuales usa `git cherry-pick <commit>`; evita fusionar
-las ramas completas.
+- `debian_nativo`: laptop con escritorio i3.
+- `debian_wsl`: Debian dentro de Windows, sin instalar ni enlazar el escritorio.
 
 ```bash
-git clone --branch debian_wsl <repo> ~/dotfiles && cd ~/dotfiles
-
-sudo bash setup_debian.sh   # Debian nativo o WSL
+# En WSL, cambia el nombre de rama por debian_wsl.
+git clone --branch debian_nativo <repo> ~/dotfiles
+cd ~/dotfiles
+sudo bash setup_debian.sh
 ```
 
-Instala paquetes, aplica stow y deja zsh por defecto. La instalación base usa
-`packages.txt` y, en Debian nativo, `packages_debian_nativo.txt`, sin paquetes
-recomendados de apt. No instala LaTeX. Conserva `build-essential` y `cmake`
-para compilar llama.cpp, su servicio y la integración de IA local en Neovim
-y zsh; no descarga modelos ni inicia el servidor automáticamente.
+El instalador detecta WSL y comprueba que la rama corresponda al entorno.
+Instala paquetes sin recomendaciones de apt, enlaza la configuración y deja
+zsh como shell. Neovim se descarga del release oficial en `~/.local/nvim`;
+sus plugins se sincronizan con `lazy-lock.json`.
 
-Infraestructura (Docker, Ansible, AWS CLI y Terraform), depuración (GDB y
-Valgrind) y PHP están en `packages_extras.txt` y se instalan solo con:
+| Lista | Cuándo se instala |
+|---|---|
+| `packages.txt` | Siempre: terminal, desarrollo y compilación de llama.cpp |
+| `packages_debian_nativo.txt` | Solo nativo: utilidades de escritorio |
+| `packages_extras.txt` | Con `--with-extras`: infraestructura, depuración y PHP |
 
 ```bash
 sudo bash setup_debian.sh --with-extras
 ```
 
-Los repos de Docker y HashiCorp se añaden solo al seleccionar esos extras.
-Estos cambios no desinstalan paquetes existentes.
-**Neovim se instala desde el release oficial en `~/.local`**: trixie solo
-trae 0.10.4 y el LSP moderno pide 0.11+. Al final se sincronizan los plugins
-de Neovim en headless.
+Los extras incluyen Docker, Ansible, AWS CLI, Terraform, GDB y Valgrind.
+Los repos de Docker y HashiCorp solo se añaden con los extras. No se instala
+LaTeX ni se eliminan paquetes existentes.
 
-El prompt usa Nerd Font: instala JetBrainsMono NF o quita los iconos de `zsh/.config/starship.toml`.
+En cada equipo, trabaja y sube cambios en su rama. Usa `git pull --ff-only`
+antes de editar y `git push` después de guardar los commits. Comparte cambios
+puntuales con `git cherry-pick <commit>` para evitar mezclar ajustes de equipos.
 
-## Paquetes
+## Configuración
 
-| Paquete | Enlaza a | Contenido |
+| Paquetes de Stow | Función | Entorno |
 |---|---|---|
-| `alacritty` | `~/.config/alacritty/` | Terminal. Overrides por máquina en `local.toml` |
-| `bin` | `~/.bin/` (en `PATH`) | `vol-boost` (volumen 100%/150%, `$mod+u`), `lock` (i3lock con el wallpaper difuminado), `papirus-recolor` (carpetas Gruvbox sin sudo) |
-| `claude` | `~/.claude/` | Config global de Claude Code (ver abajo) |
-| `dunst` | `~/.config/dunst/` | Notificaciones |
-| `git` | — | `.gitconfig` versionado pero **no enlazado** (ver abajo): identidad + merges con `nvimdiff`, `zdiff3` y `rerere` |
-| `herdr` | `~/.config/herdr/` | Multiplexor por defecto (orientado a agentes), arranca solo desde `.zshrc`. Prefijo `C-a`, Gruvbox. Binario aparte en `~/.local/bin/herdr` |
-| `gtk` | `~/.config/gtk-3.0/` | Adwaita-dark repintado a Gruvbox por CSS + iconos Papirus. Afecta a PCManFM y a los diálogos de Firefox |
-| `i3` | `~/.config/i3/` | WM, `i3status` (Gruvbox) y `osd.sh` (volumen/brillo/batería) |
-| `libinput-gestures` | `~/.config/` | Gestos del touchpad |
-| `nvim` | `~/.config/nvim/` | lazy.nvim, LSP (mason + lspconfig + nvim-cmp; pyright + ruff, gopls, ansiblels…), format on save (conform: ruff, stylua/prettier si el proyecto los configura), explorador fijo a la izquierda (nvim-tree, `<espacio>e`), fzf-lua (`<espacio><espacio>` archivos, `<espacio>/` grep, `<espacio>s…` búsquedas, `<espacio>g…` git), which-key, lualine (barra inferior con ruta), dropbar (breadcrumbs arriba, `<espacio>;`), iconos (nvim-web-devicons), treesitter (rama `main`, off en archivos >512 KB), tema **gruvbox** (dark hard) |
-| `opencode` | `~/.config/opencode/` | CLI sin proveedor/modelo fijo; hereda `~/.claude/AGENTS.md` y `skills-index.md` |
-| `pi` | `~/.config/systemd/user/` | Unit de `llama-server` (ver abajo) |
-| `picom` | `~/.config/picom.conf` | Compositor: sin tearing, sombras y blur `dual_kawase` |
-| `pipewire` | `~/.config/pipewire/`, `~/.config/wireplumber/` | Cancelación de eco para llamadas y Bluetooth fijado en A2DP |
-| `redshift` | `~/.config/redshift.conf` | Luz nocturna |
-| `rofi` | `~/.config/rofi/` | Launcher |
-| `scripts` | `~/.local/bin/` | `verify` (check gate del proyecto actual: ruff/pytest o lint/format/build/test) |
-| `tealdeer` | `~/.config/tealdeer/` | `tldr` con auto-update del cache |
-| `tmux` | `~/.config/tmux/` | Alternativa a herdr (no arranca solo). Prefijo `C-a`, divisiones que heredan el directorio, copia vi con portapapeles del SO, Gruvbox |
-| `xresources` | `~/.Xresources` | xterm/uxterm: fuente, 256 colores, Gruvbox |
-| `zsh` | `~/.zshrc`, `~/.config/shell/`, `~/.config/starship.toml` | zsh puro: completado con menú, historial compartido, `vim`→`nvim`, arranque de herdr. Prompt Starship con iconos Nerd Font |
+| `zsh`, `tmux`, `herdr` | Shell y multiplexores; herdr arranca si está disponible | Ambos |
+| `nvim` | Editor, LSP, búsqueda, formato y autocompletado | Ambos |
+| `claude` | Instrucciones, agentes, skills y settings de Claude Code | Ambos |
+| `llama` | Servicio de usuario `llama-server` | Ambos |
+| `tealdeer`, `scripts` | tldr y comando `verify` | Ambos |
+| `alacritty`, `i3`, `autorandr` | Terminal, gestor de ventanas y monitores | Nativo |
+| `dunst`, `rofi`, `picom`, `gtk`, `xresources` | Notificaciones, launcher y apariencia Gruvbox | Nativo |
+| `pipewire`, `redshift`, `libinput-gestures` | Audio, luz nocturna y gestos | Nativo |
+| `bin`, `templates` | Scripts de escritorio y plantillas | Nativo |
 
-`setup_debian.sh` detecta WSL por el kernel y comprueba que la rama coincida
-con el entorno antes de modificar el sistema.
+Los binarios de herdr y llama.cpp se instalan aparte. La lista nativa todavía
+no incluye todas las dependencias del escritorio: i3, dunst, rofi, picom,
+redshift, playerctl, wireplumber y papirus-icon-theme deben estar instalados.
+El instalador no retira enlaces de escritorio aplicados antes en WSL.
 
-| Configuración | Debian nativo | Debian WSL |
-|---|---|---|
-| Neovim, zsh, tmux, herdr, IA local, opencode, tealdeer, Claude y scripts | Sí | Sí |
-| i3, autorandr, alacritty, dunst, rofi, picom, GTK, PipeWire, redshift y gestos | Sí | No |
-| Plantillas, scripts de escritorio de `bin` y Xresources | Sí | No |
-| `packages.txt` (herramientas compartidas) | Sí | Sí |
-| `packages_debian_nativo.txt` (xclip, feh, autorandr, bc) | Sí | No |
+El prompt usa Nerd Font. Alacritty admite ajustes por equipo en `local.toml`.
+En i3, `Super+p` aplica el perfil de monitores y `Super+Shift+x` bloquea la sesión.
+En WSL el portapapeles usa `clip.exe`.
 
-En WSL el portapapeles usa `clip.exe`. El instalador no elimina paquetes ni
-enlaces de escritorio que se hayan aplicado previamente; este filtro evita
-aplicarlos en nuevas ejecuciones. Los archivos de escritorio heredados en
-la rama WSL quedan como referencia, sin instalarse ni enlazarse.
+## llama.cpp
 
-## Tema
+Se conserva el servicio en `llama/.config/systemd/user/llama-server.service`.
+Espera el binario en `~/llama.cpp/build/bin/llama-server` y el modelo en
+`~/models/Qwen2.5-Coder-1.5B-Instruct-Q4_K_M.gguf`. El instalador no descarga
+modelos ni activa el servidor automáticamente.
 
-Todo lo visual comparte una paleta Gruvbox dark hard: fondo `#1d2021`, acento `#d79921`. La comparten i3bar, rofi, dunst, alacritty, tmux, xterm, GTK y el tema de VS Code, que viaja por Settings Sync y no por este repo.
+```bash
+systemctl --user enable --now llama-server
+```
 
-El cristal esmerilado lo pone picom con `blur-background`: cada programa solo declara su propio alfa y picom difumina lo que quede detrás. Por eso lo tienen i3bar, rofi, dunst y alacritty, y **no** VS Code, Firefox ni PCManFM, que abren su ventana sin canal alfa. Forzarlo con una regla de opacidad de picom volvería translúcido también el texto, no solo el fondo.
+El servicio usa el puerto 8082 para autocompletado y chat en Neovim y los
+atajos `ai`, `explain`, `cmd`, `why` y `gitai` en zsh. Escucha en `127.0.0.1`;
+si WSL necesita acceso por la IP de la VM, configura `LLAMA_BIND=0.0.0.0` en
+`~/.config/llama-server.env`. Los clientes admiten `LLAMA_HOST`; los atajos
+usan `AI_MODEL`. Los comandos generados quedan en el prompt para revisarlos.
 
-En GTK los `@define-color` no bastan: desde 3.20 Adwaita compila sus colores como literales, así que `gtk/.config/gtk-3.0/gtk.css` lleva reglas explícitas por widget. `bin/.bin/papirus-recolor` genera `~/.local/share/icons/Papirus-Gruvbox` reapuntando las carpetas a las variantes amarillas que **ya trae** `papirus-icon-theme`, sin sudo ni descargas. No se versiona porque son enlaces a rutas del sistema; lo regenera `setup_debian.sh`.
+## Ajustes locales
 
-Esta máquina no usa gestor de sesión: lightdm está enmascarado, `getty@tty1` autologuea y `.zprofile` lanza `startx`. El bloqueo manual es `$mod+Shift+x` → `~/.bin/lock`.
+No se versionan secretos, credenciales, sesiones ni historial de agentes.
+Claude puede usar `~/.claude/CLAUDE.local.md` para contexto de cada equipo.
 
-## Audio
-
-PipeWire con compatibilidad PulseAudio; el PulseAudio clásico no está instalado. Firefox decodifica con el `ffmpeg` del sistema (sin él no hay H.264 ni AAC), Chrome trae los suyos compilados.
-
-`99-echo-cancel.conf` carga `libpipewire-module-echo-cancel`, que Debian instala pero WirePlumber no activa. Va en `monitor.mode`, así que usa el monitor de la salida actual como referencia en vez de crear un sink virtual: solo hay que elegir la fuente **Micro (eco cancelado)**, y la salida puede cambiar libremente sin reconfigurar nada.
-
-`51-bluetooth.conf` desactiva `bluetooth.autoswitch-to-headset-profile`. Bluetooth no puede dar estéreo de calidad y micrófono a la vez: A2DP es solo salida y al abrir el micro el auricular cae a HFP, mono y de banda estrecha. Con el autoswitch apagado los auriculares se quedan en A2DP y el micro sale del portátil, ya con cancelación de eco. **Contrapartida: el micrófono del auricular deja de ofrecerse**; para recuperarlo hay que cambiar el perfil a mano con `pactl set-card-profile`.
-
-Bluetooth tiene SBC, aptX, LDAC, LC3 y Opus, pero **no AAC**: `fdk-aac` es non-free en Debian. Solo afecta a auriculares Apple, que caen a SBC.
-
-`zsh/.config/shell/` son tres archivos: `tools.zsh` (reemplazos como **alias** sobre el comando de siempre — `ls`→eza, `cd`→zoxide, `cat`→bat, `fd`, `tldr`; en Debian resuelve `batcat`/`fdfind`), `ai.zsh` (copiloto local) y `zsh-enhance.zsh` (autosuggestions, syntax-highlighting y fzf; **debe cargarse el último**).
-
-## IA local (opcional)
-
-Sin llama.cpp todo lo demás funciona igual. Un único servidor para FIM y chat:
-
-| Puerto | Modelo | Para qué | Unit |
-|---|---|---|---|
-| 8082 | `qwen2.5-coder-1.5b-instruct` | FIM/autocompletado en Neovim (minuet-ai; aceptar `<A-y>`, una línea `<A-l>`, descartar `<A-e>`), `gen.nvim` (`<espacio>a` sobre una selección) y los atajos de shell `ai`, `explain`, `cmd`, `why`, `gitai`, más `Ctrl+X Ctrl+A` | `llama-server.service` |
-
-`qwen2.5-coder` **no hace tool-calling nativo** — emite la llamada como texto JSON en `content` — así que no sirve para agentes. Los atajos que generan comandos los dejan en el prompt con `print -z` para revisar: **nunca se auto-ejecutan**.
-
-La unit se enlaza desde `pi/` y se activa con `systemctl --user enable --now llama-server`. Escucha solo en `127.0.0.1`: es un portátil que se conecta a wifis ajenas. Si otra máquina necesita `0.0.0.0` (WSL2, donde los clientes llegan por la IP de la VM), se pone `LLAMA_BIND=0.0.0.0` en `~/.config/llama-server.env`, no versionado; zsh y Neovim usan esa IP automáticamente en WSL. Cambia modelo o puerto de los atajos con `AI_MODEL` y `LLAMA_HOST`.
-
-## Claude Code (`claude/`)
-
-Solo lo declarativo: `AGENTS.md` (guías de ingeniería globales), `CLAUDE.md` (contexto personal), `skills-index.md` (lo lee opencode), `settings.json`, y:
-
-- `skills/` — build-agentic-agent, build-backend, build-robot, devops, etl-pipeline, graphify, linux-best-practices, terraform-deploy, write-tests, más archify, codebase-discovery, excalidraw-skill, knowledge-curation y security-audit. `skills/synced/` (skills sincronizados desde claude.ai) es estado en tiempo de ejecución y no se versiona
-- `agents/` — ai, architect, graph-ml, iac-expert, voip. Solo donde compensa un contexto aparte
-
-`settings.json` **sí se versiona**: el token del MCP es la referencia `${env:DOCTION_MCP_TOKEN}`, no un literal, así que modelo, `effortLevel`, plugins y MCP se reproducen en una máquina nueva. Claude Code reescribe ese archivo al tocar `/config`, así que comprueba de vez en cuando que sigue siendo enlace: `ls -l ~/.claude/settings.json`.
-
-Fuera del repo a propósito (archivo real en `~/.claude/`): `.credentials.json`, `settings.local.json`, `projects/`, `sessions/`, `history.jsonl` y demás estado en tiempo de ejecución.
-
-## Local, no versionado
-
-| Archivo | Para qué |
+| Archivo | Uso |
 |---|---|
-| `~/.zsh_secrets` | Secretos |
-| `~/.zshrc.local` | Aliases y vars de una sola máquina |
-| `~/.config/alacritty/local.toml` | Tamaño de fuente y demás por equipo |
-| `~/.gitconfig` | Identidad de git (distinta según el equipo) |
+| `~/.zsh_secrets` | Secretos de shell |
+| `~/.zshrc.local` | Alias y variables del equipo |
+| `~/.config/alacritty/local.toml` | Ajustes de terminal |
+| `~/.config/llama-server.env` | Variables del servidor local |
+| `~/.gitconfig` | Identidad y preferencias de Git |
 
-`git/.gitconfig` está versionado pero **ningún script lo enlaza**, y lleva una identidad distinta de la que usa esta máquina. Es intencionado mientras la identidad varíe por equipo; si algún día se unifica, añade `git` a la lista de stow de `setup_debian.sh`.
+`git/.gitconfig` sirve como referencia y no se enlaza automáticamente.
+Los archivos reales que el instalador necesita reemplazar se guardan en
+`~/dotfiles_backup`.
 
-## Cabos sueltos conocidos
+## Comprobaciones
 
-- `packages.txt` no lista el stack de escritorio (i3, dunst, rofi, picom, redshift, playerctl, wireplumber, papirus-icon-theme): en un Debian limpio hay que instalarlo a mano. Sin resolver porque `setup_debian.sh` usa el mismo `packages.txt` en WSL, donde arrastrar X11 no tiene sentido.
+```bash
+bash scripts/.local/bin/verify
+```
+
+Valida la sintaxis de shell, la selección de entorno y paquetes, y el formato
+del diff. No instala paquetes ni modifica servicios.
